@@ -3,7 +3,7 @@ import re
 
 class VSA:
     nodes: set[str]
-    edges: dict[str, dict[str, set[str]]]
+    edges: dict[str, dict[str, tuple[bool, set[str]]]]
     start_node: str
     end_node: str
 
@@ -45,7 +45,7 @@ def mk_vsa(s: str) -> VSA:
     for i in range(len(s)):
         outgoing_edges = {}
         for j in range(i+1, len(s)+1):
-            outgoing_edges[f"v{j}"] = set(possible_regex_tokens(s[i:j]))
+            outgoing_edges[f"v{j}"] = False, set(possible_regex_tokens(s[i:j]))
         edges[f"v{i}"] = outgoing_edges
     edges[f"v{len(s)}"] = {}
     start_node = "v0"
@@ -59,15 +59,30 @@ def intersect(va: VSA, vb: VSA) -> VSA:
     pairs = [(a, b) for a in va.nodes for b in vb.nodes]
     nodes = set(a + "," + b for a, b in pairs)
     edges = {}
+
     for a_src, b_src in pairs:
         outgoing_edges = {}
+
+        # add regular edges
         for a_target, b_target in pairs:
             if a_target not in va.edges[a_src] or b_target not in vb.edges[b_src]:
                 continue
-            a_edges = va.edges[a_src][a_target]
-            b_edges = vb.edges[b_src][b_target]
-            outgoing_edges[a_target + "," + b_target] = a_edges.intersection(b_edges)
+            a_is_opt, a_edges = va.edges[a_src][a_target]
+            b_is_opt, b_edges = vb.edges[b_src][b_target]
+            outgoing_edges[a_target + "," + b_target] = a_is_opt or b_is_opt, a_edges.intersection(b_edges)
+
+        # add optional edges where a is constant
+        for b_target in vb.edges[b_src]:
+            _, b_edges = vb.edges[b_src][b_target]
+            outgoing_edges[a_src + "," + b_target] = True, b_edges
+
+        # add optional edges where b is constant
+        for a_target in va.edges[a_src]:
+            _, a_edges = va.edges[a_src][a_target]
+            outgoing_edges[a_target + "," + b_src] = True, a_edges
+
         edges[a_src + "," + b_src] = outgoing_edges
+
     start_node = va.start_node + "," + vb.start_node
     end_node = va.end_node + "," + vb.end_node
     return VSA(nodes, edges, start_node, end_node)
@@ -81,7 +96,7 @@ def simplify(v: VSA) -> VSA:
             return
         nodes.add(a)
         for b, regexes in v.edges[a].items():
-            if regexes != {}:
+            if regexes[1] != {}:
                 dfs(b)
     dfs(v.start_node)
 
@@ -115,7 +130,7 @@ def possible_regexes(v: VSA):
     yield from regexes_starting_at(v.start_node)
 
 
-def wt_of_token(tok: set[str]) -> tuple[int, str]:
+def wt_of_token(tok: set[str]) -> tuple[float, str]:
     special_things = {"[0-9]+", "[a-z]+", "[A-Z]+", "[a-zA-Z]+", "[a-zA-Z0-9]+", "\\s+", "(\w+ )+"}
     if len(tok.difference(special_things)) > 0:
         # it has a literal string
@@ -153,10 +168,15 @@ def get_best_regex(v: VSA) -> str:
             cur_best_regex = ""
             for b, regexes in v.edges[a].items():
                 wt_of_b, regex_of_b = dfs(b)
-                wt, regex = wt_of_token(regexes)
+                wt, regex = wt_of_token(regexes[1])
+                if regexes[0]: # extra weight for ?. 50 is ok
+                    wt += 50
                 if wt + wt_of_b < cur_best_wt:
                     cur_best_wt = wt + wt_of_b
-                    cur_best_regex = regex + regex_of_b
+                    if regexes[0]:
+                        cur_best_regex = regex + '?' + regex_of_b
+                    else:
+                        cur_best_regex = regex + regex_of_b
             best_from_node[a] = cur_best_wt, cur_best_regex
             return cur_best_wt, cur_best_regex
     return dfs(v.start_node)
