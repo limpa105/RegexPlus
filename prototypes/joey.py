@@ -1,15 +1,16 @@
 import math
 import re
 from typing import List, Dict, Tuple, Set
+import itertools
 
 class VSA:
-    nodes: Set[str]
-    edges: Dict[str, Dict[str, Tuple[bool, Set[str]]]]
-    start_node: str
-    end_node: str
+    num_nodes: int
+    edges: List[Dict[int, Tuple[bool, Set[str]]]]
+    start_node: int
+    end_node: int
 
-    def __init__(self, nodes, edges, start_node, end_node):
-        self.nodes = nodes
+    def __init__(self, num_nodes, edges, start_node, end_node):
+        self.num_nodes = num_nodes
         self.edges = edges
         self.start_node = start_node
         self.end_node = end_node
@@ -41,52 +42,54 @@ def possible_regex_tokens(s):
     # TODO: other tokens (capitalized words, stuff like that)
 
 def mk_vsa(s: str) -> VSA:
-    nodes = set(f"v{i}" for i in range(len(s) + 1))
-    edges = {}
+    num_nodes = len(s) + 1
+    edges = []
     for i in range(len(s)):
         outgoing_edges = {}
         for j in range(i+1, len(s)+1):
-            outgoing_edges[f"v{j}"] = False, set(possible_regex_tokens(s[i:j]))
-        edges[f"v{i}"] = outgoing_edges
-    edges[f"v{len(s)}"] = {}
-    start_node = "v0"
-    end_node = f"v{len(s)}"
-    return VSA(nodes, edges, start_node, end_node)
+            outgoing_edges[j] = False, set(possible_regex_tokens(s[i:j]))
+        edges.append(outgoing_edges)
+    edges.append({})
+    start_node = 0
+    end_node = len(s)
+    return VSA(num_nodes, edges, start_node, end_node)
 
 # Generates a big VSA that you should subsequently get rid of its unreachable
 # nodes
 # This two-step process could be implemented more efficiently in a single step
 def intersect(va: VSA, vb: VSA) -> VSA:
-    pairs = [(a, b) for a in va.nodes for b in vb.nodes]
-    nodes = set(a + "," + b for a, b in pairs)
-    edges = {}
+    num_nodes = va.num_nodes * vb.num_nodes
+    def n(a, b): return a * vb.num_nodes + b
+    def pairs():
+        return itertools.product(range(va.num_nodes), range(vb.num_nodes))
 
-    for a_src, b_src in pairs:
+    edges = []
+    for a_src, b_src in pairs():
         outgoing_edges = {}
 
         # add regular edges
-        for a_target, b_target in pairs:
+        for a_target, b_target in pairs():
             if a_target not in va.edges[a_src] or b_target not in vb.edges[b_src]:
                 continue
             a_is_opt, a_edges = va.edges[a_src][a_target]
             b_is_opt, b_edges = vb.edges[b_src][b_target]
-            outgoing_edges[a_target + "," + b_target] = a_is_opt or b_is_opt, a_edges.intersection(b_edges)
+            outgoing_edges[n(a_target, b_target)] = a_is_opt or b_is_opt, a_edges.intersection(b_edges)
 
         # add optional edges where a is constant
         for b_target in vb.edges[b_src]:
             _, b_edges = vb.edges[b_src][b_target]
-            outgoing_edges[a_src + "," + b_target] = True, b_edges
+            outgoing_edges[n(a_src, b_target)] = True, b_edges
 
         # add optional edges where b is constant
         for a_target in va.edges[a_src]:
             _, a_edges = va.edges[a_src][a_target]
-            outgoing_edges[a_target + "," + b_src] = True, a_edges
+            outgoing_edges[n(a_target, b_src)] = True, a_edges
 
-        edges[a_src + "," + b_src] = outgoing_edges
+        edges.append(outgoing_edges)
 
-    start_node = va.start_node + "," + vb.start_node
-    end_node = va.end_node + "," + vb.end_node
-    return VSA(nodes, edges, start_node, end_node)
+    start_node = n(va.start_node, vb.start_node)
+    end_node = n(va.end_node, vb.end_node)
+    return VSA(num_nodes, edges, start_node, end_node)
 
 # Delete unreachable nodes, and use congruence closure to deduplicate
 def simplify(v: VSA) -> VSA:
@@ -128,13 +131,22 @@ def simplify(v: VSA) -> VSA:
     can_reach_end, start_node = dfs(v.start_node)
     if not can_reach_end:
         raise Exception("No possible regex :(")
-    nodes = set(n for can_reach_end, n in memo.values() if can_reach_end)
+    num_nodes = 0
+    nodes = {}
+    for can_reach_end, n in memo.values():
+        if can_reach_end and n not in nodes:
+            nodes[n] = num_nodes
+            num_nodes += 1
 
     # populate edges
-    edges = dict((a, dict((memo[b][1], e) for b, e in v.edges[a].items() if memo[b][0]))
-                 for a in nodes)
+    edges = [{}] * num_nodes
+    for a, i in nodes.items():
+        edges[i] = dict((nodes[memo[b][1]], e) for b, e in v.edges[a].items() if memo[b][0])
 
-    return VSA(nodes, edges, v.start_node, v.end_node)
+    start_node = nodes[v.start_node]
+    end_node = nodes[v.end_node]
+
+    return VSA(num_nodes, edges, start_node, end_node)
 
 
 def possible_regexes(v: VSA):
@@ -212,8 +224,10 @@ def main():
 
     print("doin' VSA stuff")
     vsa = mk_vsa(inputs[0])
+    print("there are %d nodes" % vsa.num_nodes)
     for s in inputs[1:]:
         vsa = simplify(intersect(vsa, mk_vsa(s)))
+        print("there are %d nodes" % vsa.num_nodes)
 
     wt, regex = get_best_regex(vsa)
     print(f"Best regex: {regex} (weight {wt})")
