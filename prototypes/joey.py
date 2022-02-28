@@ -88,35 +88,53 @@ def intersect(va: VSA, vb: VSA) -> VSA:
     end_node = va.end_node + "," + vb.end_node
     return VSA(nodes, edges, start_node, end_node)
 
-# Delete unreachable nodes
+# Delete unreachable nodes, and use congruence closure to deduplicate
 def simplify(v: VSA) -> VSA:
-    # use DFS to find reachable nodes
-    nodes = set()
+    # DFS taking advantage of it being a DAG
+    memo = {}
+    children_to_node_map = {}
     def dfs(a):
-        if a in nodes:
-            return
-        nodes.add(a)
+        if a in memo:
+            return memo[a]
+        if a == v.end_node:
+            memo[a] = True, a
+            return True, a
+        children = []
         for b, regexes in v.edges[a].items():
-            if regexes[1] != {}:
-                dfs(b)
-    dfs(v.start_node)
+            if regexes[1] != {}: # I think this is the only part that depends on the representation of edges
+                can_reach_end, new_b = dfs(b)
+                if can_reach_end:
+                    children.append((new_b, regexes))
+        if len(children) == 0:
+            memo[a] = False, a
+            return False, a
+        children.sort()
+        ns = tuple(n for n, e in children)
+        es = tuple(e for n, e in children)
+        if ns in children_to_node_map:
+            for candidate in children_to_node_map[ns]:
+                if candidate[0] == es:
+                    new_node = candidate[1]
+                    memo[a] = True, new_node
+                    return True, new_node
+            children_to_node_map[ns].append((es, a))
+            memo[a] = True, a
+            return True, a
+        else:
+            children_to_node_map[ns] = [(es, a)]
+            memo[a] = True, a
+            return True, a
+
+    can_reach_end, start_node = dfs(v.start_node)
+    if not can_reach_end:
+        raise Exception("No possible regex :(")
+    nodes = set(n for can_reach_end, n in memo.values() if can_reach_end)
 
     # populate edges
-    edges = {}
-    for a in nodes:
-        outgoing_edges = {}
-        for b in nodes:
-            if b not in v.edges[a]:
-                continue
-            outgoing_edges[b] = v.edges[a][b]
-        edges[a] = outgoing_edges
+    edges = dict((a, dict((memo[b][1], e) for b, e in v.edges[a].items() if memo[b][0]))
+                 for a in nodes)
 
-    start_node = v.start_node
-    end_node = v.end_node
-    if end_node not in nodes:
-        raise Exception("No possible regex :(")
-
-    return VSA(nodes, edges, start_node, end_node)
+    return VSA(nodes, edges, v.start_node, v.end_node)
 
 
 def possible_regexes(v: VSA):
