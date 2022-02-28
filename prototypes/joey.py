@@ -15,6 +15,12 @@ class VSA:
         self.start_node = start_node
         self.end_node = end_node
 
+    def debug(self):
+        print(f"VSA with {self.num_nodes} nodes")
+        print(f"start: {self.start_node}, end: {self.end_node}")
+        for i, e in enumerate(self.edges):
+            print(f"  {i}: {e}")
+
 def possible_regex_tokens(s):
     # FIXME: there should be a better way to represent regex tokens than strings
     yield s # constant string always works
@@ -73,7 +79,10 @@ def intersect(va: VSA, vb: VSA) -> VSA:
                 continue
             a_is_opt, a_edges = va.edges[a_src][a_target]
             b_is_opt, b_edges = vb.edges[b_src][b_target]
-            outgoing_edges[n(a_target, b_target)] = a_is_opt or b_is_opt, a_edges.intersection(b_edges)
+            is_opt = a_is_opt or b_is_opt
+            e = a_edges.intersection(b_edges)
+            if len(e) > 0:
+                outgoing_edges[n(a_target, b_target)] = is_opt, e
 
         # add optional edges where a is constant
         for b_target in vb.edges[b_src]:
@@ -103,11 +112,11 @@ def simplify(v: VSA) -> VSA:
             memo[a] = True, a
             return True, a
         children = []
-        for b, regexes in v.edges[a].items():
-            if regexes[1] != {}: # I think this is the only part that depends on the representation of edges
-                can_reach_end, new_b = dfs(b)
-                if can_reach_end:
-                    children.append((new_b, regexes))
+        for b, edge in v.edges[a].items():
+            assert len(edge[1]) > 0 # I think this is the only part that depends on the representation of edges
+            can_reach_end, new_b = dfs(b)
+            if can_reach_end:
+                children.append((new_b, edge))
         if len(children) == 0:
             memo[a] = False, a
             return False, a
@@ -143,7 +152,7 @@ def simplify(v: VSA) -> VSA:
     for a, i in nodes.items():
         edges[i] = dict((nodes[memo[b][1]], e) for b, e in v.edges[a].items() if memo[b][0])
 
-    start_node = nodes[v.start_node]
+    start_node = nodes[start_node]
     end_node = nodes[v.end_node]
 
     return VSA(num_nodes, edges, start_node, end_node)
@@ -231,7 +240,6 @@ def main():
 
     wt, regex = get_best_regex(vsa)
     print(f"Best regex: {regex} (weight {wt})")
-
 
 if __name__ == '__main__':
     main()
