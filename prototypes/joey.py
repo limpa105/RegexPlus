@@ -1,9 +1,10 @@
 import math
 import re
+from typing import List, Dict, Tuple, Set
 
 class VSA:
-    nodes: set[str]
-    edges: dict[str, dict[str, tuple[bool, set[str]]]]
+    nodes: Set[str]
+    edges: Dict[str, Dict[str, Tuple[bool, Set[str]]]]
     start_node: str
     end_node: str
 
@@ -130,7 +131,7 @@ def possible_regexes(v: VSA):
     yield from regexes_starting_at(v.start_node)
 
 
-def wt_of_token(tok: set[str]) -> tuple[float, str]:
+def wt_of_token(tok: Set[str]) -> Tuple[float, str]:
     special_things = {"[0-9]+", "[a-z]+", "[A-Z]+", "[a-zA-Z]+", "[a-zA-Z0-9]+", "\\s+", "(\w+ )+"}
     if len(tok.difference(special_things)) > 0:
         # it has a literal string
@@ -169,7 +170,7 @@ def get_best_regex(v: VSA) -> str:
             for b, regexes in v.edges[a].items():
                 wt_of_b, regex_of_b = dfs(b)
                 wt, regex = wt_of_token(regexes[1])
-                if regexes[0]: # extra weight for ?. 50 is ok
+                if regexes[0]: # extra weight for ? -- 50 is ok
                     wt += 50
                 if wt + wt_of_b < cur_best_wt:
                     cur_best_wt = wt + wt_of_b
