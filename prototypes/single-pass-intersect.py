@@ -1,5 +1,6 @@
 import math
 import re
+import sys
 from typing import List, Dict, Tuple, Set
 import itertools
 
@@ -92,12 +93,13 @@ def intersect(va: VSA, vb: VSA) -> VSA:
                 e = a_edge[1].intersection(b_edge[1])
                 if len(e) > 0:
                     process_edge(a_target, b_target, (is_opt, e))
-        # optional edges where a is constant
-        for b_target, b_edge in vb.edges[b].items():
-            process_edge(a, b_target, (True, b_edge[1]))
-        # optional edges where b is constant
-        for a_target, a_edge in va.edges[a].items():
-            process_edge(a_target, b, (True, a_edge[1]))
+        if USE_OPTIONALS:
+            # optional edges where a is constant
+            for b_target, b_edge in vb.edges[b].items():
+                process_edge(a, b_target, (True, b_edge[1]))
+            # optional edges where b is constant
+            for a_target, a_edge in va.edges[a].items():
+                process_edge(a_target, b, (True, a_edge[1]))
 
         if len(children) == 0:
             memo[a, b] = False, -1
@@ -191,6 +193,12 @@ def get_best_regex(v: VSA) -> str:
 
 
 def main():
+    # Only enable regexes with `?` if the -q flag is used
+    global USE_OPTIONALS
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-q':
+            USE_OPTIONALS = True
+
     print('Enter examples, leave blank when done')
     inputs = []
     while True:
@@ -209,5 +217,6 @@ def main():
     wt, regex = get_best_regex(vsa)
     print(f"Best regex: {regex} (weight {wt})")
 
+USE_OPTIONALS = False
 if __name__ == '__main__':
     main()
