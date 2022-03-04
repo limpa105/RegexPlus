@@ -191,7 +191,7 @@ def get_best_regex(v: VSA, const_prob:float, opt_prob:float) -> str:
                 wt_of_b, regex_of_b = dfs(b)
                 wt, regex = wt_of_token(regexes[1], const_prob)
                 if regexes[0]: # extra weight for ? -- 50 is ok
-                    wt += 54*opt_prob + len(regex) 
+                    wt += 52*opt_prob + len(regex) 
                 if wt + wt_of_b < cur_best_wt:
                     cur_best_wt = wt + wt_of_b
                     if regexes[0]:
@@ -225,6 +225,8 @@ def main():
     std = np.asarray([ len(j) for j in inputs]).std() 
     # getting the mean
     mean_len = np.asarray([ len(j) for j in inputs]).mean()
+    dif = np.asarray([len(j) for j in inputs]).max() - np.asarray([len(j) 
+            for j in inputs]).min()
     # length of shared constants 
     ans = inputs[0]
     for j in inputs:
@@ -239,7 +241,7 @@ def main():
     const_prob = constants_model.predict_proba([[std,shared_count]])[0][1]
 
     #predicting the probability that the regex will NOT include an optional
-    opt_prob = optionals_model.predict_proba([[std,shared_count,mean_len]])[0][0]
+    opt_prob = optionals_model.predict_proba([[std,shared_count,mean_len, dif]])[0][0]
 
     print("Probability of a constant", round(const_prob, 3))
     print("Probability of NOT an optional", round(opt_prob, 3))
