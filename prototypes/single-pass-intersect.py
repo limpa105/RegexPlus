@@ -22,16 +22,22 @@ class VSA:
         for i, e in enumerate(self.edges):
             print(f"  {i}: {e}")
 
+def add_backslashes(s):
+    return ''.join([disambiguate_char(c) for c in s])
+
+def disambiguate_char(c):
+    return '\\'*(c in '[]()\{\}*+?|^$.\\') + c
+
 def possible_regex_tokens(s):
     # FIXME: there should be a better way to represent regex tokens than strings
-    yield s # constant string always works
+    yield add_backslashes(s) # constant string always works
     decis = re.compile(r'[0-9]+$')
     lows = re.compile(r'[a-z]+$')
     ups = re.compile(r'[A-Z]+$')
     alphas = re.compile(r'[a-zA-Z]+$')
     alnums = re.compile(r'[a-zA-Z0-9]+$')
     whites = re.compile(r'\s+$')
-    words = re.compile(r'(\w+ )+$')
+    words = re.compile(r'(\w+ ?)+$')
     if decis.match(s):
         yield "[0-9]+"
     if lows.match(s):
@@ -45,7 +51,7 @@ def possible_regex_tokens(s):
     if whites.match(s):
         yield "\\s+"
     if words.match(s):
-        yield "(\w+ )+"
+        yield "(\w+ ?)+"
     # TODO: other tokens (capitalized words, stuff like that)
 
 def mk_vsa(s: str) -> VSA:
@@ -141,7 +147,7 @@ def possible_regexes(v: VSA):
 
 
 def wt_of_token(tok: Set[str]) -> Tuple[float, str]:
-    special_things = {"[0-9]+", "[a-z]+", "[A-Z]+", "[a-zA-Z]+", "[a-zA-Z0-9]+", "\\s+", "(\w+ )+"}
+    special_things = {"[0-9]+", "[a-z]+", "[A-Z]+", "[a-zA-Z]+", "[a-zA-Z0-9]+", "\\s+", "(\w+ ?)+"}
     if len(tok.difference(special_things)) > 0:
         # it has a literal string
         s, = tok.difference(special_things)
@@ -158,8 +164,8 @@ def wt_of_token(tok: Set[str]) -> Tuple[float, str]:
         return 26 + 26, "[a-zA-Z]+"
     elif "[a-zA-Z0-9]+" in tok:
         return 26 + 26 + 10, "[a-zA-Z0-9]+"
-    elif "(\w+ )+" in tok:
-        return 5, "(\w+ )+"  # TODO: cardinality doesn't handle weight!
+    elif "(\w+ ?)+" in tok:
+        return 50, "(\w+ ?)+"  # TODO: cardinality doesn't handle weight!
     else:
         return math.inf, ""
         # # set is probably empty
