@@ -3,6 +3,11 @@ import re
 import sys
 from typing import List, Dict, Tuple, Set
 import itertools
+import pickle
+import numpy as np 
+import warnings
+# ignoring sklearn warnings 
+warnings.filterwarnings('ignore')
 
 class VSA:
     num_nodes: int
@@ -146,12 +151,12 @@ def possible_regexes(v: VSA):
     yield from regexes_starting_at(v.start_node)
 
 
-def wt_of_token(tok: Set[str]) -> Tuple[float, str]:
+def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
     special_things = {"[0-9]+", "[a-z]+", "[A-Z]+", "[a-zA-Z]+", "[a-zA-Z0-9]+", "\\s+", "(\w+ ?)+"}
     if len(tok.difference(special_things)) > 0:
         # it has a literal string
         s, = tok.difference(special_things)
-        return -20, s
+        return -26*const_prob, s
     elif "\\s+" in tok:
         return 3, "\\s+"
     elif "[0-9]+" in tok:
@@ -165,7 +170,7 @@ def wt_of_token(tok: Set[str]) -> Tuple[float, str]:
     elif "[a-zA-Z0-9]+" in tok:
         return 26 + 26 + 10, "[a-zA-Z0-9]+"
     elif "(\w+ ?)+" in tok:
-        return 50, "(\w+ ?)+"  # TODO: cardinality doesn't handle weight!
+        return 100, "(\w+ ?)+"  # TODO: cardinality doesn't handle weight!
     else:
         return math.inf, ""
         # # set is probably empty
@@ -174,7 +179,7 @@ def wt_of_token(tok: Set[str]) -> Tuple[float, str]:
         # raise Exception('no possible regex')
 
 
-def get_best_regex(v: VSA) -> str:
+def get_best_regex(v: VSA, const_prob:float, opt_prob:float) -> str:
     best_from_node = { v.end_node: (0, "") }
     def dfs(a):
         if a in best_from_node:
@@ -184,9 +189,9 @@ def get_best_regex(v: VSA) -> str:
             cur_best_regex = ""
             for b, regexes in v.edges[a].items():
                 wt_of_b, regex_of_b = dfs(b)
-                wt, regex = wt_of_token(regexes[1])
+                wt, regex = wt_of_token(regexes[1], const_prob)
                 if regexes[0]: # extra weight for ? -- 50 is ok
-                    wt += 50 + len(regex)
+                    wt += 54*opt_prob + len(regex) 
                 if wt + wt_of_b < cur_best_wt:
                     cur_best_wt = wt + wt_of_b
                     if regexes[0]:
@@ -214,13 +219,40 @@ def main():
         inputs.append(i)
 
     print("doin' VSA stuff")
+    
+    # getting features from the examples 
+    # getting the variance
+    std = np.asarray([ len(j) for j in inputs]).std() 
+    # getting the mean
+    mean_len = np.asarray([ len(j) for j in inputs]).mean()
+    # length of shared constants 
+    ans = inputs[0]
+    for j in inputs:
+        ans = set(j).intersection(ans)
+    shared_count = len(ans)
+
+    # loading the two models from files
+    constants_model = pickle.load(open("constants_model.sav", 'rb'))
+    optionals_model = pickle.load(open("optionals_model.sav", 'rb'))
+
+    # predicting the probability that the regex will include a constant 
+    const_prob = constants_model.predict_proba([[std,shared_count]])[0][1]
+
+    #predicting the probability that the regex will NOT include an optional
+    opt_prob = optionals_model.predict_proba([[std,shared_count,mean_len]])[0][0]
+
+    print("Probability of a constant", round(const_prob, 3))
+    print("Probability of NOT an optional", round(opt_prob, 3))
+
+
+
     vsa = mk_vsa(inputs[0])
     # print("there are %d nodes" % vsa.num_nodes)
     for s in inputs[1:]:
         vsa = intersect(vsa, mk_vsa(s))
         # print("there are %d nodes" % vsa.num_nodes)
 
-    wt, regex = get_best_regex(vsa)
+    wt, regex = get_best_regex(vsa, const_prob, opt_prob)
     print(f"Best regex: {regex} (weight {wt})")
 
 USE_OPTIONALS = False
