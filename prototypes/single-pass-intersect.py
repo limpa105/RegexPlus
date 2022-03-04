@@ -186,7 +186,7 @@ def get_best_regex(v: VSA) -> str:
                 wt_of_b, regex_of_b = dfs(b)
                 wt, regex = wt_of_token(regexes[1])
                 if regexes[0]: # extra weight for ? -- 50 is ok
-                    wt += 50
+                    wt += 50 + len(regex)
                 if wt + wt_of_b < cur_best_wt:
                     cur_best_wt = wt + wt_of_b
                     if regexes[0]:
@@ -215,10 +215,10 @@ def main():
 
     print("doin' VSA stuff")
     vsa = mk_vsa(inputs[0])
-    print("there are %d nodes" % vsa.num_nodes)
+    # print("there are %d nodes" % vsa.num_nodes)
     for s in inputs[1:]:
         vsa = intersect(vsa, mk_vsa(s))
-        print("there are %d nodes" % vsa.num_nodes)
+        # print("there are %d nodes" % vsa.num_nodes)
 
     wt, regex = get_best_regex(vsa)
     print(f"Best regex: {regex} (weight {wt})")
