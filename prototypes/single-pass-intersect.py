@@ -233,15 +233,31 @@ def main():
         ans = set(j).intersection(ans)
     shared_count = len(ans)
 
+    from numpy import linalg as LA
+    def cosine_sim(v1,v2):
+        v1 = np.asarray(v1)
+        v2 = np.asarray(v2)
+        index = np.argmax([len(v1), len(v2)])
+        if index==0:
+            v2 = np.pad(v2,(0,len(v1)-len(v2)),'constant')
+        else:
+            v1 = np.pad(v1,(0,len(v2)-len(v1)),'constant')
+        return np.dot(v1,v2)/(LA.norm(v1)*LA.norm(v2))
+
+    test = [list(j) for j in inputs]
+    test =  [[ord(i) for i in j] for j in test]
+    test = [cosine_sim(i, test[0]) for i in test]
+    cosine_sim = np.mean(test[1:])
+
     # loading the two models from files
     constants_model = pickle.load(open("constants_model.sav", 'rb'))
     optionals_model = pickle.load(open("optionals_model.sav", 'rb'))
 
     # predicting the probability that the regex will include a constant 
-    const_prob = constants_model.predict_proba([[std,shared_count]])[0][1]
+    const_prob = constants_model.predict_proba([[std,shared_count,dif, cosine_sim]])[0][1]
 
     #predicting the probability that the regex will NOT include an optional
-    opt_prob = optionals_model.predict_proba([[std,shared_count,mean_len, dif]])[0][0]
+    opt_prob = optionals_model.predict_proba([[shared_count,std,cosine_sim]])[0][0]
 
     print("Probability of a constant", round(const_prob, 3))
     print("Probability of NOT an optional", round(opt_prob, 3))
