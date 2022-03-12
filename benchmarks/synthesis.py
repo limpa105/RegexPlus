@@ -179,27 +179,29 @@ def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
         # raise Exception('no possible regex')
 
 
-def get_best_regex(v: VSA, const_prob:float, opt_prob:float) -> str:
-    best_from_node = { v.end_node: (0, "") }
+def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tuple[float, str]]:
+    '''Return the top k regexes. By default k = 5'''
+    best_from_node = { v.end_node: [(0, "")] }
     def dfs(a):
         if a in best_from_node:
             return best_from_node[a]
         else:
-            cur_best_wt = math.inf
-            cur_best_regex = ""
+            # make a list of all possibilities
+            cur_best = set()
             for b, regexes in v.edges[a].items():
-                wt_of_b, regex_of_b = dfs(b)
                 wt, regex = wt_of_token(regexes[1], const_prob)
-                if regexes[0]: # extra weight for ? -- 50 is ok
+                if regexes[0]:
+                    # extra weight for ?
                     wt += 52*opt_prob + len(regex) 
-                if wt + wt_of_b < cur_best_wt:
-                    cur_best_wt = wt + wt_of_b
-                    if regexes[0]:
-                        cur_best_regex = '(' + regex + ')?' + regex_of_b
-                    else:
-                        cur_best_regex = regex + regex_of_b
-            best_from_node[a] = cur_best_wt, cur_best_regex
-            return cur_best_wt, cur_best_regex
+                    for wt_of_b, regex_of_b in dfs(b):
+                        cur_best.add((wt + wt_of_b, '(' + regex + ')?' + regex_of_b))
+                else:
+                    for wt_of_b, regex_of_b in dfs(b):
+                        cur_best.add((wt + wt_of_b, regex + regex_of_b))
+            # get only the top k
+            best = sorted(cur_best)[:k]
+            best_from_node[a] = best
+            return best
     return dfs(v.start_node)
 
 
@@ -257,9 +259,9 @@ def synthesize(inputs):
         vsa = intersect(vsa, mk_vsa(s))
         # print("there are %d nodes" % vsa.num_nodes)
 
-    wt, regex = get_best_regex(vsa, const_prob, opt_prob)
+    regexes = get_best_regexes(vsa, const_prob, opt_prob)
     # print(f"Best regex: {regex} (weight {wt})")
-    return regex
+    return regexes
 
 USE_OPTIONALS = True
 if __name__ == '__main__':
@@ -279,5 +281,5 @@ if __name__ == '__main__':
 
     print("doin' VSA stuff")
 
-    regex = synthesize(inputs)
-    print(regex)
+    for i, (wt, regex) in enumerate(synthesize(inputs)):
+        print(f"  {i+1}. {regex}")
