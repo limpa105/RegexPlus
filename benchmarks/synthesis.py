@@ -166,9 +166,9 @@ def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
     elif "[A-Z]+" in tok:
         return 26, "[A-Z]+"
     elif "[a-zA-Z]+" in tok:
-        return 26 + 26, "[a-zA-Z]+"
+        return 26 + 26+1, "[a-zA-Z]+"
     elif "[a-zA-Z0-9]+" in tok:
-        return 26 + 26 + 10, "[a-zA-Z0-9]+"
+        return 26 + 26 + 10+1, "[a-zA-Z0-9]+"
     elif "(\w+ ?)+" in tok:
         return 100, "(\w+ ?)+"  # TODO: cardinality doesn't handle weight!
     else:
