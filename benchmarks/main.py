@@ -12,9 +12,6 @@ USE_OPTIONALS = True
 NUM_EXAMPLES = 4
 TIMEOUT_SEC = 40 
 
-
-
-
 # Using code from https://erogol.com/timeout-function-takes-long-finish-python/
 class TimeoutError(Exception):
     pass
@@ -32,9 +29,6 @@ class timeout:
         signal.alarm(self.seconds)
     def __exit__(self, type, value, traceback):
         signal.alarm(0)
-
-
-
 
 print("doin' VSA stuff")
 for i, ex in enumerate(examples.all_benchmarks):

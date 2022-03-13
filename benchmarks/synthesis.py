@@ -33,30 +33,18 @@ def add_backslashes(s):
 def disambiguate_char(c):
     return '\\'*(c in '[]()\{\}*+?|^$.\\') + c
 
+regparts_base = [r'[0-9]', r'[a-z]', r'[A-Z]', r'[a-zA-Z]', r'[a-zA-Z0-9]', r'\s', r'(\w+ ?)']
+reg_strs = []
+for part in regparts_base:
+    reg_strs.append(part)
+    reg_strs.append(part+'+')
+
 def possible_regex_tokens(s):
     # FIXME: there should be a better way to represent regex tokens than strings
     yield add_backslashes(s) # constant string always works
-    decis = re.compile(r'[0-9]+$')
-    lows = re.compile(r'[a-z]+$')
-    ups = re.compile(r'[A-Z]+$')
-    alphas = re.compile(r'[a-zA-Z]+$')
-    alnums = re.compile(r'[a-zA-Z0-9]+$')
-    whites = re.compile(r'\s+$')
-    words = re.compile(r'(\w+ ?)+$')
-    if decis.match(s):
-        yield "[0-9]+"
-    if lows.match(s):
-        yield "[a-z]+"
-    if ups.match(s):
-        yield "[A-Z]+"
-    if alphas.match(s):
-        yield "[a-zA-Z]+"
-    if alnums.match(s):
-        yield "[a-zA-Z0-9]+"
-    if whites.match(s):
-        yield "\\s+"
-    if words.match(s):
-        yield "(\w+ ?)+"
+    for reg_str in reg_strs:
+        if (re.compile(reg_str+r'$')).match(s):
+            yield reg_str
     # TODO: other tokens (capitalized words, stuff like that)
 
 def mk_vsa(s: str) -> VSA:
@@ -150,33 +138,56 @@ def possible_regexes(v: VSA):
                     yield r + rest
     yield from regexes_starting_at(v.start_node)
 
+token_weights: Dict[str, float] = {
+    '\\s': -4,
+    '\\s+': 1,  # 3
+    '[0-9]': -4,
+    '[0-9]+': 1,  # 10
+    '[a-z]': -4,
+    '[a-z]+': 1,  # 26
+    '[A-Z]': -4,
+    '[A-Z]+': 1,  # 26
+    '[a-zA-Z]': -3,
+    '[a-zA-Z]+': 2,  # 26 + 26 + 1
+    '[a-zA-Z0-9]': -2,
+    '[a-zA-Z0-9]+': 3,  # 26 + 26 + 10 + 1
+    '(\\w ?)': -1,
+    '(\\w ?)+': 4  # 100
+}
+
+# this determines parse order... yeck
+ordered_tokens = [
+    '\\s',
+    '\\s+',
+    '[0-9]',
+    '[0-9]+',
+    '[a-z]',
+    '[a-z]+',
+    '[A-Z]',
+    '[A-Z]+',
+    '[a-zA-Z]',
+    '[a-zA-Z]+',
+    '[a-zA-Z0-9]',
+    '[a-zA-Z0-9]+',
+    '(\\w ?)',
+    '(\\w ?)+'
+]
 
 def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
-    special_things = {"[0-9]+", "[a-z]+", "[A-Z]+", "[a-zA-Z]+", "[a-zA-Z0-9]+", "\\s+", "(\w+ ?)+"}
+    special_things = set(reg_strs)
     if len(tok.difference(special_things)) > 0:
         # it has a literal string
         s, = tok.difference(special_things)
         return -26*const_prob, s
-    elif "\\s+" in tok:
-        return 3, "\\s+"
-    elif "[0-9]+" in tok:
-        return 10, "[0-9]+"
-    elif "[a-z]+" in tok:
-        return 26, "[a-z]+"
-    elif "[A-Z]+" in tok:
-        return 26, "[A-Z]+"
-    elif "[a-zA-Z]+" in tok:
-        return 26 + 26+1, "[a-zA-Z]+"
-    elif "[a-zA-Z0-9]+" in tok:
-        return 26 + 26 + 10+1, "[a-zA-Z0-9]+"
-    elif "(\w+ ?)+" in tok:
-        return 100, "(\w+ ?)+"  # TODO: cardinality doesn't handle weight!
     else:
-        return math.inf, ""
-        # # set is probably empty
-        # assert len(tok) == 0
-        # # there is no regex
-        # raise Exception('no possible regex')
+        for t in ordered_tokens:
+            if t in tok:
+                return token_weights[t], t            
+    return math.inf, ""
+    # # set is probably empty
+    # assert len(tok) == 0
+    # # there is no regex
+    # raise Exception('no possible regex')
 
 
 def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tuple[float, str]]:
@@ -263,7 +274,7 @@ def synthesize(inputs):
     # print(f"Best regex: {regex} (weight {wt})")
     return regexes
 
-USE_OPTIONALS = True
+USE_OPTIONALS = True  # lol
 if __name__ == '__main__':
     print('Enter examples, leave blank when done')
     inputs = []
