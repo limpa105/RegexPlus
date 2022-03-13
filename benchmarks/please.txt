@@ -1,0 +1,1099 @@
+doin' VSA stuff
+Example 0:
+('peter', 'alex', 'ramon')
+  correct: repeatatleast(<let>,1)
+  synthesized:
+   - [-11.000] [a-z]+[a-z][a-z][a-z]
+   - [-11.000] [a-z][a-z]+[a-z][a-z]
+   - [-11.000] [a-z][a-z][a-z]+[a-z]
+   - [-11.000] [a-z][a-z][a-z][a-z]+
+   - [-7.000] [a-z]+[a-z][a-z]
+Example 1:
+('%123', '%1234', '12%3')
+  correct: or(not(contain(repeatatleast(<%>,1))),repeatatleast(<any>,4))
+  synthesized:
+   - [-37.668] (%)?12(%)?3(4)?
+   - [-24.383] (%)?(%)?12(%)?3(4)?
+   - [-24.112] (%)?12(%)?[0-9]+
+   - [-15.826] (%)?12(%)?(3)?[0-9]
+   - [-15.826] (%)?12(3)?(%)?[0-9]
+Example 2:
+('SO-123456', 'So-123456', 'sO-123456')
+  correct: concat(concat(or(<S>,<s>),concat(or(<O>,<o>),<->)),repeat(<num>,6))
+  synthesized:
+   - [-187.981] [a-zA-Z][a-zA-Z]-123456
+   - [-179.981] [a-zA-Z]+-123456
+   - [-166.546] (S)?[a-zA-Z]+-123456
+   - [-166.546] (s)?[a-zA-Z]+-123456
+   - [-166.546] [a-zA-Z]+(O)?-123456
+Example 3:
+('A123', 'B345', 'C234')
+  correct: concat(or(<A>,or(<B>,<C>)),repeat(<num>,3))
+  synthesized:
+   - [-16.000] [A-Z][0-9][0-9][0-9]
+   - [-7.000] [A-Z][0-9]+[0-9]
+   - [-7.000] [A-Z][0-9][0-9]+
+   - [-5.000] [a-zA-Z0-9]+[0-9][0-9]
+   - [-3.000] [A-Z][0-9]+
+Example 4:
+('B', 'B6', 'BB')
+  correct: concat(or(<A>,or(<B>,or(<C>,<Z>))),repeatrange(or(<let>,<num>),1,2))
+  synthesized:
+   - [3.000] [a-zA-Z0-9]+
+   - [17.826] (B)?[a-zA-Z0-9]
+   - [20.549] (B)?B(6)?
+   - [20.826] [A-Z]+(6)?
+   - [22.826] (B)?[a-zA-Z0-9]+
+Example 5:
+('00000001', '101AE24', '01234')
+  correct: and(not(repeatatleast(<0>,1)),repeatrange(<alphanum>,3,20))
+  synthesized:
+   - [-16.283] (1)?0[0-9][a-zA-Z0-9]+[0-9][0-9]
+   - [-14.283] (1)?0[0-9][a-zA-Z0-9][a-zA-Z0-9]+[0-9]
+   - [-14.283] (1)?0[0-9][a-zA-Z0-9][a-zA-Z0-9][0-9]+
+   - [-14.283] (1)?0[a-zA-Z0-9]+[a-zA-Z0-9][0-9][0-9]
+   - [-13.000] [0-9][0-9][0-9][a-zA-Z0-9]+[0-9]
+Example 6:
+('ADFad1334', '43545SFDDFdf454fgf', 'asdadadASD')
+  correct: and(contain(<let>),repeatatleast(<alphanum>,1))
+  synthesized:
+   - [-32.713] [a-zA-Z0-9]+[a-zA-Z][a-zA-Z][a-zA-Z]d[a-zA-Z0-9]+[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-32.713] [a-zA-Z0-9]+[a-zA-Z][a-zA-Z][a-zA-Z]d[a-zA-Z0-9][a-zA-Z0-9]+[a-zA-Z0-9][a-zA-Z0-9]
+   - [-32.713] [a-zA-Z0-9]+[a-zA-Z][a-zA-Z][a-zA-Z]d[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+[a-zA-Z0-9]
+   - [-32.713] [a-zA-Z0-9]+[a-zA-Z][a-zA-Z][a-zA-Z]d[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+
+   - [-31.713] [a-zA-Z0-9][a-zA-Z0-9]+[a-zA-Z][a-zA-Z]d[a-zA-Z0-9]+[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+Example 7:
+('ABCDEF05', 'A21', 'C99')
+  correct: and(concat(repeatrange(<cap>,1,6),and(repeat(<num>,2),not(contain(concat(<0>,<0>))))),repeatrange(<any>,3,8))
+  synthesized:
+   - [-7.000] [A-Z]+[0-9][0-9]
+   - [-5.000] [A-Z][a-zA-Z0-9]+[0-9]
+   - [-3.000] [A-Z][a-zA-Z0-9][a-zA-Z0-9]+
+   - [-1.000] [A-Z][a-zA-Z0-9]+
+   - [-1.000] [a-zA-Z0-9]+[0-9]
+Example 8:
+('ACCCGTTNNGTCCGGA3', 'ACCCGTTNNGTCCGGATTGAANNGT9', 'TTGGACCNAC0')
+  correct: concat(R1,R2)
+  synthesized:
+   - [-127.772] [A-Z]+T[A-Z]+G[A-Z]CC[A-Z]+A[a-zA-Z0-9]+
+   - [-127.766] (ACCCG)?TT[A-Z]+G[A-Z]CC[A-Z]+A[a-zA-Z0-9]+
+   - [-116.818] [A-Z]+T[A-Z]+G[A-Z]CC[A-Z]+[A-Z][A-Z][0-9]
+   - [-116.818] [A-Z]+T[A-Z]+G[A-Z]CC[A-Z][A-Z]+[A-Z][0-9]
+   - [-116.818] [A-Z]+T[A-Z]+G[A-Z]CC[A-Z][A-Z][A-Z]+[0-9]
+Example 9:
+('123.12', '2', '56754')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<.>,repeatrange(<num>,1,2))))
+  synthesized:
+   - [35.923] [0-9]+(\.12)?
+   - [36.923] (123\.)?[0-9]+
+   - [36.923] [0-9]+(3\.12)?
+   - [37.923] (123\.1)?[0-9]+
+   - [37.923] [0-9]+(23\.12)?
+Example 10:
+('091123456',)
+  correct: and(repeat(<num>,9),startwith(concat(<0>,<9>)))
+  synthesized:
+   - [-233.993] 091123456
+   - [-207.994] 091123456
+   - [-181.995] 091123456
+   - [-155.995] 091123456
+   - [-129.996] 091123456
+Example 11:
+('aab', 'abb', 'aaba')
+  correct: or(startwith(concat(<a>,<a>)),endwith(concat(<b>,<b>)))
+  synthesized:
+   - [-37.695] a[a-z]b(a)?
+   - [-26.815] a[a-z]+[a-z]
+   - [-26.815] a[a-z][a-z]+
+   - [-22.815] a[a-z]+
+   - [-17.880] (a)?a[a-z][a-z]
+Example 12:
+('ABBCCAABBC', 'ABCAAAAAA', 'A')
+  correct: repeatatleast(or(<A>,or(<B>,<C>)),1)
+  synthesized:
+   - [1.000] [A-Z]+
+   - [28.314] (A)?[A-Z]+
+   - [28.314] [A-Z]+(C)?
+   - [29.314] (AB)?[A-Z]+
+   - [29.314] [A-Z]+(AA)?
+Example 13:
+('{foo}', '{bar}', '{nice}')
+  correct: startwith(<{>)
+  synthesized:
+   - [-54.632] \{[a-z]+[a-z][a-z]\}
+   - [-54.632] \{[a-z][a-z]+[a-z]\}
+   - [-54.632] \{[a-z][a-z][a-z]+\}
+   - [-50.632] \{[a-z]+[a-z]\}
+   - [-50.632] \{[a-z][a-z]+\}
+Example 14:
+('aa', 'aaaaa', 'a.')
+  correct: and(repeatatleast(<any>,2),concat(repeatatleast(<let>,1),or(endwith(<.>),concat(optional(or(< >,<->)),repeatatleast(<let>,1)))))
+  synthesized:
+   - [23.504] [a-z]+(\.)?
+   - [45.007] (a)?[a-z]+(\.)?
+   - [45.007] [a-z]+(\.)?(a)?
+   - [45.007] [a-z]+(a)?(\.)?
+   - [46.007] (aa)?[a-z]+(\.)?
+Example 15:
+('Abc 20 Jan to 15 Dec', 'hello world')
+  correct: concat(<let>,repeatatleast(or(< >,<alphanum>),1))
+  synthesized:
+   - [-33.777] [a-zA-Z][a-z][a-z]( 20 J)?[a-z][a-z] [a-z]o( 15 )?[a-zA-Z][a-z][a-z]
+   - [-32.777] [a-zA-Z][a-z](c 20 )?[a-zA-Z][a-z][a-z] [a-z]o( 15 )?[a-zA-Z][a-z][a-z]
+   - [-29.777] [a-zA-Z][a-z][a-z]( 20 Jan )?[a-z]o [a-zA-Z0-9][a-zA-Z0-9]( )?[a-zA-Z][a-z][a-z]
+   - [-28.777] [a-zA-Z]+[a-z]( 20 )?[a-zA-Z][a-z][a-z] [a-z]o( 15 )?[a-zA-Z][a-z][a-z]
+   - [-28.777] [a-zA-Z][a-z]+( 20 )?[a-zA-Z][a-z][a-z] [a-z]o( 15 )?[a-zA-Z][a-z][a-z]
+Example 16:
+('Page 2 of 20',)
+  correct: concat(concat(<P>,concat(<a>,concat(<g>,<e>))),concat(concat(< >,concat(R1,< >)),concat(concat(concat(<o>,<f>),< >),R1)))
+  synthesized:
+   - [-311.998] Page 2 of 20
+   - [-285.998] Page 2 of 20
+   - [-259.998] Page 2 of 20
+   - [-233.998] Page 2 of 20
+   - [-207.998] Page 2 of 20
+Example 17:
+('1566', '1566-02', '1566-45')
+  correct: concat(concat(<1>,concat(<5>,concat(<6>,<6>))),optional(concat(<->,repeat(<num>,2))))
+  synthesized:
+   - [-64.663] 1566(-02)?(-45)?
+   - [-64.663] 1566(-45)?(-02)?
+   - [-57.720] 156(6-)?[0-9]+
+   - [-50.218] 1566(-)?(02)?(45)?
+   - [-50.218] 1566(-)?(45)?(02)?
+Example 18:
+('abc.def',)
+  correct: concat(concat(<a>,concat(<b>,<c>)),concat(<.>,repeatatleast(<let>,1)))
+  synthesized:
+   - [-181.979] abc\.def
+   - [-155.982] abc\.def
+   - [-129.985] abc\.def
+   - [-103.988] abc\.def
+   - [-77.991] abc\.def
+Example 19:
+('abcd', 'ab_cd', 'a_b_cd')
+  correct: not(contain(repeat(<_>,2)))
+  synthesized:
+   - [-73.814] a(_)?b(_)?cd
+   - [-59.043] a(_)?b(_)?(_)?cd
+   - [-47.975] a(_)?b(_)?cd
+   - [-33.204] a(_)?b(_)?(_)?cd
+   - [-32.204] (a)?(a_)?b(_)?cd
+Example 20:
+('*abc*', '*ab*c', 'aaa?')
+  correct: and(contain(or(<?>,<*>)),and(not(contain(repeatatleast(or(<?>,<*>),2))),repeatatleast(<alphanum>,3)))
+  synthesized:
+   - [49.607] (\*)?a[a-z](\*)?[a-z](\*)?(\?)?
+   - [49.607] (\*)?a[a-z](\*)?[a-z](\?)?(\*)?
+   - [56.607] (\*)?a(b\*)?[a-z](a\?)?(c\*)?
+   - [56.607] (\*)?a(b\*)?[a-z](c\*)?(a\?)?
+   - [56.607] (\*)?a[a-z](\*c)?(a\?)?(c\*)?
+Example 21:
+('028938',)
+  correct: repeat(<num>,6)
+  synthesized:
+   - [-155.736] 028938
+   - [-129.780] 028938
+   - [-103.824] 028938
+   - [-77.868] 028938
+   - [-51.912] 028938
+Example 22:
+('390987.456',)
+  correct: concat(repeat(<num>,6),concat(<.>,repeat(<num>,3)))
+  synthesized:
+   - [-259.998] 390987\.456
+   - [-233.998] 390987\.456
+   - [-207.998] 390987\.456
+   - [-181.999] 390987\.456
+   - [-155.999] 390987\.456
+Example 23:
+('2X', 'X', '3123X')
+  correct: concat(star(<num>),concat(<X>,optional(concat(<^>,repeatatleast(<num>,1)))))
+  synthesized:
+   - [3.000] [a-zA-Z0-9]+
+   - [27.507] (2)?[a-zA-Z0-9]+
+   - [27.507] (3)?[a-zA-Z0-9]+
+   - [28.507] (31)?[a-zA-Z0-9]+
+   - [28.507] [a-zA-Z0-9]+(3X)?
+Example 24:
+('hoho', 'hihi', 'haha')
+  correct: not(contain(concat(concat(<h>,<e>),concat(<d>,<e>))))
+  synthesized:
+   - [-46.439] h[a-z]h[a-z]
+   - [-22.220] [a-z]+h[a-z]
+   - [-22.220] h[a-z]+[a-z]
+   - [-22.220] h[a-z][a-z]+
+   - [-18.220] h[a-z]+
+Example 25:
+('ankitrai326', 'geeksforgeeks')
+  correct: endwith(<alphanum>)
+  synthesized:
+   - [-67.620] [a-z]+[a-z]k[a-z]+[a-z]r[a-z][a-z][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-67.620] [a-z]+[a-z]k[a-z][a-z]+r[a-z][a-z][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-67.620] [a-z][a-z]+k[a-z]+[a-z]r[a-z][a-z][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-67.620] [a-z][a-z]+k[a-z][a-z]+r[a-z][a-z][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-63.620] [a-z]+[a-z]k[a-z]+r[a-z][a-z][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+Example 26:
+('ankit',)
+  correct: startwith(<vow>)
+  synthesized:
+   - [-129.780] ankit
+   - [-103.824] ankit
+   - [-77.868] ankit
+   - [-51.912] ankit
+   - [-25.956] ankit
+Example 27:
+('gfg', '_abc12')
+  correct: and(startwith(or(<let>,<_>)),repeatatleast(or(<alphanum>,<_>),1))
+  synthesized:
+   - [23.096] (_ab)?[a-z][a-zA-Z0-9][a-zA-Z0-9]
+   - [24.096] (_)?[a-z][a-z][a-zA-Z0-9]+
+   - [25.096] (_a)?[a-z][a-z][a-zA-Z0-9]+
+   - [26.096] (_)?[a-z]+[a-zA-Z0-9][a-zA-Z0-9]
+   - [26.096] (_)?[a-z][a-zA-Z0-9]+[a-zA-Z0-9]
+Example 28:
+('Geek12#',)
+  correct: and(contain(<num>),and(and(contain(<cap>),contain(<low>)),and(contain(<spec>),repeatrange(<any>,6,20))))
+  synthesized:
+   - [-181.920] Geek12#
+   - [-155.932] Geek12#
+   - [-129.943] Geek12#
+   - [-103.955] Geek12#
+   - [-77.966] Geek12#
+Example 29:
+('Geeks',)
+  correct: contain(concat(<cap>,<low>))
+  synthesized:
+   - [-129.152] Geeks
+   - [-103.321] Geeks
+   - [-77.491] Geeks
+   - [-51.661] Geeks
+   - [-25.830] Geeks
+Example 30:
+('geeks for geeks',)
+  correct: contain(concat(<g>,<e>))
+  synthesized:
+   - [-389.989] geeks for geeks
+   - [-363.989] geeks for geeks
+   - [-337.990] geeks for geeks
+   - [-311.991] geeks for geeks
+   - [-285.992] geeks for geeks
+Example 31:
+('0.125', '1.15', '0.5')
+  correct: and(concat(repeatrange(<num>,1,4),optional(concat(<.>,repeatrange(<num>,1,3)))),not(repeatatleast(or(<0>,<.>),1)))
+  synthesized:
+   - [-26.773] [0-9]\.[0-9]+
+   - [-19.711] [0-9]\.(1)?(2)?5
+   - [-18.711] [0-9]\.(1)?(12)?5
+   - [-18.711] [0-9]\.(12)?(1)?5
+   - [-10.856] [0-9]\.(1)?[0-9]+
+Example 32:
+('000000', '0.0', '0000.')
+  correct: concat(star(<0>),or(concat(or(<0>,or(<1>,or(<2>,or(<3>,<4>)))),optional(concat(<.>,concat(optional(<5>),star(<0>))))),concat(<5>,concat(<.>,star(<0>)))))
+  synthesized:
+   - [25.942] 0(\.)?[0-9]+(\.)?
+   - [25.942] [0-9]+(\.)?0(\.)?
+   - [26.942] 0(\.)?[0-9]+(0\.)?
+   - [26.942] [0-9]+(\.)?0(0\.)?
+   - [27.942] 0(\.)?[0-9]+(00\.)?
+Example 33:
+('123456789.123', '123456789123456.12', '12345.1')
+  correct: concat(repeatrange(<num>,1,15),optional(concat(<.>,repeatrange(<num>,1,3))))
+  synthesized:
+   - [-127.943] 1234[0-9]+\.[0-9]+
+   - [-111.614] 1234[0-9]+\.1(2)?(3)?
+   - [-110.614] 1234[0-9]+\.1(2)?(23)?
+   - [-110.614] 1234[0-9]+\.1(23)?(2)?
+   - [-106.284] 1234(5)?[0-9]+\.[0-9]+
+Example 34:
+('1@100%', '9@50%', '5@10%')
+  correct: concat(concat(R1,<@>),concat(R2,<%>))
+  synthesized:
+   - [-79.197] [0-9]@[0-9]+0%
+   - [-71.300] [0-9]@(1)?[0-9]0%
+   - [-71.300] [0-9]@[0-9](0)?0%
+   - [-57.798] [0-9]@[0-9][0-9]+%
+   - [-53.798] [0-9]@[0-9]+%
+Example 35:
+('215-121-1247',)
+  correct: concat(concat(repeat(R1,3),<->),concat(repeat(R1,3),concat(<->,repeat(R1,4))))
+  synthesized:
+   - [-311.864] 215-121-1247
+   - [-285.875] 215-121-1247
+   - [-259.886] 215-121-1247
+   - [-233.898] 215-121-1247
+   - [-207.909] 215-121-1247
+Example 36:
+('0123456', '1234567', '0123456789')
+  correct: or(repeat(<num>,7),repeat(<num>,10))
+  synthesized:
+   - [-112.461] (0)?12345[0-9]+
+   - [-105.479] (0)?123456(7)?(89)?
+   - [-104.479] (0)?123456(7)?(789)?
+   - [-104.479] (0)?123456(789)?(7)?
+   - [-101.957] [0-9]+2345[0-9]+
+Example 37:
+('09103,09101,', '09103,09101', '12345,123456789')
+  correct: concat(or(repeat(<num>,5),repeat(<num>,9)),concat(repeatatleast(or(repeat(<num>,5),repeat(<num>,9)),1),optional(<,>)))
+  synthesized:
+   - [-46.542] (09)?1[0-9]3(45)?,[0-9]+[0-9][0-9][0-9][0-9](,)?
+   - [-46.542] (09)?1[0-9]3(45)?,[0-9][0-9]+[0-9][0-9][0-9](,)?
+   - [-46.542] (09)?1[0-9]3(45)?,[0-9][0-9][0-9]+[0-9][0-9](,)?
+   - [-46.542] (09)?1[0-9]3(45)?,[0-9][0-9][0-9][0-9]+[0-9](,)?
+   - [-46.542] (09)?1[0-9]3(45)?,[0-9][0-9][0-9][0-9][0-9]+(,)?
+Example 38:
+('white snake', 'white snake valley')
+  correct: not(contain(concat(< >,< >)))
+  synthesized:
+   - [-258.163] white snake( valley)?
+   - [-237.326] white snak(e vall)?e(y)?
+   - [-237.326] white snake( )?(valley)?
+   - [-237.326] white snake( v)?(alley)?
+   - [-237.326] white snake( va)?(lley)?
+Example 39:
+('0', '0.00', '0.12')
+  correct: concat(<0>,optional(concat(<.>,repeatrange(<num>,1,2))))
+  synthesized:
+   - [26.913] (0\.)?[0-9]+
+   - [34.845] (0\.0)?0(\.12)?
+   - [34.845] 0(\.00)?(\.12)?
+   - [34.845] 0(\.12)?(\.00)?
+   - [49.826] (0)?(\.)?[0-9]+
+Example 40:
+('123', '123.', '123.4')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<.>,star(<num>))))
+  synthesized:
+   - [-45.645] 123(\.)?(4)?
+   - [-43.645] 123(\.)?(\.4)?
+   - [-43.645] 123(\.4)?(\.)?
+   - [-29.887] 123(\.)?(4)?(\.)?
+   - [-29.887] 123(\.)?(\.)?(4)?
+Example 41:
+('Foo', 'Hello World', 'Hello-world')
+  correct: and(repeatrange(<any>,3,20),and(startwith(<cap>),and(not(contain(concat(<cap>,<cap>))),and(not(contain(concat(not(<let>),< >))),and(not(contain(concat(< >,not(<cap>)))),and(not(contain(concat(not(<let>),<->))),and(not(contain(concat(<->,not(<low>)))),not(contain(concat(<cap>,not(or(<low>,or(<->,< >)))))))))))))
+  synthesized:
+   - [40.394] [a-zA-Z]+( W)?o(-)?[a-z]+
+   - [40.394] [a-zA-Z]+o( )?(-)?[a-zA-Z]+
+   - [40.394] [a-zA-Z]+o( W)?(-)?[a-z]+
+   - [40.394] [a-zA-Z]+o(-)?( )?[a-zA-Z]+
+   - [40.394] [a-zA-Z]+o(-)?( W)?[a-z]+
+Example 42:
+('4', '10.25', '15.3')
+  correct: and(not(<0>),or(concat(concat(<3>,<0>),optional(concat(<.>,repeatrange(<0>,1,2)))),concat(optional(or(<1>,<2>)),concat(<num>,optional(concat(<.>,repeatrange(<num>,1,2)))))))
+  synthesized:
+   - [68.129] (10\.2)?(15\.)?[0-9]
+   - [68.129] (10\.2)?[0-9](5\.3)?
+   - [68.129] (15\.)?(10\.2)?[0-9]
+   - [68.129] (15\.)?[0-9](0\.25)?
+   - [68.129] [0-9](0\.25)?(5\.3)?
+Example 43:
+('em1,erg,123,enc',)
+  correct: concat(repeat(<any>,3),star(concat(<,>,repeat(<any>,3))))
+  synthesized:
+   - [-389.999] em1,erg,123,enc
+   - [-363.999] em1,erg,123,enc
+   - [-337.999] em1,erg,123,enc
+   - [-311.999] em1,erg,123,enc
+   - [-285.999] em1,erg,123,enc
+Example 44:
+('123,4A67,GGG,767', 'test', 'test,test')
+  correct: concat(repeatatleast(<alphanum>,1),star(concat(<,>,repeatatleast(or(<let>,<num>),1))))
+  synthesized:
+   - [80.144] [a-zA-Z0-9]+(,4A67,G)?[a-zA-Z][a-zA-Z](,)?[a-zA-Z0-9]+
+   - [81.144] (123,4A67,)?[a-zA-Z]+[a-zA-Z][a-zA-Z](,)?[a-zA-Z0-9]+
+   - [81.144] (123,4A67,)?[a-zA-Z][a-zA-Z]+[a-zA-Z](,)?[a-zA-Z0-9]+
+   - [81.144] (123,4A67,)?[a-zA-Z][a-zA-Z][a-zA-Z]+(,)?[a-zA-Z0-9]+
+   - [81.144] (test,)?[a-zA-Z0-9](23,4A67,GGG,)?[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+Example 45:
+('04140000000', '04240000000')
+  correct: concat(concat(concat(<0>,<4>),concat(R1,R2)),repeat(R3,7))
+  synthesized:
+   - [-242.304] 04[0-9]40000000
+   - [-218.474] 04[0-9]40000000
+   - [-214.180] 04(1)?(2)?40000000
+   - [-214.180] 04(2)?(1)?40000000
+   - [-213.474] 04[0-9]+0000000
+Example 46:
+('A111B2_3_.exe',)
+  correct: concat(concat(<A>,concat(R1,concat(<B>,concat(R2,<_>)))),concat(R3,concat(<_>,R4)))
+  synthesized:
+   - [-337.997] A111B2_3_\.exe
+   - [-311.998] A111B2_3_\.exe
+   - [-285.998] A111B2_3_\.exe
+   - [-259.998] A111B2_3_\.exe
+   - [-233.998] A111B2_3_\.exe
+Example 47:
+('1,2,3', '111,234234,-09', '1')
+  correct: concat(concat(optional(<->),repeatatleast(<num>,1)),star(concat(<,>,concat(optional(<->),repeatatleast(<num>,1)))))
+  synthesized:
+   - [55.765] 1(,2,3)?(11,234234,-09)?
+   - [55.765] 1(11,234234,-09)?(,2,3)?
+   - [70.377] (1,2,)?(111,234234,-0)?[0-9]
+   - [70.377] (1,2,)?[0-9](11,234234,-09)?
+   - [70.377] (111,234234,-0)?(1,2,)?[0-9]
+Example 48:
+('(0.4545 && 0.567) || 456', '0.456 && 0.567')
+  correct: repeatatleast(or(<num>,or(<&>,or(<|>,or(<.>,or(<(>,or(<)>,< >)))))),1)
+  synthesized:
+   - [-279.283] (\()?0\.45[0-9]+ && 0\.567(\) \|\| 456)?
+   - [-260.929] (\()?0\.45(4)?[0-9] && 0\.567(\) \|\| 456)?
+   - [-260.929] (\()?0\.45[0-9](5)? && 0\.567(\) \|\| 456)?
+   - [-257.284] (\()?0\.45[0-9]+ && 0\.56(7\) \|\| 45)?[0-9]
+   - [-257.284] (\()?0\.4[0-9]+[0-9] && 0\.567(\) \|\| 456)?
+Example 49:
+('m-a 12', 'abc-ab 1234', 'ab-ab 1234')
+  correct: concat(R1,concat(R2,concat(R3,concat(R4,R5))))
+  synthesized:
+   - [-91.510] [a-z]+-a(b)? 12(34)?
+   - [-83.691] [a-z]+-a(b)? 1[0-9]+
+   - [-82.691] [a-z]+-[a-z]+ 12(34)?
+   - [-74.873] [a-z]+-[a-z]+ 1[0-9]+
+   - [-74.370] [a-z]+-a(b)? 12(3)?(4)?
+Example 50:
+('1A345678_add',)
+  correct: concat(repeat(<hex>,8),concat(<_>,star(<let>)))
+  synthesized:
+   - [-312.000] 1A345678_add
+   - [-286.000] 1A345678_add
+   - [-260.000] 1A345678_add
+   - [-234.000] 1A345678_add
+   - [-208.000] 1A345678_add
+Example 51:
+('4.1', '421.11', '467.111')
+  correct: concat(repeatatleast(<num>,1),concat(<.>,repeatrange(<num>,1,4)))
+  synthesized:
+   - [-23.376] [0-9]+\.[0-9]+
+   - [-14.659] [0-9]+\.(1)?(1)?1
+   - [-13.659] [0-9]+\.(1)?(11)?1
+   - [-13.659] [0-9]+\.(1)?1(11)?
+   - [-13.659] [0-9]+\.(11)?(1)?1
+Example 52:
+('0990 09253U108 BX', '0990 02376R102 AAL')
+  correct: startwith(concat(repeat(<num>,4),< >))
+  synthesized:
+   - [-262.894] 0990 0[0-9]+3[a-zA-Z0-9]+10[0-9] [A-Z]+[A-Z]
+   - [-262.894] 0990 0[0-9]+3[a-zA-Z0-9]+10[0-9] [A-Z][A-Z]+
+   - [-261.180] 0990 0(9)?2(5)?3[a-zA-Z0-9]+10[0-9] [A-Z]+[A-Z]
+   - [-261.180] 0990 0(9)?2(5)?3[a-zA-Z0-9]+10[0-9] [A-Z][A-Z]+
+   - [-260.905] 0990 0[0-9][0-9][0-9][0-9][A-Z]10[0-9] [A-Z]+[A-Z]
+Example 53:
+('Mu*', '*pa', '*pa*')
+  correct: concat(R1,concat(R2,R3))
+  synthesized:
+   - [31.640] (\*)?[a-zA-Z][a-z](\*)?
+   - [38.795] (Mu)?\*(pa)?(\*)?
+   - [40.640] (\*)?[a-zA-Z]+(\*)?
+   - [40.795] (Mu)?(\*pa)?\*(pa)?
+   - [40.795] (Mu)?\*(pa)?(pa\*)?
+Example 54:
+('0.2lb', '1.2lb', '2lb')
+  correct: not(startwith(concat(<0>,<num>)))
+  synthesized:
+   - [-40.492] (0\.)?(1\.)?2lb
+   - [-40.492] (1\.)?(0\.)?2lb
+   - [-36.940] [0-9](\.2)?lb
+   - [-27.656] (0)?(1)?(\.)?2lb
+   - [-27.656] (1)?(0)?(\.)?2lb
+Example 55:
+('A', 'A@', '@A')
+  correct: and(contain(<alphanum>),and(repeatatleast(or(<alphanum>,or(<@>,<#>)),1),repeatrange(<any>,1,8)))
+  synthesized:
+   - [21.211] (@)?A(@)?
+   - [60.451] (A)?(@)?(A)?
+   - [61.451] (@)?(A)?(A@)?
+   - [61.451] (@)?(A@)?(A)?
+   - [61.451] (@A)?(A)?(@)?
+Example 56:
+('+91', '91')
+  correct: concat(optional(<+>),repeatatleast(<num>,1))
+  synthesized:
+   - [-31.355] (\+)?91
+   - [-7.557] (\+)?91
+   - [8.685] (9)?(\+9)?1
+   - [8.685] (\+9)?(9)?1
+   - [18.242] (\+9)?[0-9]+
+Example 57:
+('.5', '.6', '.1')
+  correct: and(concat(repeatrange(<num>,1,13),optional(concat(<.>,repeatrange(<num>,1,2)))),not(contain(concat(<.>,<0>))))
+  synthesized:
+   - [-23.220] \.[0-9]
+   - [28.593] \.(1)?(5)?(6)?
+   - [28.593] \.(1)?(6)?(5)?
+   - [28.593] \.(5)?(1)?(6)?
+   - [28.593] \.(5)?(6)?(1)?
+Example 58:
+('10.5', '12.5')
+  correct: concat(repeat(<num>,2),concat(<.>,<5>))
+  synthesized:
+   - [-80.209] 1[0-9]\.5
+   - [-54.806] 1[0-9]\.5
+   - [-53.781] 1(0)?(2)?\.5
+   - [-53.781] 1(2)?(0)?\.5
+   - [-49.806] [0-9]+\.5
+Example 59:
+('1', '1.5', '11.5')
+  correct: concat(repeatrange(<num>,1,2),optional(concat(<.>,repeatrange(<num>,1,2))))
+  synthesized:
+   - [26.392] [0-9]+(\.5)?
+   - [29.849] (1)?1(\.5)?
+   - [44.785] (1)?(1\.)?[0-9]
+   - [47.785] (11\.)?(1\.)?[0-9]
+   - [47.785] (11\.)?[0-9](\.5)?
+Example 60:
+('12345678901', '+1234567890')
+  correct: or(concat(optional(<+>),repeatrange(<num>,10,15)),repeatrange(<num>,11,16))
+  synthesized:
+   - [-228.627] (\+)?1234567890(1)?
+   - [-216.813] (\+)?123456789[0-9]+
+   - [-206.627] (\+)?123456789(0)?[0-9]
+   - [-202.627] (\+)?1234567890(1)?
+   - [-194.813] (\+)?12345678[0-9]+[0-9]
+Example 61:
+('C01245', 'C04751')
+  correct: concat(startwith(concat(<C>,<0>)),endwith(repeat(<num>,4)))
+  synthesized:
+   - [-68.814] C0[0-9]+[0-9]5(1)?
+   - [-68.814] C0[0-9][0-9]+5(1)?
+   - [-67.919] C0[0-9][0-9][0-9][0-9]
+   - [-66.644] C0(12)?4(7)?5(1)?
+   - [-64.814] C0[0-9]+5(1)?
+Example 62:
+('1', '0.1', '9999')
+  correct: or(concat(<0>,concat(<.>,concat(<num1-9>,star(<num>)))),concat(<num1-9>,concat(star(<num>),concat(<.>,star(<num>)))))
+  synthesized:
+   - [34.095] (0\.)?[0-9]+
+   - [34.095] [0-9]+(\.1)?
+   - [62.190] (0\.)?(999)?[0-9]
+   - [62.190] (0\.)?[0-9](999)?
+   - [62.190] (999)?(0\.)?[0-9]
+Example 63:
+('0', '2', '0.4')
+  correct: concat(repeatrange(<num>,1,11),optional(concat(<.>,repeatrange(<num>,1,3))))
+  synthesized:
+   - [26.109] (0\.)?[0-9]
+   - [26.109] [0-9](\.4)?
+   - [53.217] (0)?(\.)?[0-9]
+   - [53.217] [0-9](\.)?(4)?
+   - [70.063] (0\.4)?([0-9])?
+Example 64:
+('07111111111', '447111111111')
+  correct: and(repeatrange(<num>,10,14),or(startwith(concat(<0>,<7>)),startwith(concat(<4>,concat(<4>,<7>)))))
+  synthesized:
+   - [-237.228] [0-9]+7111111111
+   - [-228.476] (4)?[0-9]7111111111
+   - [-228.476] [0-9](4)?7111111111
+   - [-217.405] [0-9][0-9]+111111111
+   - [-213.405] [0-9]+111111111
+Example 65:
+('1', '1111', '2222.56')
+  correct: concat(repeatrange(<num>,1,4),optional(concat(or(<.>,<,>),repeatrange(<num>,1,2))))
+  synthesized:
+   - [38.174] [0-9]+(\.56)?
+   - [39.174] [0-9]+(2\.56)?
+   - [40.174] (2222\.)?[0-9]+
+   - [40.174] [0-9]+(22\.56)?
+   - [41.174] (2222\.5)?[0-9]+
+Example 66:
+('+.12', '-0.13', '0.+')
+  correct: concat(optional(or(<+>,<->)),concat(concat(repeatatleast(<num>,1),concat(<.>,optional(repeatatleast(<num>,1)))),optional(or(<+>,<->))))
+  synthesized:
+   - [65.512] (-0\.1)?(\+\.1)?[0-9](\.\+)?
+   - [65.512] (\+\.1)?(-0\.1)?[0-9](\.\+)?
+   - [68.512] (-0\.)?(\+\.)?[0-9]+(\.\+)?
+   - [68.512] (\+\.)?(-0\.)?[0-9]+(\.\+)?
+   - [69.512] (-0\.)?(\+\.1)?[0-9]+(\.\+)?
+Example 67:
+('123', '1_23', '123_4567_89_312_575')
+  correct: concat(repeatatleast(<num>,1),star(concat(<_>,repeatatleast(<num>,1))))
+  synthesized:
+   - [-11.735] 1(_)?23(_4567_89_312_575)?
+   - [9.615] 1(_)?2(3_4567_89_312_57)?[0-9]
+   - [11.922] 1(_)?2(3_4567_89_)?3(12_575)?
+   - [11.922] 1(_)?23(_)?(4567_89_312_575)?
+   - [11.922] 1(_)?23(_4)?(567_89_312_575)?
+Example 68:
+('2', '2 + 3', '2 + 3 + 4')
+  correct: concat(<num>,star(concat(concat(< >,concat(<+>,< >)),<num>)))
+  synthesized:
+   - [43.983] 2( \+ 3)?( \+ 4)?
+   - [48.983] 2( \+ 3 \+ 4)?( \+ 3)?
+   - [48.983] 2( \+ 3)?( \+ 3 \+ 4)?
+   - [58.703] (2 \+ )?(3 \+ )?[0-9]
+   - [58.703] (2 \+ )?[0-9]( \+ 4)?
+Example 69:
+('01', '02', '03')
+  correct: or(concat(<0>,<num1-9>),concat(<1>,or(<0>,or(<1>,<2>))))
+  synthesized:
+   - [-23.220] 0[0-9]
+   - [1.000] [0-9]+
+   - [16.935] (0)?[0-9]+
+   - [16.935] [0-9]+(1)?
+   - [16.935] [0-9]+(2)?
+Example 70:
+('Test', 'Test-hello', 'Test-')
+  correct: concat(star(not(<->)),concat(optional(<->),star(not(<->))))
+  synthesized:
+   - [-62.512] Test(-)?(hello)?
+   - [-61.512] Test(-)?(-hello)?
+   - [-61.512] Test(-hello)?(-)?
+   - [-45.095] Test(-)?(h)?(ello)?
+   - [-45.095] Test(-)?(he)?(llo)?
+Example 71:
+('1', '1/2')
+  correct: concat(<num>,optional(concat(</>,<num>)))
+  synthesized:
+   - [4.380] 1(/2)?
+   - [19.426] (1/)?[0-9]
+   - [25.807] 1(/)?(2)?
+   - [40.853] (1)?(/)?[0-9]
+   - [46.853] (1)?(1/2)?
+Example 72:
+('test', 'test1', 'test1_')
+  correct: repeatatleast(or(<let>,or(<num>,or(<_>,or(< >,or(<->,or(<+>,or(</>,or(<\>,or(<(>,<)>))))))))),1)
+  synthesized:
+   - [-74.018] test(1)?(_)?
+   - [-73.018] test(1)?(1_)?
+   - [-73.018] test(1_)?(1)?
+   - [-60.243] test(1)?(1)?(_)?
+   - [-60.243] test(1)?(_)?(1)?
+Example 73:
+('%ab', '%ab%', '%abcde')
+  correct: concat(<%>,startwith(repeat(<let>,2)))
+  synthesized:
+   - [-42.298] %ab(%)?(cde)?
+   - [-42.298] %ab(cde)?(%)?
+   - [-33.840] %a[a-z]+(%)?
+   - [-27.374] %ab(%)?(c)?(de)?
+   - [-27.374] %ab(%)?(cd)?(e)?
+Example 74:
+('0.01', '0.12', '111.23')
+  correct: concat(and(R1,R2),R3)
+  synthesized:
+   - [-30.805] [0-9]+\.[0-9][0-9]
+   - [-21.805] [0-9]+\.[0-9]+
+   - [-19.445] (11)?[0-9]\.[0-9][0-9]
+   - [-19.445] [0-9](11)?\.[0-9][0-9]
+   - [-15.445] (1)?[0-9]+\.[0-9][0-9]
+Example 75:
+('My Name Is Jass',)
+  correct: concat(concat(<cap>,star(<let>)),star(concat(< >,concat(<cap>,star(<let>)))))
+  synthesized:
+   - [-389.999] My Name Is Jass
+   - [-363.999] My Name Is Jass
+   - [-337.999] My Name Is Jass
+   - [-311.999] My Name Is Jass
+   - [-285.999] My Name Is Jass
+Example 76:
+('0,25', '10,2', '-7000')
+  correct: concat(concat(optional(<->),repeatatleast(<num>,1)),concat(optional(<,>),repeatrange(<num>,0,2)))
+  synthesized:
+   - [36.099] (-7)?(1)?0(,)?[0-9]+
+   - [36.099] (1)?(-7)?0(,)?[0-9]+
+   - [37.099] (-70)?(1)?0(,)?[0-9]+
+   - [37.099] (1)?(-70)?0(,)?[0-9]+
+   - [37.523] (-)?[0-9]+(,)?[0-9]+
+Example 77:
+('HELLO', 'H', '')
+  correct: not(contain(< >))
+  synthesized:
+   - [52.708] ([A-Z]+)?
+   - [75.775] (H)?(ELLO)?
+   - [76.775] (H)?(HELLO)?
+   - [76.775] (HELLO)?(H)?
+   - [86.095] (HELL)?([A-Z])?
+Example 78:
+('%sample1%_%sample2%', '%sample2%%sample1%', '1_abc')
+  correct: star(or(or(<let>,or(<num>,<_>)),or(concat(<%>,concat(<s>,concat(<a>,concat(<m>,concat(<p>,concat(<l>,concat(<e>,concat(<1>,<%>)))))))),concat(<%>,concat(<s>,concat(<a>,concat(<m>,concat(<p>,concat(<l>,concat(<e>,concat(<2>,<%>)))))))))))
+  synthesized:
+   - [90.822] (%)?[a-zA-Z0-9](_)?a[a-z][a-z](le1%_%sample2%)?(le2%%sample1%)?
+   - [90.822] (%)?[a-zA-Z0-9](_)?a[a-z][a-z](le2%%sample1%)?(le1%_%sample2%)?
+   - [91.822] (%)?[a-zA-Z0-9](_)?a[a-z]+[a-zA-Z0-9](%%sample1%)?(%_%sample2%)?
+   - [91.822] (%)?[a-zA-Z0-9](_)?a[a-z]+[a-zA-Z0-9](%_%sample2%)?(%%sample1%)?
+   - [91.822] (%)?[a-zA-Z0-9](_)?a[a-z]+[a-z](1%_%sample2%)?(2%%sample1%)?
+Example 79:
+('1:x:456', '2:2:3', '3:abc:123')
+  correct: concat(repeatatleast(<num>,1),repeat(concat(<:>,or(repeatatleast(<let>,1),repeatatleast(<num>,1))),2))
+  synthesized:
+   - [-38.053] [0-9]:[a-zA-Z0-9]+:[0-9]+
+   - [-20.663] [0-9]:(ab)?[a-zA-Z0-9]:[0-9]+
+   - [-20.663] [0-9]:[a-zA-Z0-9](bc)?:[0-9]+
+   - [-16.663] [0-9]:(a)?[a-zA-Z0-9]+:[0-9]+
+   - [-16.663] [0-9]:[a-zA-Z0-9]+(c)?:[0-9]+
+Example 80:
+('abc#123', 'a%scsd', 'abacvfrdfrgthgfrthgf22222')
+  correct: and(not(endwith(<spec>)),repeatrange(<any>,3,25))
+  synthesized:
+   - [8.345] a(%)?[a-z]+c(#)?[a-zA-Z0-9]+[a-zA-Z0-9]
+   - [8.345] a(%)?[a-z]+c(#)?[a-zA-Z0-9][a-zA-Z0-9]+
+   - [9.345] a(%)?[a-z]+c(#1)?[a-zA-Z0-9]+[a-zA-Z0-9]
+   - [9.345] a(%)?[a-z]+c(#1)?[a-zA-Z0-9][a-zA-Z0-9]+
+   - [10.345] a(%)?[a-z]+c(#)?[a-zA-Z0-9]+
+Example 81:
+('Hercules.Cycle', 'Herbal&Product', 'Welcome@123')
+  correct: and(startwith(<alphanum>),repeatatleast(or(<alphanum>,or(<.>,or(<->,or(<#>,or(<&>,<@>))))),1))
+  synthesized:
+   - [-2.099] [A-Z]e[a-z][a-z](al&P)?[a-z][a-z](es\.C)?[a-z](@)?[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-2.099] [A-Z]e[a-z][a-z](al&P)?[a-z][a-z][a-z](@)?(s\.Cy)?[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-2.099] [A-Z]e[a-z][a-z](al&P)?[a-z][a-z][a-z](@)?[a-zA-Z0-9](\.Cyc)?[a-zA-Z0-9][a-zA-Z0-9]
+   - [-2.099] [A-Z]e[a-z][a-z](al&P)?[a-z][a-z][a-z](s\.Cy)?(@)?[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+   - [-2.099] [A-Z]e[a-z][a-z][a-z](l&Pr)?[a-z](es\.C)?[a-z](@)?[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
+Example 82:
+('123.1234567890', '123.1234567890;123.1234567890;123.1234567890')
+  correct: concat(concat(repeatatleast(<num>,1),concat(<.>,repeatatleast(<num>,1))),star(concat(<;>,concat(repeatatleast(<num>,1),concat(<.>,repeatatleast(<num>,1))))))
+  synthesized:
+   - [-306.327] 123\.1(234567890;123\.1234567890;123\.1)?234567890
+   - [-306.327] 123\.12(34567890;123\.1234567890;123\.12)?34567890
+   - [-306.327] 123\.123(4567890;123\.1234567890;123\.123)?4567890
+   - [-306.327] 123\.1234(567890;123\.1234567890;123\.1234)?567890
+   - [-306.327] 123\.12345(67890;123\.1234567890;123\.12345)?67890
+Example 83:
+('1.1', '1.1.3.4', '1.0')
+  correct: concat(R1,repeatatleast(concat(<.>,R1),1))
+  synthesized:
+   - [-28.508] 1(\.1\.3)?\.[0-9]
+   - [-28.508] 1\.(1\.3\.)?[0-9]
+   - [-28.508] 1\.[0-9](\.3\.4)?
+   - [-11.451] (1\.)?1(\.3)?\.[0-9]
+   - [-11.451] (1\.)?1\.(3\.)?[0-9]
+Example 84:
+('u78945', 's56123')
+  correct: concat(<let>,repeat(<num>,5))
+  synthesized:
+   - [-24.000] [a-z][0-9][0-9][0-9][0-9][0-9]
+   - [-15.000] [a-z][0-9]+[0-9][0-9][0-9]
+   - [-15.000] [a-z][0-9][0-9]+[0-9][0-9]
+   - [-15.000] [a-z][0-9][0-9][0-9]+[0-9]
+   - [-15.000] [a-z][0-9][0-9][0-9][0-9]+
+Example 85:
+('175', '1.250', '14.365')
+  correct: concat(repeatrange(<num>,1,3),repeatrange(concat(<.>,repeat(<num>,3)),0,2))
+  synthesized:
+   - [5.500] 1(4\.3)?(\.)?[0-9]5(0)?
+   - [5.500] 1(\.)?(4\.3)?[0-9]5(0)?
+   - [5.500] 1(\.)?[0-9](\.36)?5(0)?
+   - [7.500] 1(4)?(\.)?[0-9]+5(0)?
+   - [8.583] 1(4\.3)?(\.2)?[0-9][0-9]
+Example 86:
+('Sunil Kumar',)
+  correct: concat(concat(<cap>,repeatatleast(<low>,1)),concat(< >,concat(<cap>,repeatatleast(<low>,1))))
+  synthesized:
+   - [-285.999] Sunil Kumar
+   - [-259.999] Sunil Kumar
+   - [-234.000] Sunil Kumar
+   - [-208.000] Sunil Kumar
+   - [-182.000] Sunil Kumar
+Example 87:
+('Name', 'My Name Is OK')
+  correct: and(not(contain(repeatatleast(< >,2))),concat(<alphanum>,concat(repeatatleast(<alphanum>,1),<alphanum>)))
+  synthesized:
+   - [-51.391] (My )?Name( Is OK)?
+   - [-29.914] (M)?(y )?Name( Is OK)?
+   - [-29.914] (My )?Name( )?(Is OK)?
+   - [-29.914] (My )?Name( I)?(s OK)?
+   - [-29.914] (My )?Name( Is )?(OK)?
+Example 88:
+('12345', '10,23')
+  correct: concat(repeatrange(<num>,1,5),optional(concat(or(<.>,<,>),repeatrange(<num>,1,2))))
+  synthesized:
+   - [-51.760] 1(0,)?23(45)?
+   - [-41.536] 1(0)?(,)?23(45)?
+   - [-41.536] 1(0,)?23(4)?(5)?
+   - [-37.582] 1(0,)?2[0-9]+
+   - [-31.312] 1(0)?(,)?23(4)?(5)?
+Example 89:
+('MAC Address=192.167.235.19', 'MAC Address=192.167.235.19;zproduct_id=XYZ')
+  correct: concat(concat(R1,concat(<=>,R1)),star(concat(<;>,concat(R1,concat(<=>,R1)))))
+  synthesized:
+   - [-635.171] MAC Address=192\.167\.235\.19(;zproduct_id=XYZ)?
+   - [-611.171] MAC Address=192\.167\.235\.1(9;zproduct_id=XY)?[a-zA-Z0-9]
+   - [-610.342] MAC Address=192\.167\.235\.19(;)?(zproduct_id=XYZ)?
+   - [-610.342] MAC Address=192\.167\.235\.19(;z)?(product_id=XYZ)?
+   - [-610.342] MAC Address=192\.167\.235\.19(;zp)?(roduct_id=XYZ)?
+Example 90:
+('1A', '2BZ')
+  correct: concat(or(<1>,or(<2>,or(<3>,or(<4>,<5>)))),concat(or(<A>,or(<B>,<C>)),optional(or(<X>,or(<Y>,<Z>)))))
+  synthesized:
+   - [-3.000] [0-9][A-Z]+
+   - [-1.000] [a-zA-Z0-9]+[A-Z]
+   - [3.000] [a-zA-Z0-9]+
+   - [20.116] [0-9](B)?[A-Z]
+   - [20.116] [0-9][A-Z](Z)?
+Example 91:
+('10.000,50', '10,000.50', '')
+  correct: star(or(<num>,or(<.>,<,>)))
+  synthesized:
+   - [95.062] (10,000\.50)?(10\.000,50)?
+   - [95.062] (10\.000,50)?(10,000\.50)?
+   - [130.593] (10)?(,000\.50)?(\.000,50)?
+   - [130.593] (10)?(\.000,50)?(,000\.50)?
+   - [130.593] (10,000\.)?(10\.000,)?(50)?
+Example 92:
+('FooBar123!',)
+  correct: and(repeatatleast(<any>,6),and(not(contain(< >)),and(contain(<num>),and(contain(<cap>),and(contain(<low>),contain(or(<!>,or(<@>,or(<#>,or(<$>,or(<%>,or(<^>,or(<&>,or(<*>,or(<(>,or(<)>,or(<_>,<.>)))))))))))))))))
+  synthesized:
+   - [-259.998] FooBar123!
+   - [-233.998] FooBar123!
+   - [-207.998] FooBar123!
+   - [-181.999] FooBar123!
+   - [-155.999] FooBar123!
+Example 93:
+('0', '100', '1,000')
+  correct: concat(or(<0>,repeatrange(concat(<num1-9>,<num>),0,2)),star(concat(<,>,repeat(<num>,3))))
+  synthesized:
+   - [26.238] (1,)?[0-9]+
+   - [27.238] (1,0)?[0-9]+
+   - [28.238] (1,00)?[0-9]+
+   - [28.238] [0-9]+(,000)?
+   - [33.589] (1,00)?(10)?0
+Example 94:
+('9999999999', '9876543210')
+  correct: and(repeat(<num>,10),startwith(<9>))
+  synthesized:
+   - [-55.220] 9[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+   - [-46.220] 9[0-9]+[0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+   - [-46.220] 9[0-9][0-9]+[0-9][0-9][0-9][0-9][0-9][0-9]
+   - [-46.220] 9[0-9][0-9][0-9]+[0-9][0-9][0-9][0-9][0-9]
+   - [-46.220] 9[0-9][0-9][0-9][0-9]+[0-9][0-9][0-9][0-9]
+Example 95:
+('1,5,10,55', '12,34', '1')
+  correct: concat(repeatatleast(<num>,1),star(concat(<,>,repeatatleast(<num>,1))))
+  synthesized:
+   - [45.134] 1(,5,10,55)?(2,34)?
+   - [45.134] 1(2,34)?(,5,10,55)?
+   - [59.883] (1,5,10,5)?(12,3)?[0-9]
+   - [59.883] (1,5,10,5)?[0-9](2,34)?
+   - [59.883] (12,3)?(1,5,10,5)?[0-9]
+Example 96:
+('test.file.D%d4%', '%d4%.test.file', 'D%d4%.T%t7%.test.%t7%file.%d4%.txt')
+  correct: repeatatleast(or(or(<let>,<num>),or(<.>,or(concat(<%>,concat(<t>,concat(<7>,<%>))),concat(<%>,concat(<d>,concat(<4>,<%>)))))),1)
+  synthesized:
+   - [-69.221] (%d4%\.)?(D%d4%\.T%t7%\.)?test\.(%t7%)?file(\.%d4%\.txt)?(\.D%d4%)?
+   - [-69.221] (%d4%\.)?(D%d4%\.T%t7%\.)?test\.(%t7%)?file(\.D%d4%)?(\.%d4%\.txt)?
+   - [-69.221] (D%d4%\.T%t7%\.)?(%d4%\.)?test\.(%t7%)?file(\.%d4%\.txt)?(\.D%d4%)?
+   - [-69.221] (D%d4%\.T%t7%\.)?(%d4%\.)?test\.(%t7%)?file(\.D%d4%)?(\.%d4%\.txt)?
+   - [-50.666] (D)?(%d4%\.)?(T%t7%\.)?test\.(%t7%)?file(\.%d4%\.txt)?(\.D%d4%)?
+Example 97:
+('ab@4_w', 'sd!tye123')
+  correct: repeatatleast(or(or(<let>,<num>),or(<~>,or(<!>,or(<@>,or(<#>,or(<$>,or(<->,<_>))))))),1)
+  synthesized:
+   - [53.509] [a-z][a-z](!)?(@4_)?[a-zA-Z0-9]+
+   - [53.509] [a-z][a-z](!tye12)?(@4_)?[a-zA-Z0-9]
+   - [53.509] [a-z][a-z](@4_)?(!)?[a-zA-Z0-9]+
+   - [53.509] [a-z][a-z](@4_)?(!tye12)?[a-zA-Z0-9]
+   - [54.509] [a-z](d!)?[a-z](@4_)?[a-zA-Z0-9]+
+Example 98:
+('A4hgg5',)
+  correct: repeatatleast(<alphanum>,1)
+  synthesized:
+   - [-155.736] A4hgg5
+   - [-129.780] A4hgg5
+   - [-103.824] A4hgg5
+   - [-77.868] A4hgg5
+   - [-51.912] A4hgg5
+Example 99:
+('A new description.', 'A < new description.', "it< doesn't match")
+  correct: not(contain(concat(<<>,notcc(< >))))
+  synthesized:
+   - [-44.930] [a-zA-Z]( <)?(t<)? [a-z]+e(sn')?[a-z] [a-z][a-z][a-z]c[a-z]+(\.)?
+   - [-44.930] [a-zA-Z]( <)?(t<)? [a-z]+e[a-z](n't)? [a-z][a-z][a-z]c[a-z]+(\.)?
+   - [-44.930] [a-zA-Z](t<)? (< )?[a-z]+e(sn')?[a-z] [a-z][a-z][a-z]c[a-z]+(\.)?
+   - [-44.930] [a-zA-Z](t<)? (< )?[a-z]+e[a-z](n't)? [a-z][a-z][a-z]c[a-z]+(\.)?
+   - [-44.930] [a-zA-Z](t<)?( <)? [a-z]+e(sn')?[a-z] [a-z][a-z][a-z]c[a-z]+(\.)?
+Example 100:
+('0.5', '1', '1.0')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<.>,or(<0>,<5>))))
+  synthesized:
+   - [56.272] (0\.)?(1\.)?[0-9]
+   - [56.272] (0\.)?[0-9](\.0)?
+   - [56.272] (1\.)?(0\.)?[0-9]
+   - [56.272] (1\.)?[0-9](\.5)?
+   - [56.272] [0-9](\.0)?(\.5)?
+Example 101:
+('1234567890',)
+  correct: and(repeatatleast(<num>,10),not(startwith(<$>)))
+  synthesized:
+   - [-259.999] 1234567890
+   - [-234.000] 1234567890
+   - [-208.000] 1234567890
+   - [-182.000] 1234567890
+   - [-156.000] 1234567890
+Example 102:
+('Test', 'Test abc')
+  correct: concat(repeatatleast(<let>,1),optional(concat(< >,repeatatleast(<let>,1))))
+  synthesized:
+   - [-82.700] Test( abc)?
+   - [-66.040] Test( )?(abc)?
+   - [-66.040] Test( a)?(bc)?
+   - [-66.040] Test( ab)?(c)?
+   - [-60.860] Tes(t ab)?[a-z]
+Example 103:
+('12345', '1234.5', '123.45')
+  correct: and(repeat(or(<.>,<num>),5),and(not(startwith(<.>)),and(not(endwith(<.>)),concat(repeatrange(<num>,1,5),optional(concat(<.>,repeatrange(<num>,1,2)))))))
+  synthesized:
+   - [-99.686] 123(\.)?4(\.)?5
+   - [-73.727] 123(\.)?4(\.)?5
+   - [-60.673] 123(4)?(\.)?(4)?5
+   - [-58.673] 12(3)?(3\.)?4(\.)?5
+   - [-58.673] 12(3\.)?(3)?4(\.)?5
+Example 104:
+('1,234', '2,00', '5')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<,>,repeatrange(<num>,1,3))))
+  synthesized:
+   - [62.942] (1,23)?(2,0)?[0-9]
+   - [62.942] (1,23)?[0-9](,00)?
+   - [62.942] (2,0)?(1,23)?[0-9]
+   - [62.942] (2,0)?[0-9](,234)?
+   - [62.942] [0-9](,00)?(,234)?
+Example 105:
+('John Stevens 12', 'james stevens', 'willcall12')
+  correct: repeatatleast(or(<let>,or(<num>,< >)),1)
+  synthesized:
+   - [33.060] [a-zA-Z]+[a-z][a-z]( )?[a-zA-Z][a-z][a-z][a-z][a-z](ns )?[a-zA-Z0-9][a-zA-Z0-9]
+   - [33.060] [a-zA-Z]+[a-z][a-z]( )?[a-zA-Z][a-z][a-z][a-z][a-z][a-zA-Z0-9](s 1)?[a-zA-Z0-9]
+   - [33.060] [a-zA-Z]+[a-z][a-z]( )?[a-zA-Z][a-z][a-z][a-z][a-z][a-zA-Z0-9][a-zA-Z0-9]( 12)?
+   - [33.060] [a-zA-Z][a-z]+[a-z]( )?[a-zA-Z][a-z][a-z][a-z][a-z](ns )?[a-zA-Z0-9][a-zA-Z0-9]
+   - [33.060] [a-zA-Z][a-z]+[a-z]( )?[a-zA-Z][a-z][a-z][a-z][a-z][a-zA-Z0-9](s 1)?[a-zA-Z0-9]
+Example 106:
+('SH123456', 'ab123456', '12345678')
+  correct: or(repeat(<num>,8),concat(repeat(<let>,2),repeat(<num>,6)))
+  synthesized:
+   - [-114.379] (SH)?(ab)?123456(78)?
+   - [-114.379] (ab)?(SH)?123456(78)?
+   - [-113.095] [a-zA-Z0-9]+23456(78)?
+   - [-102.526] (S)?(H)?(ab)?123456(78)?
+   - [-102.526] (S)?(ab)?(H)?123456(78)?
+Example 107:
+('safename', '123', 'there-is-something-here')
+  correct: and(and(repeatatleast(or(or(<let>,<num>),<->),1),not(startwith(<->))),not(endwith(<->)))
+  synthesized:
+   - [54.117] [a-zA-Z0-9]+(-is-something-he)?[a-zA-Z0-9][a-zA-Z0-9]
+   - [55.117] [a-zA-Z0-9]+(e-is-something-he)?[a-zA-Z0-9][a-zA-Z0-9]
+   - [55.117] [a-zA-Z0-9]+[a-zA-Z0-9](-is-something-her)?[a-zA-Z0-9]
+   - [55.117] [a-zA-Z0-9][a-zA-Z0-9](ere-is-something-)?[a-zA-Z0-9]+
+   - [55.117] [a-zA-Z0-9][a-zA-Z0-9]+(-is-something-her)?[a-zA-Z0-9]
+Example 108:
+('0,872', '0,87', '0,8')
+  correct: and(not(contain(concat(<0>,concat(<,>,star(<0>))))),concat(repeatatleast(<num>,1),optional(concat(<,>,repeatrange(<num>,1,3)))))
+  synthesized:
+   - [-49.774] 0,[0-9]+
+   - [-46.561] 0,8(7)?(2)?
+   - [-45.561] 0,8(7)?(72)?
+   - [-45.561] 0,8(72)?(7)?
+   - [-34.974] 0,(8)?[0-9]+
+Example 109:
+('1,234', '1,23', '1,2')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<,>,repeatrange(<num>,1,3))))
+  synthesized:
+   - [-49.773] 1,[0-9]+
+   - [-46.365] 1,2(3)?(4)?
+   - [-45.365] 1,2(3)?(34)?
+   - [-45.365] 1,2(34)?(3)?
+   - [-34.876] 1,(2)?[0-9]+
+Example 110:
+('camp.new.', 'ca.mp.n.e.w')
+  correct: not(contain(concat(<.>,<.>)))
+  synthesized:
+   - [-135.455] ca(\.)?mp\.n(\.)?e(w)?\.(w)?
+   - [-133.455] ca(\.)?mp\.n(\.)?e(\.)?w(\.)?
+   - [-126.091] ca(\.)?mp\.n(\.)?[a-z]+\.(w)?
+   - [-124.091] ca(\.)?mp\.n(ew)?\.(e\.w)?
+   - [-115.726] ca(\.)?mp\.[a-z]+\.(e\.w)?
+Example 111:
+('1.0', '100.1', '123456789123456789.2')
+  correct: concat(repeatrange(<num>,1,18),optional(concat(<.>,<num>)))
+  synthesized:
+   - [-26.611] [0-9]+\.[0-9]
+   - [-0.181] (1)?[0-9]+\.[0-9]
+   - [-0.181] [0-9]+(0)?\.[0-9]
+   - [-0.181] [0-9]+(9)?\.[0-9]
+   - [0.819] (10)?[0-9]+\.[0-9]
+Example 112:
+('77', '2377')
+  correct: repeatatleast(<num>,1)
+  synthesized:
+   - [-18.085] [0-9]+7
+   - [-15.579] (23)?77
+   - [-3.000] [0-9][0-9]+
+   - [-0.495] [0-9](37)?7
+   - [1.000] [0-9]+
+Example 113:
+('(501) 555 1234', '(501)-555.1234', '501-555-1234')
+  correct: and(R1,concat(concat(R2,repeat(<num>,3)),concat(concat(R2,repeat(<num>,3)),concat(R2,repeat(<num>,4)))))
+  synthesized:
+   - [-150.147] (\()?501(\))?( )?(-)?555( )?(-)?(\.)?1234
+   - [-150.147] (\()?501(\))?( )?(-)?555( )?(\.)?(-)?1234
+   - [-150.147] (\()?501(\))?( )?(-)?555(-)?( )?(\.)?1234
+   - [-150.147] (\()?501(\))?( )?(-)?555(-)?(\.)?( )?1234
+   - [-150.147] (\()?501(\))?( )?(-)?555(\.)?( )?(-)?1234
+Example 114:
+('1.23', '100', '1,234')
+  correct: concat(or(concat(repeatrange(<num1-9>,0,2),repeatatleast(concat(<,>,repeat(<num>,3)),1)),or(concat(<num1-9>,star(<num>)),<0>)),optional(concat(<.>,repeatatleast(<num>,1))))
+  synthesized:
+   - [13.774] 1(,2)?(\.)?[0-9][0-9]
+   - [13.774] 1(\.)?(,2)?[0-9][0-9]
+   - [17.774] 1(,)?(\.)?[0-9]+[0-9]
+   - [17.774] 1(,)?(\.)?[0-9][0-9]+
+   - [17.774] 1(\.)?(,)?[0-9]+[0-9]
+Example 115:
+('4', '5+1')
+  correct: or(R1,concat(R1,concat(<+>,R1)))
+  synthesized:
+   - [27.672] (5\+)?[0-9]
+   - [27.672] [0-9](\+1)?
+   - [56.344] (5)?(\+)?[0-9]
+   - [56.344] [0-9](\+)?(1)?
+   - [62.344] (4)?(5\+1)?
+Example 116:
+('0', '1000', '50000')
+  correct: or(<0>,concat(<num1-9>,concat(repeatrange(<num>,0,2),or(repeatatleast(repeat(<num>,3),1),repeatatleast(concat(<,>,repeat(<num>,3)),1)))))
+  synthesized:
+   - [1.000] [0-9]+
+   - [25.547] (1)?[0-9]+
+   - [25.547] (5)?[0-9]+
+   - [26.547] (10)?[0-9]+
+   - [26.547] (50)?[0-9]+
+Example 117:
+('123 45',)
+  correct: concat(repeat(<num>,3),concat(< >,repeat(<num>,2)))
+  synthesized:
+   - [-155.932] 123 45
+   - [-129.943] 123 45
+   - [-103.955] 123 45
+   - [-77.966] 123 45
+   - [-51.977] 123 45
+Example 118:
+('A', 'a', 'B')
+  correct: or(or(<A>,<B>),or(<a>,<b>))
+  synthesized:
+   - [-3.000] [a-zA-Z]
+   - [57.813] ([A-Z])?(a)?
+   - [57.813] (a)?([A-Z])?
+   - [61.813] (A)?([a-zA-Z])?
+   - [61.813] (B)?([a-zA-Z])?
+Example 119:
+('%%', '% %', '%a%')
+  correct: concat(<%>,concat(star(<any>),<%>))
+  synthesized:
+   - [-0.354] %( )?(a)?%
+   - [-0.354] %(a)?( )?%
+   - [38.746] %( %)?(a)?(%)?
+   - [38.746] %( )?(%)?(a%)?
+   - [38.746] %( )?(a%)?(%)?
+Example 120:
+('1-252', '9823-10000', '123456-123457')
+  correct: concat(R1,concat(<->,R1))
+  synthesized:
+   - [-31.356] [0-9]+-[0-9]+[0-9][0-9]
+   - [-31.356] [0-9]+-[0-9][0-9]+[0-9]
+   - [-31.356] [0-9]+-[0-9][0-9][0-9]+
+   - [-27.356] [0-9]+-[0-9]+[0-9]
+   - [-27.356] [0-9]+-[0-9][0-9]+
+Example 121:
+('ABC.123*', '*ABC.123', 'ABC.*123')
+  correct: and(repeatrange(<any>,1,15),concat(star(or(<cap>,or(<num>,<.>))),concat(<*>,star(or(<cap>,or(<num>,<.>))))))
+  synthesized:
+   - [-136.774] (\*)?ABC\.(\*)?123(\*)?
+   - [-110.774] (\*)?ABC\.(\*)?123(\*)?
+   - [-95.701] (A)?(\*A)?BC\.(\*)?123(\*)?
+   - [-95.701] (\*)?ABC\.(1)?(\*1)?23(\*)?
+   - [-95.701] (\*)?ABC\.(\*)?12(3)?(3\*)?

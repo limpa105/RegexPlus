@@ -6,6 +6,7 @@ import itertools
 import pickle
 import numpy as np 
 import warnings
+from regexobj import *
 # ignoring sklearn warnings 
 warnings.filterwarnings('ignore')
 
@@ -189,6 +190,17 @@ def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
     # # there is no regex
     # raise Exception('no possible regex')
 
+def regex_normalize(reg: RegexObj) -> RegexObj:
+    """
+    If anything matched by R is matched by S, 
+    then R?S+ is equivalent to S+.
+    """
+    if reg.kind == "concat":
+        if (reg.left.kind == "optional") and \
+           (reg.right.kind == "plus"):
+            pass
+    
+    # TODO: greenery? brzozowski derivs?
 
 def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tuple[float, str]]:
     '''Return the top k regexes. By default k = 5'''

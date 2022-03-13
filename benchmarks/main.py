@@ -39,7 +39,7 @@ for i, ex in enumerate(examples.all_benchmarks):
     with timeout(seconds=TIMEOUT_SEC):
         try:
     	    for wt, regex in synthesis.synthesize(ex.inputs[:NUM_EXAMPLES]):
-        	    print('   - [%.3f] %s' % (wt, regex))
+                print('   - [%.3f] %s' % (wt, regex))
         except:
             print("Timed out")
             pass
