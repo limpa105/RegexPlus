@@ -7,7 +7,7 @@ import pickle
 import numpy as np 
 import warnings
 
-from greenery_syn import lego
+from greenery import lego
 
 
 # ignoring sklearn warnings 
@@ -147,17 +147,17 @@ def all_the_possible_regexes(v: VSA) -> List[str]:
 # this determines parse order... yeck
 all_tokens: List[Tuple[str, float]] = [
     ('\\s', -4),
-    ('(\\s)+', 1),      # 3
+    ('\\s+', 1),      # 3
     ('[0-9]', -4),
-    ('([0-9])+', 1),    # 10
+    ('[0-9]+', 1),    # 10
     ('[a-z]', -4),
-    ('([a-z])+', 1),    # 26
+    ('[a-z]+', 1),    # 26
     ('[A-Z]', -4),
-    ('([A-Z])+', 1),    # 26
+    ('[A-Z]+', 1),    # 26
     ('[a-zA-Z]', -3),
-    ('([a-zA-Z])+', 2), # 26 + 26 + 1
+    ('[a-zA-Z]+', 2), # 26 + 26 + 1
     ('[a-zA-Z0-9]', -2),
-    ('([a-zA-Z0-9])+', 3),  # 26 + 26 + 10 + 1
+    ('[a-zA-Z0-9]+', 3),  # 26 + 26 + 10 + 1
     ('(\\w ?)+', 4)     # 100
 ]
 token_weights: Dict[str, float] = {regex: wt for regex, wt in all_tokens}
