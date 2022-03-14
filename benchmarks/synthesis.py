@@ -172,7 +172,14 @@ def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
     else:
         for t in ordered_tokens:
             if t in tok:
-                return token_weights[t], t            
+                if "+" in t:
+                    return token_weights[t], t
+                else:
+                    if const_prob < .5 and token_weights[t]<0:
+                        return -1*token_weights[t]*const_prob, t 
+                    else: 
+                        return token_weights[t]*const_prob, t 
+
     return math.inf, ""
     # # set is probably empty
     # assert len(tok) == 0
@@ -250,8 +257,8 @@ def synthesize(inputs):
     #predicting the probability that the regex will NOT include an optional
     opt_prob = optionals_model.predict_proba([[shared_count,std,cosine_sim]])[0][0]
 
-    # print("Probability of a constant", round(const_prob, 3))
-    # print("Probability of NOT an optional", round(opt_prob, 3))
+    print("Probability of a constant", round(const_prob, 3))
+    print("Probability of NOT an optional", round(opt_prob, 3))
 
 
 
