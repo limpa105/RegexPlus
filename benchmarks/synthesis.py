@@ -160,7 +160,7 @@ all_tokens: List[Tuple[str, float]] = [
     ('[a-zA-Z0-9]+', 3),  # 26 + 26 + 10 + 1
     ('(\\w ?)+', 4)     # 100
 ]
-token_weights: Dict[str, float] = {regex: wt for regex, wt in all_tokens}
+token_weights: Dict[str, float] = {regex: wt+30 for regex, wt in all_tokens}
 ordered_tokens: List[str] = [regex for regex, wt in all_tokens]
 
 def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
@@ -261,16 +261,30 @@ def synthesize(inputs):
     print("Probability of NOT an optional", round(opt_prob, 3))
 
 
-
+    print("Making and intersecting VSAs...")
     vsa = mk_vsa(inputs[0])
     # print("there are %d nodes" % vsa.num_nodes)
     for s in inputs[1:]:
         vsa = intersect(vsa, mk_vsa(s))
     print("there are %d nodes" % vsa.num_nodes)
 
-    regexes = get_best_regexes(vsa, const_prob, opt_prob)
+    print("Doing DFS...")
+    regs_with_dupes = get_best_regexes(vsa, const_prob, opt_prob, k=5)
     # print(f"Best regex: {regex} (weight {wt})")
-    return regexes
+
+    print("Simplifying and ranking...")
+    # remove duplicates from the list
+    regexes = {}
+    for (score, raw_reg) in regs_with_dupes:
+        reg = lego.parse(raw_reg).reduce()
+        if reg not in regexes:
+            regexes[reg] = score
+        regexes[reg] = min(score, regexes[reg])
+    # print(regexes)
+
+    best_regs = sorted([(y,x) for x,y in regexes.items()], key=lambda pair: pair[0])[:5]
+
+    return best_regs
 
 USE_OPTIONALS = True  # lol
 if __name__ == '__main__':

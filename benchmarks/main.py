@@ -1,3 +1,4 @@
+from diskcache import Timeout
 import synthesis
 import examples
 import random
@@ -40,7 +41,7 @@ for i, ex in enumerate(examples.all_benchmarks):
         try:
     	    for wt, regex in synthesis.synthesize(ex.inputs[:NUM_EXAMPLES]):
                 print('   - [%.3f] %s' % (wt, regex))
-        except:
+        except TimeoutError:
             print("Timed out")
             pass
 
