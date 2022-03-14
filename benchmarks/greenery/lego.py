@@ -33,7 +33,7 @@
     readability. They're also pretty extensible.
 '''
 from typing import Optional, Union, Tuple, FrozenSet
-import fsm
+from geenery import fsm
 from dataclasses import dataclass, field
 
 class nomatch(Exception):
