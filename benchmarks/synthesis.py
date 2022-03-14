@@ -7,15 +7,17 @@ import pickle
 import numpy as np 
 import warnings
 
-from greenery import fsm, lego
+from greenery_syn import lego
 
 
 # ignoring sklearn warnings 
 warnings.filterwarnings('ignore')
 
+nil = lego.parse('')  # use this instead of nothing maybe?
+
 class VSA:
     num_nodes: int
-    edges: List[Dict[int, Tuple[bool, Set[str]]]]
+    edges: List[Dict[int, Tuple[bool, Set[lego.lego]]]]
     start_node: int
     end_node: int
 
@@ -31,24 +33,27 @@ class VSA:
         for i, e in enumerate(self.edges):
             print(f"  {i}: {e}")
 
+def disambiguate_char(c):
+    return '\\'*(c in '[]()\{\}*+?|^$.\\') + c
+
+regparts_base = [r'[0-9]', r'[a-z]', r'[A-Z]', r'[a-zA-Z]', r'[a-zA-Z0-9]', r'\s', r'(\w+ ?)']
+regparts : List[lego.lego] = []
+for part in regparts_base:
+    legopart = lego.parse(part)
+    regparts.append(legopart)
+    regparts.append(lego.mult(legopart, lego.plus))
+
 def add_backslashes(s):
     return ''.join([disambiguate_char(c) for c in s])
 
 def disambiguate_char(c):
     return '\\'*(c in '[]()\{\}*+?|^$.\\') + c
 
-regparts_base = [r'[0-9]', r'[a-z]', r'[A-Z]', r'[a-zA-Z]', r'[a-zA-Z0-9]', r'\s', r'(\w+ ?)']
-reg_strs = []
-for part in regparts_base:
-    reg_strs.append(part)
-    reg_strs.append(part+'+')
-
 def possible_regex_tokens(s):
-    # FIXME: there should be a better way to represent regex tokens than strings
-    yield add_backslashes(s) # constant string always works
-    for reg_str in reg_strs:
-        if (re.compile(reg_str+r'$')).match(s):
-            yield reg_str
+    yield lego.parse(add_backslashes(s))  # constant string always works
+    for reg in regparts:
+        if reg.matches(s):
+            yield reg
     # TODO: other tokens (capitalized words, stuff like that)
 
 def mk_vsa(s: str) -> VSA:
@@ -62,7 +67,9 @@ def mk_vsa(s: str) -> VSA:
     edges.append({})
     start_node = 0
     end_node = len(s)
-    return VSA(num_nodes, edges, start_node, end_node)
+    vsa = VSA(num_nodes, edges, start_node, end_node)
+    # vsa.debug()
+    return vsa
 
 
 # Intersect two VSAs, only retaining reachable nodes, and deduplicating the VSA
@@ -134,7 +141,7 @@ def intersect(va: VSA, vb: VSA) -> VSA:
 def possible_regexes(v: VSA):
     def regexes_starting_at(a):
         if a == v.end_node:
-            yield ""
+            yield nil
             return
         for b, regexes in v.edges[a].items():
             for r in regexes:
@@ -177,17 +184,17 @@ ordered_tokens = [
     '(\\w ?)+'
 ]
 
-def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
-    special_things = set(reg_strs)
+def wt_of_token(tok: Set[lego.lego], const_prob: float) -> Tuple[float, lego.lego]:
+    special_things = set(regparts)
     if len(tok.difference(special_things)) > 0:
         # it has a literal string
         s, = tok.difference(special_things)
         return -26*const_prob, s
     else:
         for t in ordered_tokens:
-            if t in tok:
-                return token_weights[t], t            
-    return math.inf, ""
+            if lego.parse(t) in tok:
+                return token_weights[t], lego.parse(t)          
+    return math.inf, nil
     # # set is probably empty
     # assert len(tok) == 0
     # # there is no regex
@@ -195,9 +202,9 @@ def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
 
 # for normalizing a regex (R : lego.pattern), use R.reduce()
 
-def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tuple[float, str]]:
+def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tuple[float, lego.lego]]:
     '''Return the top k regexes. By default k = 5'''
-    best_from_node = { v.end_node: [(0, "")] }
+    best_from_node = { v.end_node: [(0, nil)] }
     def dfs(a):
         if a in best_from_node:
             return best_from_node[a]
@@ -208,14 +215,14 @@ def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tupl
                 wt, regex = wt_of_token(regexes[1], const_prob)
                 if regexes[0]:
                     # extra weight for ?
-                    wt += 52*opt_prob + len(regex) 
+                    wt += 52*opt_prob + len(regex)  # TODO: not using strings here means len will do weird things
                     for wt_of_b, regex_of_b in dfs(b):
-                        cur_best.add((wt + wt_of_b, '(' + regex + ')?' + regex_of_b))
+                        cur_best.add((wt + wt_of_b, lego.mult(regex, lego.qm) + regex_of_b))
                 else:
                     for wt_of_b, regex_of_b in dfs(b):
                         cur_best.add((wt + wt_of_b, regex + regex_of_b))
             # get only the top k
-            best = sorted(cur_best)[:k]
+            best = sorted(cur_best, key = lambda p : p[0])[:k]
             best_from_node[a] = best
             return best
     return dfs(v.start_node)
@@ -275,9 +282,23 @@ def synthesize(inputs):
         vsa = intersect(vsa, mk_vsa(s))
         # print("there are %d nodes" % vsa.num_nodes)
 
-    regexes = get_best_regexes(vsa, const_prob, opt_prob)
+    #print("Doing DFS...")
+    regs_with_dupes = get_best_regexes(vsa, const_prob, opt_prob, k=15)
+    #print("Simplifying and ranking...")
+    # remove duplicates from the list
+    # print(regs_with_dupes)
+    regexes = {}
+    for (score, raw_reg) in regs_with_dupes:
+        reg = raw_reg.reduce()
+        if reg not in regexes:
+            regexes[reg] = score
+        regexes[reg] = min(score, regexes[reg])
+    # print(regexes)
+    
+    best_regs = sorted([(y,x) for x,y in regexes.items()], key=lambda pair: pair[0])[:5]
+
     # print(f"Best regex: {regex} (weight {wt})")
-    return regexes
+    return best_regs
 
 USE_OPTIONALS = True  # lol
 if __name__ == '__main__':
@@ -289,7 +310,7 @@ if __name__ == '__main__':
             break
         inputs.append(i)
 
-    # Only enable regexes with `?` if the -q flag is used
+    # Only enable regexes with `?` if the -q flag is used 
     # global USE_OPTIONALS
     if len(sys.argv) > 1:
         if sys.argv[1] == '-q':

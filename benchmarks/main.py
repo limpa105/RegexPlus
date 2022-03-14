@@ -9,7 +9,7 @@ import gc
 global USE_OPTIONALS
 USE_OPTIONALS = True
 
-NUM_EXAMPLES = 4
+NUM_EXAMPLES = 3
 TIMEOUT_SEC = 40 
 
 # Using code from https://erogol.com/timeout-function-takes-long-finish-python/
@@ -40,7 +40,7 @@ for i, ex in enumerate(examples.all_benchmarks):
         try:
     	    for wt, regex in synthesis.synthesize(ex.inputs[:NUM_EXAMPLES]):
                 print('   - [%.3f] %s' % (wt, regex))
-        except:
+        except TimeoutError:
             print("Timed out")
             pass
 
