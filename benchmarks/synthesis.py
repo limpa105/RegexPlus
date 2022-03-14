@@ -172,13 +172,13 @@ def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
     else:
         for t in ordered_tokens:
             if t in tok:
-                # if "+" in t:
+                if "+" in t:
                     return token_weights[t], t
-                # else:
-                #     if const_prob < .5 and token_weights[t]<0:
-                #         return -1*token_weights[t]*const_prob, t 
-                #     else: 
-                #         return token_weights[t]*const_prob, t 
+                else:
+                     if const_prob < .99 and token_weights[t]<0:
+                         return -1*token_weights[t]*const_prob, t 
+                     else: 
+                         return token_weights[t]*const_prob, t 
 
     return math.inf, ""
     # # set is probably empty
