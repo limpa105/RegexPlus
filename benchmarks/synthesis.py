@@ -7,7 +7,7 @@ import pickle
 import numpy as np 
 import warnings
 
-from greenery import fsm, lego
+from greenery_syn import lego
 
 
 # ignoring sklearn warnings 
@@ -131,7 +131,8 @@ def intersect(va: VSA, vb: VSA) -> VSA:
     return VSA(num_nodes, edges, start_node, end_node)
 
 
-def possible_regexes(v: VSA):
+# Enumerate *all* possible regexes.  We don't use this function
+def all_the_possible_regexes(v: VSA) -> List[str]:
     def regexes_starting_at(a):
         if a == v.end_node:
             yield ""
@@ -142,40 +143,25 @@ def possible_regexes(v: VSA):
                     yield r + rest
     yield from regexes_starting_at(v.start_node)
 
-token_weights: Dict[str, float] = {
-    '\\s': -4,
-    '\\s+': 1,  # 3
-    '[0-9]': -4,
-    '[0-9]+': 1,  # 10
-    '[a-z]': -4,
-    '[a-z]+': 1,  # 26
-    '[A-Z]': -4,
-    '[A-Z]+': 1,  # 26
-    '[a-zA-Z]': -3,
-    '[a-zA-Z]+': 2,  # 26 + 26 + 1
-    '[a-zA-Z0-9]': -2,
-    '[a-zA-Z0-9]+': 3,  # 26 + 26 + 10 + 1
-    '(\\w ?)': -1,
-    '(\\w ?)+': 4  # 100
-}
 
 # this determines parse order... yeck
-ordered_tokens = [
-    '\\s',
-    '\\s+',
-    '[0-9]',
-    '[0-9]+',
-    '[a-z]',
-    '[a-z]+',
-    '[A-Z]',
-    '[A-Z]+',
-    '[a-zA-Z]',
-    '[a-zA-Z]+',
-    '[a-zA-Z0-9]',
-    '[a-zA-Z0-9]+',
-    '(\\w ?)',
-    '(\\w ?)+'
+all_tokens: List[Tuple[str, float]] = [
+    ('\\s', -4),
+    ('(\\s)+', 1),      # 3
+    ('[0-9]', -4),
+    ('([0-9])+', 1),    # 10
+    ('[a-z]', -4),
+    ('([a-z])+', 1),    # 26
+    ('[A-Z]', -4),
+    ('([A-Z])+', 1),    # 26
+    ('[a-zA-Z]', -3),
+    ('([a-zA-Z])+', 2), # 26 + 26 + 1
+    ('[a-zA-Z0-9]', -2),
+    ('([a-zA-Z0-9])+', 3),  # 26 + 26 + 10 + 1
+    ('(\\w ?)+', 4)     # 100
 ]
+token_weights: Dict[str, float] = {regex: wt for regex, wt in all_tokens}
+ordered_tokens: List[str] = [regex for regex, wt in all_tokens]
 
 def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
     special_things = set(reg_strs)
@@ -273,7 +259,7 @@ def synthesize(inputs):
     # print("there are %d nodes" % vsa.num_nodes)
     for s in inputs[1:]:
         vsa = intersect(vsa, mk_vsa(s))
-        # print("there are %d nodes" % vsa.num_nodes)
+    print("there are %d nodes" % vsa.num_nodes)
 
     regexes = get_best_regexes(vsa, const_prob, opt_prob)
     # print(f"Best regex: {regex} (weight {wt})")
