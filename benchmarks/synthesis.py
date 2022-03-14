@@ -156,7 +156,7 @@ def all_the_possible_regexes(v: VSA) -> List[str]:
 
 # this determines parse order... yeck
 all_tokens: List[Tuple[lego.lego, float]] = [
-    (lego.parse(regex).reduce(), wt) for regex, wt in [
+    (lego.parse(regex).reduce(), wt + 50) for regex, wt in [
         ('\\s', -4),
         ('(\\s)+', 1),      # 3
         ('[0-9]', -4),
