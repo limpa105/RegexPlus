@@ -10,7 +10,7 @@ import gc
 global USE_OPTIONALS
 USE_OPTIONALS = True
 
-NUM_EXAMPLES = 4
+NUM_EXAMPLES = 3
 TIMEOUT_SEC = 40 
 
 # Using code from https://erogol.com/timeout-function-takes-long-finish-python/

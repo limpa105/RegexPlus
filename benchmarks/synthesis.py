@@ -160,7 +160,7 @@ all_tokens: List[Tuple[str, float]] = [
     ('[a-zA-Z0-9]+', 3),  # 26 + 26 + 10 + 1
     ('(\\w ?)+', 4)     # 100
 ]
-token_weights: Dict[str, float] = {regex: wt+30 for regex, wt in all_tokens}
+token_weights: Dict[str, float] = {regex: (15*wt)+30 for regex, wt in all_tokens}
 ordered_tokens: List[str] = [regex for regex, wt in all_tokens]
 
 def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
@@ -172,13 +172,13 @@ def wt_of_token(tok: Set[str], const_prob: float) -> Tuple[float, str]:
     else:
         for t in ordered_tokens:
             if t in tok:
-                if "+" in t:
+                # if "+" in t:
                     return token_weights[t], t
-                else:
-                    if const_prob < .5 and token_weights[t]<0:
-                        return -1*token_weights[t]*const_prob, t 
-                    else: 
-                        return token_weights[t]*const_prob, t 
+                # else:
+                #     if const_prob < .5 and token_weights[t]<0:
+                #         return -1*token_weights[t]*const_prob, t 
+                #     else: 
+                #         return token_weights[t]*const_prob, t 
 
     return math.inf, ""
     # # set is probably empty
@@ -201,7 +201,7 @@ def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tupl
                 wt, regex = wt_of_token(regexes[1], const_prob)
                 if regexes[0]:
                     # extra weight for ?
-                    wt += 52*opt_prob + len(regex) 
+                    wt += 52*(opt_prob) + (len(regex) * (6))
                     for wt_of_b, regex_of_b in dfs(b):
                         cur_best.add((wt + wt_of_b, '(' + regex + ')?' + regex_of_b))
                 else:
@@ -269,7 +269,7 @@ def synthesize(inputs):
     print("there are %d nodes" % vsa.num_nodes)
 
     print("Doing DFS...")
-    regs_with_dupes = get_best_regexes(vsa, const_prob, opt_prob, k=5)
+    regs_with_dupes = get_best_regexes(vsa, const_prob, opt_prob, k=20)
     # print(f"Best regex: {regex} (weight {wt})")
 
     print("Simplifying and ranking...")
@@ -305,4 +305,4 @@ if __name__ == '__main__':
     print("doin' VSA stuff")
 
     for i, (wt, regex) in enumerate(synthesize(inputs)):
-        print(f"  {i+1}. {regex}")
+        print(f"  {i+1}. ({wt}, {regex})")
