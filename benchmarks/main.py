@@ -33,12 +33,16 @@ class timeout:
 print("doin' VSA stuff")
 for i, ex in enumerate(examples.all_benchmarks):
     print(f'Example {i}:')
-    print(ex.inputs[:NUM_EXAMPLES])
+    if len(ex.inputs) < NUM_EXAMPLES:
+        sampled = ex.inputs
+    else:
+        sampled = random.sample(ex.inputs, NUM_EXAMPLES)
+    print(sampled)
     print(f'  correct: {ex.regex}')
     print('  synthesized:')
     with timeout(seconds=TIMEOUT_SEC):
         try:
-    	    for wt, regex in synthesis.synthesize(ex.inputs[:NUM_EXAMPLES]):
+    	    for wt, regex in synthesis.synthesize(sampled):
                 print('   - [%.3f] %s' % (wt, regex))
         except TimeoutError:
             print("Timed out")
