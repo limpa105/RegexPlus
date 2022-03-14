@@ -141,7 +141,8 @@ def intersect(va: VSA, vb: VSA) -> VSA:
     return VSA(num_nodes, edges, start_node, end_node)
 
 
-def possible_regexes(v: VSA):
+# Enumerate *all* possible regexes.  We don't use this function
+def all_the_possible_regexes(v: VSA) -> List[str]:
     def regexes_starting_at(a):
         if a == v.end_node:
             yield nil
@@ -152,42 +153,27 @@ def possible_regexes(v: VSA):
                     yield r + rest
     yield from regexes_starting_at(v.start_node)
 
-token_weights: Dict[str, float] = {
-    lego.parse('\\s').reduce(): -4,
-    lego.parse('(\\s)+').reduce(): 1,  # 3
-    lego.parse('[0-9]').reduce(): -4,
-    lego.parse('([0-9])+').reduce(): 1,  # 10
-    lego.parse('[a-z]').reduce(): -4,
-    lego.parse('([a-z])+').reduce(): 1,  # 26
-    lego.parse('[A-Z]').reduce(): -4,
-    lego.parse('([A-Z])+').reduce(): 1,  # 26
-    lego.parse('[a-zA-Z]').reduce(): -3,
-    lego.parse('([a-zA-Z])+').reduce(): 2,  # 26 + 26 + 1
-    lego.parse('[a-zA-Z0-9]').reduce(): -2,
-    lego.parse('([a-zA-Z0-9])+').reduce(): 3,  # 26 + 26 + 10 + 1
-    lego.parse('(\\w ?)+').reduce(): 4  # 100
-}
 
 # this determines parse order... yeck
-ordered_raw_tokens = map(lego.parse, [
-    '\\s',
-    '(\\s)+',
-    '[0-9]',
-    '([0-9])+',
-    '[a-z]',
-    '([a-z])+',
-    '[A-Z]',
-    '([A-Z])+',
-    '[a-zA-Z]',
-    '([A-Z]a-z)+',
-    '[a-zA-Z0-9]',
-    '([a-zA-Z0-9])+',
-    '(\\w ?)+'
-])
+all_tokens: List[Tuple[lego.lego, float]] = [
+    (lego.parse(regex).reduce(), wt) for regex, wt in [
+        ('\\s', -4),
+        ('(\\s)+', 1),      # 3
+        ('[0-9]', -4),
+        ('([0-9])+', 1),    # 10
+        ('[a-z]', -4),
+        ('([a-z])+', 1),    # 26
+        ('[A-Z]', -4),
+        ('([A-Z])+', 1),    # 26
+        ('[a-zA-Z]', -3),
+        ('([a-zA-Z])+', 2), # 26 + 26 + 1
+        ('[a-zA-Z0-9]', -2),
+        ('([a-zA-Z0-9])+', 3),  # 26 + 26 + 10 + 1
+        ('(\\w ?)+', 4)     # 100
+    ]]
+token_weights: Dict[lego.lego, float] = {regex: wt for regex, wt in all_tokens}
+ordered_tokens: List[lego.lego] = [regex for regex, wt in all_tokens]
 
-ordered_tokens = map(lambda r: r.reduce(), ordered_raw_tokens)
-
-# TODO: reorganize this so it isn't steaming garbage
 
 def wt_of_token(tok: Set[lego.lego], const_prob: float) -> Tuple[float, lego.lego]:
     # i crave death  --jrdek
@@ -243,7 +229,7 @@ def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tupl
                         cur_best.add((wt + wt_of_b, regex + regex_of_b))
             # get only the top k
             # print([str(x[1]) for x in cur_best])
-            best = sorted(cur_best, key = lambda p : p[0]) #[:k]
+            best = sorted(cur_best, key = lambda p : p[0])[:k]
             best_from_node[a] = best
             return best
     return dfs(v.start_node)
@@ -301,12 +287,12 @@ def synthesize(inputs):
     # print("there are %d nodes" % vsa.num_nodes)
     for s in inputs[1:]:
         vsa = intersect(vsa, mk_vsa(s))
-        # print("there are %d nodes" % vsa.num_nodes)
+    print("there are %d nodes" % vsa.num_nodes)
 
-    #print("Doing DFS...")
+    print("Doing DFS...")
     regs_with_dupes = get_best_regexes(vsa, const_prob, opt_prob)
     #print([(w, str(r)) for (w, r) in regs_with_dupes])
-    #print("Simplifying and ranking...")
+    print("Simplifying and ranking...")
     # remove duplicates from the list
     regexes = {}
     for (score, raw_reg) in regs_with_dupes:
