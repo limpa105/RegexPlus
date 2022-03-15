@@ -4,6 +4,7 @@ import examples
 import random
 import os
 import signal
+import sys
 import time
 import gc
 
@@ -11,7 +12,15 @@ global USE_OPTIONALS
 USE_OPTIONALS = True
 
 NUM_EXAMPLES = 4
-TIMEOUT_SEC = 40 
+TIMEOUT_SEC = 40
+
+if sys.argv:
+    NUM_EXAMPLES = int(sys.argv[1])
+if len(sys.argv) > 2:
+    TIMEOUT_SEC = int(sys.argv[2])
+
+print(NUM_EXAMPLES)
+print(TIMEOUT_SEC)
 
 # Using code from https://erogol.com/timeout-function-takes-long-finish-python/
 class TimeoutError(Exception):

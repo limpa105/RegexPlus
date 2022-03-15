@@ -35,7 +35,7 @@ def add_backslashes(s):
     return ''.join([disambiguate_char(c) for c in s])
 
 def disambiguate_char(c):
-    return '\\'*(c in '[]()\{\}*+?|^$.\\') + c
+    return '\\'*(c in '[]()\{\}*+?|$.\\') + c  # no ^s, greenery doesn't like escaping them
 
 regparts_base = [r'[0-9]', r'[a-z]', r'[A-Z]', r'[a-zA-Z]', r'[a-zA-Z0-9]', r'\s', r'(\w+ ?)']
 reg_strs = []
