@@ -1,0 +1,1695 @@
+4
+60
+doin' VSA stuff
+Example 0:
+('peter', 'alex', 'ramon', 'thomas')
+  correct: repeatatleast(<let>,1)
+  synthesized:
+Probability of a constant 0.416
+Probability of NOT an optional 0.693
+Making and intersecting VSAs...
+there are 1260 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [45.000] [a-z]+
+   - [57.477] [a-z]{2,}
+   - [69.954] [a-z]{3,}
+   - [82.213] (al)?[a-z]+
+   - [82.213] (pe)?[a-z]+
+Example 1:
+('%123', '%1234', '12%3', 'abc%')
+  correct: or(not(contain(repeatatleast(<%>,1))),repeatatleast(<any>,4))
+  synthesized:
+Probability of a constant 0.737
+Probability of NOT an optional 0.692
+Making and intersecting VSAs...
+there are 720 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [91.328] %?[0-9A-Za-z]{2,3}%?[0-9A-Za-z]%?
+   - [91.328] %?[0-9A-Za-z]{2}%?[0-9A-Za-z]{1,2}%?
+   - [91.328] %?[0-9A-Za-z]{2}%?[0-9A-Za-z]%?4?
+   - [97.328] %?(%1)?[0-9A-Za-z]{2}%?[0-9A-Za-z]%?
+   - [97.328] (%1)?%?[0-9A-Za-z]{2}%?[0-9A-Za-z]%?
+Example 2:
+('SO-123456', 'So-123456', 'sO-123456', 'so-123456')
+  correct: concat(concat(or(<S>,<s>),concat(or(<O>,<o>),<->)),repeat(<num>,6))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.739
+Making and intersecting VSAs...
+there are 6224 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-211.978] [A-Za-z]{2}-123456
+   - [-169.092] [A-Za-z]{2}-\d{5,7}
+   - [-165.092] [A-Za-z]{2}-1\d{4,6}
+   - [-165.092] [A-Za-z]{2}-\d{4,6}6
+   - [-161.092] [A-Za-z]{2}-12\d{3,5}
+Example 3:
+('A123', 'B345', 'C234', 'B986')
+  correct: concat(or(<A>,or(<B>,<C>)),repeat(<num>,3))
+  synthesized:
+Probability of a constant 0.423
+Probability of NOT an optional 0.642
+Making and intersecting VSAs...
+there are 625 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [50.703] [A-Z]\d{3}
+   - [57.676] [A-Z]\d+
+   - [70.352] [A-Z]\d{2,}
+   - [73.419] [0-9A-Za-z]{1,2}\d+
+   - [75.000] [0-9A-Za-z]+
+Example 4:
+('B', 'B6', 'BB', 'AB')
+  correct: concat(or(<A>,or(<B>,or(<C>,<Z>))),repeatrange(or(<let>,<num>),1,2))
+  synthesized:
+Probability of a constant 0.734
+Probability of NOT an optional 0.73
+Making and intersecting VSAs...
+there are 42 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [49.755] [0-9A-Za-z]{1,3}
+   - [55.547] A?B{1,2}6?
+   - [55.547] B?A?B6?
+   - [69.877] [A-Z]+6?
+   - [74.632] A?B{0,2}[0-9A-Za-z]
+Example 5:
+('00000001', '101AE24', '01234', '00001')
+  correct: and(not(repeatatleast(<0>,1)),repeatrange(<alphanum>,3,20))
+  synthesized:
+Probability of a constant 0.914
+Probability of NOT an optional 0.761
+Making and intersecting VSAs...
+there are 1833 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [64.804] 1?0[0-9A-Za-z]{2,3}\d+
+   - [70.446] 1?0\d[0-9A-Za-z]{2}\d+
+   - [70.804] 1?0(1A)?[0-9A-Za-z]\d+
+   - [70.804] 1?0\d+[0-9A-Za-z]{2}(24)?
+   - [72.789] \d+[0-9A-Za-z]{2}(24)?
+Example 6:
+('ADFad1334', '43545SFDDFdf454fgf', 'asdadadASD', 'A8')
+  correct: and(contain(<let>),repeatatleast(<alphanum>,1))
+  synthesized:
+Probability of a constant 0.375
+Probability of NOT an optional 0.899
+Making and intersecting VSAs...
+there are 6270 nodes
+Doing DFS...
+Timed out
+Example 7:
+('ABCDEF05', 'A21', 'C99')
+  correct: and(concat(repeatrange(<cap>,1,6),and(repeat(<num>,2),not(contain(concat(<0>,<0>))))),repeatrange(<any>,3,8))
+  synthesized:
+Probability of a constant 0.412
+Probability of NOT an optional 0.81
+Making and intersecting VSAs...
+there are 144 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [69.741] [A-Z]+\d{2}
+   - [73.793] [A-Z][0-9A-Za-z]{2}(DEF05)?
+   - [75.000] [0-9A-Za-z]+
+   - [86.164] [A-Z][0-9A-Za-z](CDEF0)?\d
+   - [87.370] [A-Z][0-9A-Za-z]+
+Example 8:
+('ACCCGTTNNGTCCGGA3', 'ACCCGTTNNGTCCGGATTGAANNGT9', 'TTGGACCNAC0', 'ACGGTA0')
+  correct: concat(R1,R2)
+  synthesized:
+Probability of a constant 0.993
+Probability of NOT an optional 0.936
+Making and intersecting VSAs...
+Timed out
+Example 9:
+('123.12', '2', '56754', '92929292929292.12')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<.>,repeatrange(<num>,1,2))))
+  synthesized:
+Probability of a constant 0.379
+Probability of NOT an optional 0.905
+Making and intersecting VSAs...
+there are 1368 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [106.169] \d+(\.12)?
+   - [143.338] \d+\.?(12)?
+   - [143.338] \d+(\.1)?2?
+   - [149.338] \d+(\.12)?4?
+   - [155.338] (12)?\d+(\.12)?
+Example 10:
+('091123456',)
+  correct: and(repeat(<num>,9),startwith(concat(<0>,<9>)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.881
+Making and intersecting VSAs...
+there are 10 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-233.993] 091{2}23456
+Example 11:
+('aab', 'abb', 'aaba')
+  correct: or(startwith(concat(<a>,<a>)),endwith(concat(<b>,<b>)))
+  synthesized:
+Probability of a constant 0.916
+Probability of NOT an optional 0.707
+Making and intersecting VSAs...
+there are 75 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-1.216] a[a-z]ba?
+   - [9.175] a{1,2}b{1,2}a?
+   - [9.175] ab?a?ba?
+   - [21.185] a[a-z]+
+   - [28.110] a{1,3}b{1,2}a?
+Example 12:
+('ABBCCAABBC', 'ABCAAAAAA', 'A', 'ABBC')
+  correct: repeatatleast(or(<A>,or(<B>,<C>)),1)
+  synthesized:
+Probability of a constant 0.721
+Probability of NOT an optional 0.86
+Making and intersecting VSAs...
+there are 855 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [45.000] [A-Z]+
+   - [82.950] (AB)?[A-Z]+
+   - [82.950] [A-Z]+(A{2})?
+   - [82.950] [A-Z]+(BC)?
+   - [88.950] (AB{2})?[A-Z]+
+Example 13:
+('{foo}', '{bar}', '{nice}')
+  correct: startwith(<{>)
+  synthesized:
+Probability of a constant 0.916
+Probability of NOT an optional 0.705
+Making and intersecting VSAs...
+there are 244 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-2.632] \{[a-z]+\}
+   - [22.225] \{(ba)?[a-z]+\}
+   - [22.225] \{(fo)?[a-z]+\}
+   - [22.225] \{(ni)?[a-z]+\}
+   - [22.225] \{[a-z]+(ar)?\}
+Example 14:
+('aa', 'aaaaa', 'a.', 'a-a')
+  correct: and(repeatatleast(<any>,2),concat(repeatatleast(<let>,1),or(endwith(<.>),concat(optional(or(< >,<->)),repeatatleast(<let>,1)))))
+  synthesized:
+Probability of a constant 0.731
+Probability of NOT an optional 0.759
+Making and intersecting VSAs...
+there are 177 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [104.753] a?-?(a{3})?a\.?
+   - [104.753] a?-?a\.?(a{3})?
+   - [104.753] a?-?a(a{3})?\.?
+   - [104.753] a?(a{3})?-?a\.?
+   - [104.753] (a{3})?a?-?a\.?
+Example 15:
+('Abc 20 Jan to 15 Dec', 'hello world')
+  correct: concat(<let>,repeatatleast(or(< >,<alphanum>),1))
+  synthesized:
+Probability of a constant 0.976
+Probability of NOT an optional 0.892
+Making and intersecting VSAs...
+there are 252 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [156.896] [A-Za-z](bc )?[0-9A-Za-z]{2}( Jan to )?[0-9A-Za-z]{2} [A-Za-z][a-z]+
+   - [157.251] [A-Za-z](bc )?[0-9A-Za-z]{2}( Jan to )?[0-9A-Za-z]{2} [A-Za-z]+
+   - [159.223] (Abc 20 Jan )?[a-z]+o [0-9A-Za-z]{2}( D)?[a-z]+
+   - [161.152] [A-Za-z](bc )?[0-9A-Za-z]{2}( Jan )?[a-z]o [0-9A-Za-z]{2}( D)?[a-z]+
+   - [161.152] [A-Za-z][a-z](c )?[0-9A-Za-z]{2}( Jan t)?o [0-9A-Za-z]{2}( D)?[a-z]+
+Example 16:
+('Page 2 of 20',)
+  correct: concat(concat(<P>,concat(<a>,concat(<g>,<e>))),concat(concat(< >,concat(R1,< >)),concat(concat(concat(<o>,<f>),< >),R1)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.888
+Making and intersecting VSAs...
+there are 13 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-311.998] Page 2 of 20
+Example 17:
+('1566', '1566-02', '1566-45')
+  correct: concat(concat(<1>,concat(<5>,concat(<6>,<6>))),optional(concat(<->,repeat(<num>,2))))
+  synthesized:
+Probability of a constant 0.976
+Probability of NOT an optional 0.785
+Making and intersecting VSAs...
+there are 320 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-34.663] 156{2}(-02)?(-45)?
+   - [-34.663] 156{2}(-45)?(-02)?
+   - [-25.218] 156{2}-?(02)?(45)?
+   - [-25.218] 156{2}-?(45)?(02)?
+   - [-19.218] 156{2}-?(-02)?(45)?
+Example 18:
+('abc.def',)
+  correct: concat(concat(<a>,concat(<b>,<c>)),concat(<.>,repeatatleast(<let>,1)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.875
+Making and intersecting VSAs...
+there are 8 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-181.979] abc\.def
+Example 19:
+('abcd', 'ab_cd', 'a_b_cd', '%*##_@+')
+  correct: not(contain(repeat(<_>,2)))
+  synthesized:
+Probability of a constant 0.411
+Probability of NOT an optional 0.746
+Making and intersecting VSAs...
+there are 1296 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [242.461] (a_b)?(%\*#{2}_@\+)?(ab)?_?(cd)?
+   - [242.461] (ab)?(%\*#{2}_@\+)?(a_b)?_?(cd)?
+   - [242.461] (%\*#{2}_@\+)?(a_b)?(ab)?_?(cd)?
+   - [242.461] (%\*#{2}_@\+)?(ab)?(a_b)?_?(cd)?
+   - [242.461] (a_b)?(ab)?(%\*#{2}_@\+)?_?(cd)?
+Example 20:
+('*abc*', '*ab*c', 'aaa?')
+  correct: and(contain(or(<?>,<*>)),and(not(contain(repeatatleast(or(<?>,<*>),2))),repeatatleast(<alphanum>,3)))
+  synthesized:
+Probability of a constant 0.737
+Probability of NOT an optional 0.699
+Making and intersecting VSAs...
+there are 180 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [133.607] \*?a(a{2}\?)?(b\*c)?(bc\*)?
+   - [133.607] \*?a(a{2}\?)?(bc\*)?(b\*c)?
+   - [133.607] \*?a(b\*c)?(a{2}\?)?(bc\*)?
+   - [133.607] \*?a(b\*c)?(bc\*)?(a{2}\?)?
+   - [133.607] \*?a(bc\*)?(a{2}\?)?(b\*c)?
+Example 21:
+('028938',)
+  correct: repeat(<num>,6)
+  synthesized:
+Probability of a constant 0.998
+Probability of NOT an optional 0.86
+Making and intersecting VSAs...
+there are 7 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-155.736] 028938
+Example 22:
+('390987.456',)
+  correct: concat(repeat(<num>,6),concat(<.>,repeat(<num>,3)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.888
+Making and intersecting VSAs...
+there are 11 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-259.998] 390987\.456
+Example 23:
+('2X', 'X', '3123X', '23X^6')
+  correct: concat(star(<num>),concat(<X>,optional(concat(<^>,repeatatleast(<num>,1)))))
+  synthesized:
+Probability of a constant 0.728
+Probability of NOT an optional 0.821
+Making and intersecting VSAs...
+there are 162 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [110.776] [0-9A-Za-z]+(^6)?
+   - [112.181] (31)?2?3?X(^6)?
+   - [116.776] [0-9A-Za-z]+(X^6)?
+   - [118.181] 2?3?(123)?X(^6)?
+   - [118.181] 2?(31)?(23)?X(^6)?
+Example 24:
+('hoho', 'hihi', 'haha')
+  correct: not(contain(concat(concat(<h>,<e>),concat(<d>,<e>))))
+  synthesized:
+Probability of a constant 0.739
+Probability of NOT an optional 0.657
+Making and intersecting VSAs...
+there are 125 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [5.914] h[a-z]h[a-z]
+   - [25.780] h[a-z]+
+   - [45.000] [a-z]+
+   - [46.581] ha?i?o?h[a-z]
+   - [46.581] ha?o?i?h[a-z]
+Example 25:
+('ankitrai326', 'geeksforgeeks')
+  correct: endwith(<alphanum>)
+  synthesized:
+Probability of a constant 0.916
+Probability of NOT an optional 0.74
+Making and intersecting VSAs...
+there are 168 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [45.000] [a-z]+[0-9A-Za-z]{3}
+   - [65.646] [a-z]+[0-9A-Za-z]{2,3}
+   - [65.646] [a-z]+[0-9A-Za-z]{3,4}
+   - [66.190] [a-z]+k[a-z]+[0-9A-Za-z]{3}
+   - [66.190] [a-z]+r[a-z]+[0-9A-Za-z]{3}
+Example 26:
+('ankit',)
+  correct: startwith(<vow>)
+  synthesized:
+Probability of a constant 0.998
+Probability of NOT an optional 0.86
+Making and intersecting VSAs...
+there are 6 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-129.780] ankit
+Example 27:
+('gfg', '_abc12')
+  correct: and(startwith(or(<let>,<_>)),repeatatleast(or(<alphanum>,<_>),1))
+  synthesized:
+Probability of a constant 0.418
+Probability of NOT an optional 0.75
+Making and intersecting VSAs...
+there are 28 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [58.650] (_ab)?[a-z][0-9A-Za-z]{2}
+   - [79.096] _?[a-z]+[0-9A-Za-z]{2}
+   - [85.096] (_a)?[a-z]+[0-9A-Za-z]{2}
+   - [86.191] (_abc)?[0-9A-Za-z]{2,3}
+   - [86.191] g?(_abc)?[0-9A-Za-z]{2}
+Example 28:
+('Geek12#',)
+  correct: and(contain(<num>),and(and(contain(<cap>),contain(<low>)),and(contain(<spec>),repeatrange(<any>,6,20))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.868
+Making and intersecting VSAs...
+there are 8 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-181.920] Ge{2}k12#
+Example 29:
+('Geeks',)
+  correct: contain(concat(<cap>,<low>))
+  synthesized:
+Probability of a constant 0.993
+Probability of NOT an optional 0.852
+Making and intersecting VSAs...
+there are 6 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-129.152] Ge{2}ks
+Example 30:
+('geeks for geeks',)
+  correct: contain(concat(<g>,<e>))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.881
+Making and intersecting VSAs...
+there are 16 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-389.989] ge{2}ks for ge{2}ks
+Example 31:
+('0.125', '1.15', '0.5', '12345')
+  correct: and(concat(repeatrange(<num>,1,4),optional(concat(<.>,repeatrange(<num>,1,3)))),not(repeatatleast(or(<0>,<.>),1)))
+  synthesized:
+Probability of a constant 0.735
+Probability of NOT an optional 0.721
+Making and intersecting VSAs...
+there are 641 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [97.432] \d\.?\d+
+   - [105.055] \d+\.?1?2?5
+   - [111.055] \d+\.?1?(12)?5
+   - [111.055] \d+\.?(12)?1?5
+   - [112.486] \d\.?1?2?(34)?5
+Example 32:
+('000000', '0.0', '0000.', '0')
+  correct: concat(star(<0>),or(concat(or(<0>,or(<1>,or(<2>,or(<3>,<4>)))),optional(concat(<.>,concat(optional(<5>),star(<0>))))),concat(<5>,concat(<.>,star(<0>)))))
+  synthesized:
+Probability of a constant 0.726
+Probability of NOT an optional 0.798
+Making and intersecting VSAs...
+there are 318 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [108.292] \d+\.?0?
+   - [113.712] 0{1,2}(0{3})?\.?0?
+   - [113.712] 0(0{3})?0?\.?0?
+   - [113.712] 0(0{3})?\.?0{0,2}
+   - [113.712] 0?(0{3})?0\.?0?
+Example 33:
+('123456789.123', '123456789123456.12', '12345.1', '123456789123456')
+  correct: concat(repeatrange(<num>,1,15),optional(concat(<.>,repeatrange(<num>,1,3))))
+  synthesized:
+Probability of a constant 0.998
+Probability of NOT an optional 0.876
+Making and intersecting VSAs...
+Timed out
+Example 34:
+('1@100%', '9@50%', '5@10%')
+  correct: concat(concat(R1,<@>),concat(R2,<%>))
+  synthesized:
+Probability of a constant 0.977
+Probability of NOT an optional 0.717
+Making and intersecting VSAs...
+there are 231 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-1.891] \d@\d+0%
+   - [0.313] \d@\d{1,2}0%
+   - [6.801] \d@1?0?5?0%
+   - [6.801] \d@1?5?0{1,2}%
+   - [6.801] \d@5?1?0{1,2}%
+Example 35:
+('215-121-1247',)
+  correct: concat(concat(repeat(R1,3),<->),concat(repeat(R1,3),concat(<->,repeat(R1,4))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.868
+Making and intersecting VSAs...
+there are 13 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-311.864] 215-121-1247
+Example 36:
+('0123456', '1234567', '0123456789', '1233467890')
+  correct: or(repeat(<num>,7),repeat(<num>,10))
+  synthesized:
+Probability of a constant 0.998
+Probability of NOT an optional 0.794
+Making and intersecting VSAs...
+there are 7744 nodes
+Doing DFS...
+Timed out
+Example 37:
+('09103,09101,', '09103,09101', '12345,123456789')
+  correct: concat(or(repeat(<num>,5),repeat(<num>,9)),concat(repeatatleast(or(repeat(<num>,5),repeat(<num>,9)),1),optional(<,>)))
+  synthesized:
+Probability of a constant 0.994
+Probability of NOT an optional 0.785
+Making and intersecting VSAs...
+there are 2496 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-263.994] \d{5},(1234)?\d{5},?
+   - [-263.994] \d{5},\d(2345)?\d{4},?
+   - [-263.994] \d{5},\d{2}(3456)?\d{3},?
+   - [-263.994] \d{5},\d{3}(4567)?\d{2},?
+   - [-263.994] \d{5},\d{4}(5678)?\d,?
+Example 38:
+('white snake', 'white snake valley')
+  correct: not(contain(concat(< >,< >)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.901
+Making and intersecting VSAs...
+there are 228 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-243.163] white (snake v)?[a-z]{5}
+   - [-239.163] white s(nake va)?[a-z]{4}
+   - [-238.326] (white )?[a-z]{4}e [a-z]{5,6}
+   - [-235.163] white sn(ake val)?[a-z]{3}
+   - [-234.326] (white )?[a-z]{4}e [a-z]{4}ey?
+Example 39:
+('0', '0.00', '0.12', '0.14')
+  correct: concat(<0>,optional(concat(<.>,repeatrange(<num>,1,2))))
+  synthesized:
+Probability of a constant 0.728
+Probability of NOT an optional 0.802
+Making and intersecting VSAs...
+there are 225 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [85.766] (0\.)?\d+
+   - [108.532] 0?\.?\d+
+   - [115.384] (0\.0)?(0\.1)?\d
+   - [115.384] (0\.1)?(0\.0)?\d
+   - [115.384] (0\.1)?\d(\.0{2})?
+Example 40:
+('123', '123.', '123.4', '0.2')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<.>,star(<num>))))
+  synthesized:
+Probability of a constant 0.735
+Probability of NOT an optional 0.719
+Making and intersecting VSAs...
+there are 480 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [111.986] \d\.?23?\.?4?
+   - [117.986] \d\.?2(3\.)?3?4?
+   - [117.986] \d\.?2(3\.)?4?3?
+   - [117.986] \d\.?23?(3\.)?4?
+   - [120.197] (0\.)?1?23?\.?4?
+Example 41:
+('Foo', 'Hello World', 'Hello-world', 'Bigsby Platt-slatt')
+  correct: and(repeatrange(<any>,3,20),and(startwith(<cap>),and(not(contain(concat(<cap>,<cap>))),and(not(contain(concat(not(<let>),< >))),and(not(contain(concat(< >,not(<cap>)))),and(not(contain(concat(not(<let>),<->))),and(not(contain(concat(<->,not(<low>)))),not(contain(concat(<cap>,not(or(<low>,or(<->,< >)))))))))))))
+  synthesized:
+Probability of a constant 0.374
+Probability of NOT an optional 0.907
+Making and intersecting VSAs...
+there are 10184 nodes
+Doing DFS...
+Timed out
+Example 42:
+('4', '10.25', '15.3', '29.99')
+  correct: and(not(<0>),or(concat(concat(<3>,<0>),optional(concat(<.>,repeatrange(<0>,1,2)))),concat(optional(or(<1>,<2>)),concat(<num>,optional(concat(<.>,repeatrange(<num>,1,2)))))))
+  synthesized:
+Probability of a constant 0.405
+Probability of NOT an optional 0.811
+Making and intersecting VSAs...
+there are 360 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [191.006] \d(0\.25)?(5\.3)?(9\.9{2})?
+   - [191.006] \d(0\.25)?(9\.9{2})?(5\.3)?
+   - [191.006] \d(5\.3)?(0\.25)?(9\.9{2})?
+   - [191.006] \d(5\.3)?(9\.9{2})?(0\.25)?
+   - [191.006] \d(9\.9{2})?(0\.25)?(5\.3)?
+Example 43:
+('em1,erg,123,enc',)
+  correct: concat(repeat(<any>,3),star(concat(<,>,repeat(<any>,3))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.894
+Making and intersecting VSAs...
+there are 16 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-389.999] em1,erg,123,enc
+Example 44:
+('123,4A67,GGG,767', 'test', 'test,test', 'test123,Test123,test')
+  correct: concat(repeatatleast(<alphanum>,1),star(concat(<,>,repeatatleast(or(<let>,<num>),1))))
+  synthesized:
+Probability of a constant 0.383
+Probability of NOT an optional 0.91
+Making and intersecting VSAs...
+there are 14025 nodes
+Doing DFS...
+Simplifying and ranking...
+Timed out
+Example 45:
+('04140000000', '04240000000')
+  correct: concat(concat(concat(<0>,<4>),concat(R1,R2)),repeat(R3,7))
+  synthesized:
+Probability of a constant 0.917
+Probability of NOT an optional 0.671
+Making and intersecting VSAs...
+there are 108 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-210.808] 04\d40{7}
+   - [-204.180] 041?2?40{7}
+   - [-204.180] 042?1?40{7}
+   - [-169.474] 04\d+0{7}
+   - [-169.474] 0\d+40{7}
+Example 46:
+('A111B2_3_.exe',)
+  correct: concat(concat(<A>,concat(R1,concat(<B>,concat(R2,<_>)))),concat(R3,concat(<_>,R4)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.888
+Making and intersecting VSAs...
+there are 14 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-337.997] A1{3}B2_3_\.exe
+Example 47:
+('1,2,3', '111,234234,-09', '1', '1,2')
+  correct: concat(concat(optional(<->),repeatatleast(<num>,1)),star(concat(<,>,concat(optional(<->),repeatatleast(<num>,1)))))
+  synthesized:
+Probability of a constant 0.711
+Probability of NOT an optional 0.893
+Making and intersecting VSAs...
+there are 720 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [167.473] 1(,2)?(,3)?(1{2},234234,-09)?
+   - [167.473] 1(,2)?(1{2},234234,-09)?(,3)?
+   - [167.473] 1(1{2},234234,-09)?(,2)?(,3)?
+   - [179.473] 1(,2)?(,2,3)?(1{2},234234,-09)?
+   - [179.473] 1(,2)?(1{2},234234,-09)?(,2,3)?
+Example 48:
+('(0.4545 && 0.567) || 456', '0.456 && 0.567')
+  correct: repeatatleast(or(<num>,or(<&>,or(<|>,or(<.>,or(<(>,or(<)>,< >)))))),1)
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.93
+Making and intersecting VSAs...
+there are 375 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-236.928] \(?0\.\d{3,4} &{2} 0\.(567\) \|{2} )?\d{3}
+   - [-232.928] \(?0\.\d{3,4} &{2} 0\.5(67\) \|{2} 4)?\d{2}
+   - [-232.928] \(?0\.4\d{2,3} &{2} 0\.(567\) \|{2} )?\d{3}
+   - [-228.928] \(?0\.\d{3,4} &{2} 0\.56(7\) \|{2} 45)?\d
+   - [-228.928] \(?0\.4\d{2,3} &{2} 0\.5(67\) \|{2} 4)?\d{2}
+Example 49:
+('m-a 12', 'abc-ab 1234', 'ab-ab 1234')
+  correct: concat(R1,concat(R2,concat(R3,concat(R4,R5))))
+  synthesized:
+Probability of a constant 0.998
+Probability of NOT an optional 0.829
+Making and intersecting VSAs...
+there are 672 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-73.163] [a-z]{1,3}-[a-z]{1,2} (12)?\d{2}
+   - [-69.169] [a-z]{1,3}-[a-z]{1,2} 1(23)?\d
+   - [-69.169] [a-z]{1,3}-ab? (12)?\d{2}
+   - [-67.163] a?(ab)?[a-z]-[a-z]{1,2} (12)?\d{2}
+   - [-67.163] [a-z]{1,2}(bc)?-[a-z]{1,2} (12)?\d{2}
+Example 50:
+('1A345678_add',)
+  correct: concat(repeat(<hex>,8),concat(<_>,star(<let>)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.9
+Making and intersecting VSAs...
+there are 13 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-312.000] 1A345678_ad{2}
+Example 51:
+('4.1', '421.11', '467.111', '438904.1111')
+  correct: concat(repeatatleast(<num>,1),concat(<.>,repeatrange(<num>,1,4)))
+  synthesized:
+Probability of a constant 0.974
+Probability of NOT an optional 0.85
+Making and intersecting VSAs...
+there are 2430 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [50.083] \d+\.1?(1{2})?1
+   - [50.083] \d+\.1{1,2}(1{2})?
+   - [50.083] \d+\.(1{2})?1{1,2}
+   - [64.665] \d+\.\d+
+   - [68.960] \d+\.1{1,4}
+Example 52:
+('0990 09253U108 BX', '0990 02376R102 AAL')
+  correct: startwith(concat(repeat(<num>,4),< >))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.757
+Making and intersecting VSAs...
+there are 342 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-454.456] 09{2}0 0\d{4}[A-Z]10\d [A-Z]{2,3}
+   - [-403.114] 09{2}0 0\d{4}[A-Z]10\d ?( A)?[A-Z]{2}
+   - [-403.114] 09{2}0 0\d{4}[A-Z]10\d( A)? ?[A-Z]{2}
+   - [-399.116] 09{2}0 0\d{4}[A-Z]10\d (A{2})?[A-Z]{1,2}
+   - [-399.116] 09{2}0 0\d{4}[A-Z]10\d B?(A{2})?[A-Z]
+Example 53:
+('Mu*', '*pa', '*pa*')
+  correct: concat(R1,concat(R2,R3))
+  synthesized:
+Probability of a constant 0.737
+Probability of NOT an optional 0.702
+Making and intersecting VSAs...
+there are 76 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [68.795] (Mu)?\*(pa)?\*?
+   - [80.795] (Mu)?(\*pa)?\*(pa)?
+   - [80.795] (Mu)?\*(pa)?(pa\*)?
+   - [80.795] (Mu)?\*(pa\*)?(pa)?
+   - [80.795] (\*pa)?(Mu)?\*(pa)?
+Example 54:
+('0.2lb', '1.2lb', '2lb')
+  correct: not(startwith(concat(<0>,<num>)))
+  synthesized:
+Probability of a constant 0.976
+Probability of NOT an optional 0.774
+Making and intersecting VSAs...
+there are 98 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-10.492] (0\.)?(1\.)?2lb
+   - [-10.492] (1\.)?(0\.)?2lb
+   - [-7.656] 0?1?\.?2lb
+   - [-7.656] 1?0?\.?2lb
+   - [4.344] 0?\.?(1\.)?2lb
+Example 55:
+('A', 'A@', '@A', 'A@a@')
+  correct: and(contain(<alphanum>),and(repeatatleast(or(<alphanum>,or(<@>,<#>)),1),repeatrange(<any>,1,8)))
+  synthesized:
+Probability of a constant 0.727
+Probability of NOT an optional 0.776
+Making and intersecting VSAs...
+there are 70 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [69.399] @?A@?(a@)?
+   - [69.399] @?A(@a)?@?
+   - [75.399] @?A@?(@a@)?
+   - [75.399] @?A(@a@)?@?
+   - [90.837] @?A@?a?@?
+Example 56:
+('+91', '91')
+  correct: concat(optional(<+>),repeatatleast(<num>,1))
+  synthesized:
+Probability of a constant 0.915
+Probability of NOT an optional 0.732
+Making and intersecting VSAs...
+there are 9 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-21.355] \+?91
+   - [28.685] 9?(\+9)?1
+   - [28.685] (\+9)?9?1
+   - [42.926] 9?\+?9?1
+   - [42.926] \+?9{0,2}1
+Example 57:
+('.5', '.6', '.1', '0')
+  correct: and(concat(repeatrange(<num>,1,13),optional(concat(<.>,repeatrange(<num>,1,2)))),not(contain(concat(<.>,<0>))))
+  synthesized:
+Probability of a constant 0.419
+Probability of NOT an optional 0.687
+Making and intersecting VSAs...
+there are 54 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [49.418] \.?\d
+   - [86.264] \.{0,2}\d
+   - [123.111] \.{0,3}\d
+   - [146.006] 0?\.?\d?
+   - [146.006] \.?\d{0,2}
+Example 58:
+('10.5', '12.5')
+  correct: concat(repeat(<num>,2),concat(<.>,<5>))
+  synthesized:
+Probability of a constant 0.977
+Probability of NOT an optional 0.685
+Making and intersecting VSAs...
+there are 22 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-46.898] 1\d\.5
+   - [-43.781] 10?2?\.5
+   - [-43.781] 12?0?\.5
+   - [-6.378] (10)?(12)?\.5
+   - [-6.378] (12)?(10)?\.5
+Example 59:
+('1', '1.5', '11.5')
+  correct: concat(repeatrange(<num>,1,2),optional(concat(<.>,repeatrange(<num>,1,2))))
+  synthesized:
+Probability of a constant 0.728
+Probability of NOT an optional 0.795
+Making and intersecting VSAs...
+there are 28 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [49.849] 1{1,2}(\.5)?
+   - [72.242] 1{1,2}\.?5?
+   - [74.785] 1?(1\.5)?
+   - [85.392] \d+(\.5)?
+   - [90.242] 1{1,2}(\.5){0,2}
+Example 60:
+('12345678901', '+1234567890')
+  correct: or(concat(optional(<+>),repeatrange(<num>,10,15)),repeatrange(<num>,11,16))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.773
+Making and intersecting VSAs...
+there are 144 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-253.627] 1?\+?\d{10}
+   - [-253.627] \+?\d{10,11}
+   - [-249.627] \+?1\d{9,10}
+   - [-245.627] \+?12\d{8,9}
+   - [-241.627] \+?123\d{7,8}
+Example 61:
+('C01245', 'C04751')
+  correct: concat(startwith(concat(<C>,<0>)),endwith(repeat(<num>,4)))
+  synthesized:
+Probability of a constant 0.998
+Probability of NOT an optional 0.712
+Making and intersecting VSAs...
+there are 49 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-171.731] C0\d{4}
+   - [-111.643] C{0,2}0\d{4}
+   - [-111.643] C\d{4,6}
+   - [-107.649] C\d{3,4}51?
+   - [-107.649] C0\d{3,5}
+Example 62:
+('1', '0.1', '9999')
+  correct: or(concat(<0>,concat(<.>,concat(<num1-9>,star(<num>)))),concat(<num1-9>,concat(star(<num>),concat(<.>,star(<num>)))))
+  synthesized:
+Probability of a constant 0.409
+Probability of NOT an optional 0.783
+Making and intersecting VSAs...
+there are 35 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [93.095] (0\.)?\d+
+   - [93.095] \d+(\.1)?
+   - [108.460] \d(9{3})?(\.1)?
+   - [108.460] \d(\.1)?(9{3})?
+   - [108.460] (0\.)?(9{3})?\d
+Example 63:
+('0', '2', '0.4', '78784764.23')
+  correct: concat(repeatrange(<num>,1,11),optional(concat(<.>,repeatrange(<num>,1,3))))
+  synthesized:
+Probability of a constant 0.399
+Probability of NOT an optional 0.864
+Making and intersecting VSAs...
+there are 192 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [156.131] (0\.)?\d+(\.23)?
+   - [156.131] \d+(\.23)?(\.4)?
+   - [156.131] \d+(\.4)?(\.23)?
+   - [162.131] (0\.)?\d+(4\.23)?
+   - [162.131] \d+(4\.23)?(\.4)?
+Example 64:
+('07111111111', '447111111111')
+  correct: and(repeatrange(<num>,10,14),or(startwith(concat(<0>,<7>)),startwith(concat(<4>,concat(<4>,<7>)))))
+  synthesized:
+Probability of a constant 0.916
+Probability of NOT an optional 0.703
+Making and intersecting VSAs...
+there are 101 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-194.724] 0?(4{2})?71{9}
+   - [-194.724] (4{2})?0?71{9}
+   - [-193.228] \d+71{9}
+   - [-191.988] \d{1,2}71{9}
+   - [-181.973] 0?4{0,2}71{9}
+Example 65:
+('1', '1111', '2222.56', '9999.55')
+  correct: concat(repeatrange(<num>,1,4),optional(concat(or(<.>,<,>),repeatrange(<num>,1,2))))
+  synthesized:
+Probability of a constant 0.402
+Probability of NOT an optional 0.842
+Making and intersecting VSAs...
+there are 576 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [159.624] \d+(\.5{2})?(\.56)?
+   - [159.624] \d+(\.56)?(\.5{2})?
+   - [165.624] \d+(2\.56)?(\.5{2})?
+   - [165.624] \d+(9\.5{2})?(\.56)?
+   - [165.624] \d+(\.5{2})?(2\.56)?
+Example 66:
+('+.12', '-0.13', '0.+', '45.-')
+  correct: concat(optional(or(<+>,<->)),concat(concat(repeatatleast(<num>,1),concat(<.>,optional(repeatatleast(<num>,1)))),optional(or(<+>,<->))))
+  synthesized:
+Probability of a constant 0.734
+Probability of NOT an optional 0.71
+Making and intersecting VSAs...
+there are 600 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [201.225] (-0)?\+?(\.1)?\d(5\.-)?(\.\+)?
+   - [201.225] (-0)?\+?(\.1)?\d(\.\+)?(5\.-)?
+   - [201.225] \+?(-0)?(\.1)?\d(5\.-)?(\.\+)?
+   - [201.225] \+?(-0)?(\.1)?\d(\.\+)?(5\.-)?
+   - [201.382] (-0\.1)?(\+\.1)?\d(5\.-)?(\.\+)?
+Example 67:
+('123', '1_23', '123_4567_89_312_575', '12')
+  correct: concat(repeatatleast(<num>,1),star(concat(<_>,repeatatleast(<num>,1))))
+  synthesized:
+Probability of a constant 0.905
+Probability of NOT an optional 0.93
+Making and intersecting VSAs...
+there are 1020 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [135.415] 1_?23?(_4567_89_312_575)?
+   - [141.415] 1_?23?(3_4567_89_312_575)?
+   - [141.415] 1_?2(3_4567_89_312_575)?3?
+   - [160.241] 1_?23?_?(4567_89_312_575)?
+   - [160.241] 1_?23?(_4)?(567_89_312_575)?
+Example 68:
+('2', '2 + 3', '2 + 3 + 4')
+  correct: concat(<num>,star(concat(concat(< >,concat(<+>,< >)),<num>)))
+  synthesized:
+Probability of a constant 0.72
+Probability of NOT an optional 0.867
+Making and intersecting VSAs...
+there are 120 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [93.983] 2( \+ 3)?( \+ 4)?
+   - [120.335] 2 ?(\+ 3)?( \+ 4)?
+   - [120.335] 2( \+ )?3?( \+ 4)?
+   - [120.335] 2( \+ 3)? ?(\+ 4)?
+   - [120.335] 2( \+ 3)?( \+ )?4?
+Example 69:
+('01', '02', '03', '04')
+  correct: or(concat(<0>,<num1-9>),concat(<1>,or(<0>,or(<1>,<2>))))
+  synthesized:
+Probability of a constant 0.739
+Probability of NOT an optional 0.657
+Making and intersecting VSAs...
+there are 81 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [2.957] 0\d
+   - [45.000] \d+
+   - [64.049] 0{0,2}\d
+   - [64.049] \d{1,3}
+   - [64.523] 01?2?3?4?
+Example 70:
+('Test', 'Test-hello', 'Test-', '-Test')
+  correct: concat(star(not(<->)),concat(optional(<->),star(not(<->))))
+  synthesized:
+Probability of a constant 0.994
+Probability of NOT an optional 0.822
+Making and intersecting VSAs...
+there are 1320 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-16.481] -?T(est-he)?[a-z]{3}-?
+   - [-12.507] -?Te(st-hel)?[a-z]{2}-?
+   - [-10.558] -?Test-?(hel{2}o)?
+   - [-8.533] -?Tes(t-hel{2})?[a-z]-?
+   - [-5.552] -?(Test-h)?[A-Za-z][a-z]{3}-?
+Example 71:
+('1', '1/2')
+  correct: concat(<num>,optional(concat(</>,<num>)))
+  synthesized:
+Probability of a constant 0.733
+Probability of NOT an optional 0.778
+Making and intersecting VSAs...
+there are 8 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [14.380] 1(/2)?
+   - [35.807] 1/?2?
+   - [55.403] (1/)?\d
+   - [66.853] 1?(1/2)?
+   - [66.853] (1/2)?1?
+Example 72:
+('test', 'test1', 'test1_', 't(e_ s)t1 i/s \\good+-')
+  correct: repeatatleast(or(<let>,or(<num>,or(<_>,or(< >,or(<->,or(<+>,or(</>,or(<\>,or(<(>,<)>))))))))),1)
+  synthesized:
+Probability of a constant 0.974
+Probability of NOT an optional 0.927
+Making and intersecting VSAs...
+there are 4620 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [168.074] t\(?e(_ )?s\)?t1?( i/s \\go{2}d\+-)?_?
+   - [168.074] t\(?e(_ )?s\)?t1?_?( i/s \\go{2}d\+-)?
+   - [174.074] t\(?e(_ )?s\)?t(1 i/s \\go{2}d\+-)?1?_?
+   - [174.074] t\(?e(_ )?s\)?t1?( i/s \\go{2}d\+-)?(1_)?
+   - [174.074] t\(?e(_ )?s\)?t1?(1 i/s \\go{2}d\+-)?_?
+Example 73:
+('%ab', '%ab%', '%abcde', '%abcde%')
+  correct: concat(<%>,startwith(repeat(<let>,2)))
+  synthesized:
+Probability of a constant 0.976
+Probability of NOT an optional 0.797
+Making and intersecting VSAs...
+there are 1092 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-20.007] %ab(cde)?%?
+   - [-3.952] %abc?(de)?%?
+   - [-3.952] %ab(cd)?e?%?
+   - [2.048] %ab(cde)?%{0,2}
+   - [2.048] %ab%?(cde)?%?
+Example 74:
+('0.01', '0.12', '111.23', '1234.56')
+  correct: concat(and(R1,R2),R3)
+  synthesized:
+Probability of a constant 0.914
+Probability of NOT an optional 0.758
+Making and intersecting VSAs...
+there are 1400 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [66.224] \d+\.\d+
+   - [76.091] \d+\.\d{2}
+   - [93.851] (1{2})?\d+\.\d+
+   - [93.851] (12)?\d+\.\d+
+   - [93.851] \d+(1{2})?\.\d+
+Example 75:
+('My Name Is Jass',)
+  correct: concat(concat(<cap>,star(<let>)),star(concat(< >,concat(<cap>,star(<let>)))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.894
+Making and intersecting VSAs...
+there are 16 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-389.999] My Name Is Jas{2}
+Example 76:
+('0,25', '10,2', '-7000', '-175,33')
+  correct: concat(concat(optional(<->),repeatatleast(<num>,1)),concat(optional(<,>),repeatrange(<num>,0,2)))
+  synthesized:
+Probability of a constant 0.415
+Probability of NOT an optional 0.724
+Making and intersecting VSAs...
+there are 1200 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [155.733] -?\d+,?\d+
+   - [168.518] -?\d+,?\d,?\d
+   - [186.844] (-17)?(-7)?\d,?\d,?\d
+   - [186.844] (-7)?(-17)?\d,?\d,?\d
+   - [188.599] -{0,2}\d+,?\d+
+Example 77:
+('HELLO', 'H', '')
+  correct: not(contain(< >))
+  synthesized:
+Probability of a constant 0.397
+Probability of NOT an optional 0.879
+Making and intersecting VSAs...
+there are 12 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [100.775] H?(EL{2}O)?
+   - [106.775] H?(HEL{2}O)?
+   - [106.775] (HEL{2}O)?H?
+   - [126.708] [A-Z]*
+   - [136.162] H?E?(L{2}O)?
+Example 78:
+('%sample1%_%sample2%', '%sample2%%sample1%', '1_abc', '%sample2%%sample1%_%sample1%_%sample1%')
+  correct: star(or(or(<let>,or(<num>,<_>)),or(concat(<%>,concat(<s>,concat(<a>,concat(<m>,concat(<p>,concat(<l>,concat(<e>,concat(<1>,<%>)))))))),concat(<%>,concat(<s>,concat(<a>,concat(<m>,concat(<p>,concat(<l>,concat(<e>,concat(<2>,<%>)))))))))))
+  synthesized:
+Probability of a constant 0.884
+Probability of NOT an optional 0.974
+Making and intersecting VSAs...
+Timed out
+Example 79:
+('1:x:456', '2:2:3', '3:abc:123', '333:abc:123456')
+  correct: concat(repeatatleast(<num>,1),repeat(concat(<:>,or(repeatatleast(<let>,1),repeatatleast(<num>,1))),2))
+  synthesized:
+Probability of a constant 0.72
+Probability of NOT an optional 0.829
+Making and intersecting VSAs...
+there are 6726 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [88.959] \d+:(ab)?[0-9A-Za-z]:\d+
+   - [88.959] \d+:[0-9A-Za-z](bc)?:\d+
+   - [101.926] (3{2})?\d:(ab)?[0-9A-Za-z]:\d+
+   - [101.926] (3{2})?\d:[0-9A-Za-z](bc)?:\d+
+   - [101.926] \d(3{2})?:(ab)?[0-9A-Za-z]:\d+
+Example 80:
+('abc#123', 'a%scsd', 'abacvfrdfrgthgfrthgf22222')
+  correct: and(not(endwith(<spec>)),repeatrange(<any>,3,25))
+  synthesized:
+Probability of a constant 0.91
+Probability of NOT an optional 0.951
+Making and intersecting VSAs...
+there are 1456 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [114.994] a%?[0-9A-Za-z]+#?[0-9A-Za-z]{3}
+   - [120.994] a%?[0-9A-Za-z]+(#1)?[0-9A-Za-z]{2}
+   - [120.994] a%?[0-9A-Za-z]+(c#)?[0-9A-Za-z]{3}
+   - [120.994] a%?[0-9A-Za-z]{2,}(#1)?[0-9A-Za-z]{2}
+   - [122.814] a%?[a-z]+#?(2{2})?[0-9A-Za-z]{3}
+Example 81:
+('Hercules.Cycle', 'Herbal&Product', 'Welcome@123')
+  correct: and(startwith(<alphanum>),repeatatleast(or(<alphanum>,or(<.>,or(<->,or(<#>,or(<&>,<@>))))),1))
+  synthesized:
+Probability of a constant 0.977
+Probability of NOT an optional 0.766
+Making and intersecting VSAs...
+there are 2700 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [152.201] [A-Z]e[a-z]+(&Prod)?@?(\.Cy)?[0-9A-Za-z]{3}
+   - [152.201] [A-Z]e[a-z]+(&Prod)?(\.Cy)?@?[0-9A-Za-z]{3}
+   - [152.201] [A-Z]e[a-z]+@?(&Prod)?(\.Cy)?[0-9A-Za-z]{3}
+   - [152.201] [A-Z]e[a-z]+@?(\.Cy)?(&Prod)?[0-9A-Za-z]{3}
+   - [152.201] [A-Z]e[a-z]+(\.Cy)?(&Prod)?@?[0-9A-Za-z]{3}
+Example 82:
+('123.1234567890', '123.1234567890;123.1234567890;123.1234567890')
+  correct: concat(concat(repeatatleast(<num>,1),concat(<.>,repeatatleast(<num>,1))),star(concat(<;>,concat(repeatatleast(<num>,1),concat(<.>,repeatatleast(<num>,1))))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.994
+Making and intersecting VSAs...
+there are 570 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-156.654] 123\.(1234567890;123\.1)?\d{9}(;123\.123456789)?0
+   - [-156.654] 123\.\d{9,10}(;123\.1234567890;123\.123456789)?0
+   - [-156.654] 123\.1(234567890;123\.)?\d{9}(0;123\.1234567890)?
+   - [-152.654] 123\.(1234567890;123\.1)?\d{8}(0;123\.12345678)?90
+   - [-152.654] 123\.(1234567890;123\.12)?\d{8}(;123\.12345678)?90
+Example 83:
+('1.1', '1.1.3.4', '1.0', '1.1.334')
+  correct: concat(R1,repeatatleast(concat(<.>,R1),1))
+  synthesized:
+Probability of a constant 0.915
+Probability of NOT an optional 0.799
+Making and intersecting VSAs...
+there are 1008 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [68.929] (1\.)?1(\.3)?\.\d+
+   - [68.929] (1\.)?1\.(3\.)?\d+
+   - [68.929] (1\.)?1\.\d+(\.4)?
+   - [68.929] 1(\.1)?(\.3)?\.\d+
+   - [68.929] 1(\.1)?\.(3\.)?\d+
+Example 84:
+('u78945', 's56123')
+  correct: concat(<let>,repeat(<num>,5))
+  synthesized:
+Probability of a constant 0.739
+Probability of NOT an optional 0.657
+Making and intersecting VSAs...
+there are 49 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [58.663] (u789)?[0-9A-Za-z]5(6123)?
+   - [65.942] [0-9A-Za-z]{1,2}\d+
+   - [67.177] [a-z]\d+
+   - [71.942] (s5)?[0-9A-Za-z]\d+
+   - [71.942] (u7)?[0-9A-Za-z]\d+
+Example 85:
+('175', '1.250', '14.365', '145.985')
+  correct: concat(repeatrange(<num>,1,3),repeatrange(concat(<.>,repeat(<num>,3)),0,2))
+  synthesized:
+Probability of a constant 0.912
+Probability of NOT an optional 0.79
+Making and intersecting VSAs...
+there are 1290 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [97.104] 14?5?\.?\d+50?
+   - [97.429] 14?5?\.?\d+
+   - [103.104] 14?(45)?\.?\d+50?
+   - [103.104] 1(45)?4?\.?\d+50?
+   - [103.429] 14?(45)?\.?\d+
+Example 86:
+('Sunil Kumar',)
+  correct: concat(concat(<cap>,repeatatleast(<low>,1)),concat(< >,concat(<cap>,repeatatleast(<low>,1))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.894
+Making and intersecting VSAs...
+there are 12 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-285.999] Sunil Kumar
+Example 87:
+('Name', 'My Name Is OK')
+  correct: and(not(contain(repeatatleast(< >,2))),concat(<alphanum>,concat(repeatatleast(<alphanum>,1),<alphanum>)))
+  synthesized:
+Probability of a constant 0.994
+Probability of NOT an optional 0.91
+Making and intersecting VSAs...
+there are 70 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-22.290] [A-Z][a-z]( N)?[a-z]{2}(e Is OK)?
+   - [-14.341] [A-Z][a-z]( Na)?me( Is OK)?
+   - [-13.956] [A-Z][a-z]( Name Is )?[A-Za-z]{2}
+   - [-10.366] [A-Z](y N)?ame( Is OK)?
+   - [-7.385] [A-Z][a-z]( N)?[a-z](me Is O)?[A-Za-z]
+Example 88:
+('12345', '10,23')
+  correct: concat(repeatrange(<num>,1,5),optional(concat(or(<.>,<,>),repeatrange(<num>,1,2))))
+  synthesized:
+Probability of a constant 0.977
+Probability of NOT an optional 0.685
+Making and intersecting VSAs...
+there are 36 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-31.760] 1(0,)?23(45)?
+   - [-21.536] 10?,?23(45)?
+   - [-21.536] 1(0,)?234?5?
+   - [-11.312] 10?,?234?5?
+   - [15.867] 1?(10,)?23(45)?
+Example 89:
+('MAC Address=192.167.235.19', 'MAC Address=192.167.235.19;zproduct_id=XYZ')
+  correct: concat(concat(R1,concat(<=>,R1)),star(concat(<;>,concat(R1,concat(<=>,R1)))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.977
+Making and intersecting VSAs...
+there are 1161 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-555.171] MAC Ad{2}res{2}=192\.167\.235\.19(;zproduct_id=XYZ)?
+   - [-530.342] MAC Ad{2}res{2}=192\.167\.235\.19;?(zproduct_id=XYZ)?
+   - [-530.342] MAC Ad{2}res{2}=192\.167\.235\.19(;z)?(product_id=XYZ)?
+   - [-530.342] MAC Ad{2}res{2}=192\.167\.235\.19(;zp)?(roduct_id=XYZ)?
+   - [-530.342] MAC Ad{2}res{2}=192\.167\.235\.19(;zpr)?(oduct_id=XYZ)?
+Example 90:
+('1A', '2BZ')
+  correct: concat(or(<1>,or(<2>,or(<3>,or(<4>,<5>)))),concat(or(<A>,or(<B>,<C>)),optional(or(<X>,or(<Y>,<Z>)))))
+  synthesized:
+Probability of a constant 0.416
+Probability of NOT an optional 0.73
+Making and intersecting VSAs...
+there are 12 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [45.600] [0-9A-Za-z]{1,2}[A-Z]
+   - [57.484] \d[A-Z]+
+   - [58.084] \d[A-Z]{1,2}
+   - [72.232] [0-9A-Za-z]{1,2}(BZ)?
+   - [72.232] (2B)?[0-9A-Za-z]{1,2}
+Example 91:
+('10.000,50', '10,000.50', '')
+  correct: star(or(<num>,or(<.>,<,>)))
+  synthesized:
+Probability of a constant 0.398
+Probability of NOT an optional 0.921
+Making and intersecting VSAs...
+there are 97 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [195.062] (10,0{3}\.50)?(10\.0{3},50)?
+   - [195.062] (10\.0{3},50)?(10,0{3}\.50)?
+   - [220.593] (10)?(,0{3}\.50)?(\.0{3},50)?
+   - [220.593] (10)?(\.0{3},50)?(,0{3}\.50)?
+   - [220.593] (10,0{3}\.)?(10\.0{3},)?(50)?
+Example 92:
+('FooBar123!',)
+  correct: and(repeatatleast(<any>,6),and(not(contain(< >)),and(contain(<num>),and(contain(<cap>),and(contain(<low>),contain(or(<!>,or(<@>,or(<#>,or(<$>,or(<%>,or(<^>,or(<&>,or(<*>,or(<(>,or(<)>,or(<_>,<.>)))))))))))))))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.888
+Making and intersecting VSAs...
+there are 11 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-259.998] Fo{2}Bar123!
+Example 93:
+('0', '100', '1,000', '10,000')
+  correct: concat(or(<0>,repeatrange(concat(<num1-9>,<num>),0,2)),star(concat(<,>,repeat(<num>,3))))
+  synthesized:
+Probability of a constant 0.723
+Probability of NOT an optional 0.824
+Making and intersecting VSAs...
+there are 242 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [83.431] 1?0?(,0{2})?0
+   - [89.431] 1?(10)?(,0{2})?0
+   - [89.431] (10)?1?(,0{2})?0
+   - [93.075] \d+(,0{3})?
+   - [107.431] (1,0{2})?(10)?(,0{2})?0
+Example 94:
+('9999999999', '9876543210')
+  correct: and(repeat(<num>,10),startwith(<9>))
+  synthesized:
+Probability of a constant 0.739
+Probability of NOT an optional 0.657
+Making and intersecting VSAs...
+there are 121 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [25.780] 9\d+
+   - [45.000] \d+
+   - [46.730] 9{1,2}\d+
+   - [47.957] 9\d{2,}
+   - [52.730] (9{2})?9\d+
+Example 95:
+('1,5,10,55', '12,34', '1', '1,2,3')
+  correct: concat(repeatatleast(<num>,1),star(concat(<,>,repeatatleast(<num>,1))))
+  synthesized:
+Probability of a constant 0.716
+Probability of NOT an optional 0.839
+Making and intersecting VSAs...
+there are 720 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [152.415] 1(,2,3)?(,5,10,5{2})?(2,34)?
+   - [152.415] 1(,2,3)?(2,34)?(,5,10,5{2})?
+   - [152.415] 1(,5,10,5{2})?(,2,3)?(2,34)?
+   - [152.415] 1(,5,10,5{2})?(2,34)?(,2,3)?
+   - [152.415] 1(2,34)?(,2,3)?(,5,10,5{2})?
+Example 96:
+('test.file.D%d4%', '%d4%.test.file', 'D%d4%.T%t7%.test.%t7%file.%d4%.txt')
+  correct: repeatatleast(or(or(<let>,<num>),or(<.>,or(concat(<%>,concat(<t>,concat(<7>,<%>))),concat(<%>,concat(<d>,concat(<4>,<%>)))))),1)
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.972
+Making and intersecting VSAs...
+there are 8400 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [97.334] D?(%d4%\.)?(T%t7%\.test\.%t7%)?[a-z]{4}\.%?[a-z](4%\.)?[a-z]{3}(\.D%d4%)?
+   - [108.779] (%d4%\.)?(D%d4%\.T%t7%\.test\.%t7%)?[a-z]{4}\.%?[a-z](4%\.)?[a-z]{3}(\.D%d4%)?
+   - [108.779] (D%d4%\.T%t7%\.test\.%t7%)?(%d4%\.)?[a-z]{4}\.%?[a-z](4%\.)?[a-z]{3}(\.D%d4%)?
+   - [112.334] D?(%d4%\.)?[A-Za-z](%t7%\.test\.%t7%f)?[a-z]{3}\.%?[a-z](4%\.)?[a-z]{3}(\.D%d4%)?
+   - [113.334] D?(%d4%\.)?(T%t7%\.)?test\.%?[a-z](7%file\.%d4%\.)?[a-z]{3}(\.D%d4%)?
+Example 97:
+('ab@4_w', 'sd!tye123')
+  correct: repeatatleast(or(or(<let>,<num>),or(<~>,or(<!>,or(<@>,or(<#>,or(<$>,or(<->,<_>))))))),1)
+  synthesized:
+Probability of a constant 0.42
+Probability of NOT an optional 0.734
+Making and intersecting VSAs...
+there are 70 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [108.509] (sd!tye)?[0-9A-Za-z]{2}(@4_)?[0-9A-Za-z]
+   - [120.509] (sd!tye1)?[0-9A-Za-z](b@4_)?[0-9A-Za-z]
+   - [120.509] (sd!tye1)?[0-9A-Za-z]{2}(@4_w)?
+   - [121.115] [a-z](d!tye1)?[0-9A-Za-z](@4_)?[0-9A-Za-z]
+   - [132.509] (ab@4_)?(sd!tye12)?[0-9A-Za-z]
+Example 98:
+('A4hgg5',)
+  correct: repeatatleast(<alphanum>,1)
+  synthesized:
+Probability of a constant 0.998
+Probability of NOT an optional 0.86
+Making and intersecting VSAs...
+there are 7 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-155.736] A4hg{2}5
+Example 99:
+('A new description.', 'A < new description.', "it< doesn't match")
+  correct: not(contain(concat(<<>,notcc(< >))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.822
+Making and intersecting VSAs...
+there are 4428 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-236.393] [A-Za-z]( <)?( ne)?[a-z]<? d[a-z]{4}'?[a-z] ?[a-z]{5}\.?
+   - [-234.626] (A )?(< )?[a-z]{2,3}<? d[a-z]{4}'?[a-z] ?[a-z]{5}\.?
+   - [-234.626] (A )?(< )?[a-z]{2}<?w? d[a-z]{4}'?[a-z] ?[a-z]{5}\.?
+   - [-234.626] A?( <)?( n)?[a-z]{2}<? d[a-z]{4}'?[a-z] ?[a-z]{5}\.?
+   - [-233.393] (A < n)?(A n)?[a-z]{2}<? d[a-z]{4}'?[a-z] ?[a-z]{5}\.?
+Example 100:
+('0.5', '1', '1.0', '1.5')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<.>,or(<0>,<5>))))
+  synthesized:
+Probability of a constant 0.417
+Probability of NOT an optional 0.714
+Making and intersecting VSAs...
+there are 104 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [101.036] (0\.)?(1\.)?\d
+   - [101.036] (1\.)?(0\.)?\d
+   - [101.036] (1\.)?\d(\.5)?
+   - [101.036] \d(\.0)?(\.5)?
+   - [101.036] \d(\.5)?(\.0)?
+Example 101:
+('1234567890',)
+  correct: and(repeatatleast(<num>,10),not(startwith(<$>)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.894
+Making and intersecting VSAs...
+there are 11 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-259.999] 1234567890
+Example 102:
+('Test', 'Test abc')
+  correct: concat(repeatatleast(<let>,1),optional(concat(< >,repeatatleast(<let>,1))))
+  synthesized:
+Probability of a constant 0.994
+Probability of NOT an optional 0.817
+Making and intersecting VSAs...
+there are 45 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-74.627] T(est )?[a-z]{3}
+   - [-70.651] Te(st a)?[a-z]{2}
+   - [-66.676] Tes(t ab)?[a-z]
+   - [-62.700] Test( abc)?
+   - [-57.967] Te?(st )?[a-z]{3}
+Example 103:
+('12345', '1234.5', '123.45', '0.12')
+  correct: and(repeat(or(<.>,<num>),5),and(not(startwith(<.>)),and(not(endwith(<.>)),concat(repeatrange(<num>,1,5),optional(concat(<.>,repeatrange(<num>,1,2)))))))
+  synthesized:
+Probability of a constant 0.915
+Probability of NOT an optional 0.73
+Making and intersecting VSAs...
+there are 1345 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [91.428] (0\.)?123?4?\.?4?5?
+   - [95.261] (0\.)?123?(4\.5)?\.?(45)?
+   - [95.261] (0\.)?12(34)?(3\.4)?\.?5?
+   - [95.261] (0\.)?12(3\.4)?(34)?\.?5?
+   - [95.261] (0\.)?123?\.?(45)?(4\.5)?
+Example 104:
+('1,234', '2,00', '5', '0,1')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<,>,repeatrange(<num>,1,3))))
+  synthesized:
+Probability of a constant 0.407
+Probability of NOT an optional 0.768
+Making and intersecting VSAs...
+there are 240 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [154.304] \d(,0{2})?(,1)?(,234)?
+   - [154.304] \d(,0{2})?(,234)?(,1)?
+   - [154.304] \d(,1)?(,0{2})?(,234)?
+   - [154.304] \d(,1)?(,234)?(,0{2})?
+   - [154.304] \d(,234)?(,0{2})?(,1)?
+Example 105:
+('John Stevens 12', 'james stevens', 'willcall12', '12cell space')
+  correct: repeatatleast(or(<let>,or(<num>,< >)),1)
+  synthesized:
+Probability of a constant 0.408
+Probability of NOT an optional 0.752
+Making and intersecting VSAs...
+Timed out
+Example 106:
+('SH123456', 'ab123456', '12345678', 'sd456565')
+  correct: or(repeat(<num>,8),concat(repeat(<let>,2),repeat(<num>,6)))
+  synthesized:
+Probability of a constant 0.977
+Probability of NOT an optional 0.688
+Making and intersecting VSAs...
+there are 4860 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [13.262] [0-9A-Za-z]{2}(12)?3?456(565)?(78)?
+   - [13.262] [0-9A-Za-z]{2}(12)?3?456(78)?(565)?
+   - [19.262] [0-9A-Za-z]{2,3}(123)?456(565)?(78)?
+   - [19.262] [0-9A-Za-z]{2,3}(123)?456(78)?(565)?
+   - [19.262] [0-9A-Za-z]{2}(123)?3?456(565)?(78)?
+Example 107:
+('safename', '123', 'there-is-something-here', 'your-name-goes-here')
+  correct: and(and(repeatatleast(or(or(<let>,<num>),<->),1),not(startwith(<->))),not(endwith(<->)))
+  synthesized:
+Probability of a constant 0.381
+Probability of NOT an optional 0.94
+Making and intersecting VSAs...
+there are 17140 nodes
+Doing DFS...
+Timed out
+Example 108:
+('0,872', '0,87', '0,8', '0,001')
+  correct: and(not(contain(concat(<0>,concat(<,>,star(<0>))))),concat(repeatatleast(<num>,1),optional(concat(<,>,repeatrange(<num>,1,3)))))
+  synthesized:
+Probability of a constant 0.915
+Probability of NOT an optional 0.732
+Making and intersecting VSAs...
+there are 720 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-2.572] 0,\d+
+   - [23.709] 0,(0{2})?\d+
+   - [23.709] 0,(87)?\d+
+   - [23.709] 0,\d+(01)?
+   - [23.709] 0,\d+(72)?
+Example 109:
+('1,234', '1,23', '1,2', '1')
+  correct: concat(repeatatleast(<num>,1),optional(concat(<,>,repeatrange(<num>,1,3))))
+  synthesized:
+Probability of a constant 0.727
+Probability of NOT an optional 0.779
+Making and intersecting VSAs...
+there are 240 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [69.983] 1(,2)?3?4?
+   - [75.983] 1(,2)?3?(34)?
+   - [75.983] 1(,2)?(34)?3?
+   - [78.628] (1,)?\d+
+   - [81.983] 1(,2)?(,23)?4?
+Example 110:
+('camp.new.', 'ca.mp.n.e.w')
+  correct: not(contain(concat(<.>,<.>)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.82
+Making and intersecting VSAs...
+there are 120 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-113.455] ca\.?mp\.[a-z]{1,2}\.?[a-z]\.w?
+   - [-109.455] ca\.?mp\.n\.?[a-z]{1,2}\.w?
+   - [-109.455] ca\.?mp\.ne?\.?[a-z]\.w?
+   - [-105.455] ca\.?mp\.n\.?ew?\.w?
+   - [-104.090] (ca)?[a-z]{2}\.[a-z]{2}\.?[a-z]\.(e\.w)?
+Example 111:
+('1.0', '100.1', '123456789123456789.2', '123456789123456789')
+  correct: concat(repeatrange(<num>,1,18),optional(concat(<.>,<num>)))
+  synthesized:
+Probability of a constant 0.717
+Probability of NOT an optional 0.943
+Making and intersecting VSAs...
+there are 9576 nodes
+Doing DFS...
+Timed out
+Example 112:
+('77', '2377')
+  correct: repeatatleast(<num>,1)
+  synthesized:
+Probability of a constant 0.734
+Probability of NOT an optional 0.763
+Making and intersecting VSAs...
+there are 12 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-5.579] (23)?7{2}
+   - [15.011] 2?3?7{2}
+   - [25.915] \d+7
+   - [35.526] \d(37)?7
+   - [45.000] \d+
+Example 113:
+('(501) 555 1234', '(501)-555.1234', '501-555-1234', '501.555.1234')
+  correct: and(R1,concat(concat(R2,repeat(<num>,3)),concat(concat(R2,repeat(<num>,3)),concat(R2,repeat(<num>,4)))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.779
+Making and intersecting VSAs...
+there are 34999 nodes
+Doing DFS...
+Timed out
+Example 114:
+('1.23', '100', '1,234', '1234')
+  correct: concat(or(concat(repeatrange(<num1-9>,0,2),repeatatleast(concat(<,>,repeat(<num>,3)),1)),or(concat(<num1-9>,star(<num>)),<0>)),optional(concat(<.>,repeatatleast(<num>,1))))
+  synthesized:
+Probability of a constant 0.734
+Probability of NOT an optional 0.709
+Making and intersecting VSAs...
+there are 480 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [79.465] 1,?\.?\d+
+   - [79.465] 1\.?,?\d+
+   - [85.465] 1,?(\.2)?\d+
+   - [85.465] 1(,2)?\.?\d+
+   - [85.465] 1\.?(,2)?\d+
+Example 115:
+('4', '5+1')
+  correct: or(R1,concat(R1,concat(<+>,R1)))
+  synthesized:
+Probability of a constant 0.415
+Probability of NOT an optional 0.759
+Making and intersecting VSAs...
+there are 8 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [59.125] (5\+)?\d
+   - [59.125] \d(\+1)?
+   - [87.344] 4?(5\+1)?
+   - [87.344] (5\+1)?4?
+   - [87.797] 5?\+?\d
+Example 116:
+('0', '1000', '50000', '1,000')
+  correct: or(<0>,concat(<num1-9>,concat(repeatrange(<num>,0,2),or(repeatatleast(repeat(<num>,3),1),repeatatleast(concat(<,>,repeat(<num>,3)),1)))))
+  synthesized:
+Probability of a constant 0.726
+Probability of NOT an optional 0.816
+Making and intersecting VSAs...
+there are 258 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [80.546] (1,)?\d+
+   - [86.546] (1,0)?\d+
+   - [92.546] (1,0{2})?\d+
+   - [92.546] \d+(,0{3})?
+   - [104.093] 1?,?\d+
+Example 117:
+('123 45',)
+  correct: concat(repeat(<num>,3),concat(< >,repeat(<num>,2)))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.868
+Making and intersecting VSAs...
+there are 7 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-155.932] 123 45
+Example 118:
+('A', 'a', 'B', 'b')
+  correct: or(or(<A>,<B>),or(<a>,<b>))
+  synthesized:
+Probability of a constant 0.423
+Probability of NOT an optional 0.642
+Making and intersecting VSAs...
+there are 16 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [6.338] [A-Za-z]
+   - [113.654] A?B?a?b?
+   - [113.654] A?B?b?a?
+   - [113.654] A?a?B?b?
+   - [113.654] A?a?b?B?
+Example 119:
+('%%', '% %', '%a%', '%1%')
+  correct: concat(<%>,concat(star(<any>),<%>))
+  synthesized:
+Probability of a constant 0.736
+Probability of NOT an optional 0.71
+Making and intersecting VSAs...
+there are 155 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [33.183] % ?1?a?%
+   - [33.183] % ?a?1?%
+   - [33.183] %1? ?a?%
+   - [33.183] %1?a? ?%
+   - [33.183] %a? ?1?%
+Example 120:
+('1-252', '9823-10000', '123456-123457')
+  correct: concat(R1,concat(<->,R1))
+  synthesized:
+Probability of a constant 0.975
+Probability of NOT an optional 0.86
+Making and intersecting VSAs...
+there are 924 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [64.644] \d+-\d+
+   - [93.901] \d+-\d{2,}
+   - [96.019] (12)?\d+-\d+
+   - [96.019] (98)?\d+-\d+
+   - [96.019] \d+(23)?-\d+
+Example 121:
+('ABC.123*', '*ABC.123', 'ABC.*123')
+  correct: and(repeatrange(<any>,1,15),concat(star(or(<cap>,or(<num>,<.>))),concat(<*>,star(or(<cap>,or(<num>,<.>))))))
+  synthesized:
+Probability of a constant 1.0
+Probability of NOT an optional 0.751
+Making and intersecting VSAs...
+there are 675 nodes
+Doing DFS...
+Simplifying and ranking...
+   - [-106.774] \*?ABC\.\*?123\*?
+   - [-63.700] \*?ABC\.\*?\d{2,3}(3\*)?
+   - [-63.700] (\*A)?[A-Z]{2,3}\.\*?123\*?
+   - [-59.701] \*?ABC\.\*?1\d{1,2}(3\*)?
+   - [-59.701] (\*A)?[A-Z]{1,2}C\.\*?123\*?
