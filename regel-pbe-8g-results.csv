@@ -1,0 +1,123 @@
+b,rank,sketch,p,cost,time,regex,gt
+121,b,?,"startwith(repeat(<low>,8)): 153.52",153.52,0.487,(([a-z]){8}).*,false
+105,b,?,timeout,999999.0,40,null,false
+87,b,?,contain(<num1-9>): 76.98,76.98,0.034,.*([1-9]).*,false
+64,b,?,startwith(<low>): 76.9,76.9,0.038,([a-z]).*,false
+82,b,?,timeout,999999.0,40,null,false
+109,b,?,timeout,999999.0,40,null,false
+37,b,?,timeout,999999.0,40,null,false
+123,b,?,"startwith(or(<let>,<_>)): 153.68",153.68,0.996,((([a-zA-Z])|([_]))).*,false
+96,b,?,<let>: 0.0,0.0,0.0,[a-zA-Z],false
+32,b,?,"concat(<num>,endwith(<num1-9>)): 153.48000000000002",153.48000000000002,0.22,([0-9])(.*([1-9])),false
+7,b,?,timeout,999999.0,40,null,false
+110,b,?,startwith(<{>): 76.9,76.9,0.034,([{]).*,true
+61,b,?,"repeatatleast(notcc(<I>),11): 153.66",153.66,3.582,"([^I]){11,}",false
+14,b,?,timeout,999999.0,40,null,false
+11,b,?,"repeatatleast(notcc(<D>),1): 153.66",153.66,13.917,"([^D]){1,}",false
+119,b,?,startwith(<num1-9>): 76.9,76.9,0.116,([1-9]).*,false
+10,b,?,"contain(or(<let>,<3>)): 153.76",153.76,0.521,.*((([a-zA-Z])|([3]))).*,false
+114,b,?,endwith(<num1-9>): 76.94,76.94,0.041,.*([1-9]),false
+104,b,?,contain(<cap>): 76.98,76.98,0.06,.*([A-Z]).*,false
+31,b,?,endwith(<d>): 76.94,76.94,0.048,.*([d]),false
+47,b,?,timeout,999999.0,40,null,false
+6,b,?,timeout,999999.0,40,null,false
+107,b,?,timeout,999999.0,40,null,false
+73,b,?,timeout,999999.0,40,null,false
+120,b,?,"concat(<let>,contain(<h>)): 153.52",153.52,20.254,([a-zA-Z])(.*([h]).*),false
+72,b,?,"repeat(notcc(<f>),10): 153.62",153.62,5.379,([^f]){10},false
+16,b,?,"concat(<num1-9>,contain(<0>)): 153.52",153.52,0.563,([1-9])(.*([0]).*),false
+86,b,?,timeout,999999.0,40,null,false
+94,b,?,timeout,999999.0,40,null,false
+23,b,?,timeout,999999.0,40,null,false
+13,b,?,timeout,999999.0,40,null,false
+62,b,?,endwith(<num>): 76.94,76.94,0.035,.*([0-9]),false
+65,b,?,timeout,999999.0,40,null,false
+113,b,?,endwith(<0>): 76.94,76.94,0.045,.*([0]),false
+29,b,?,timeout,999999.0,40,null,false
+124,b,?,startwith(<G>): 76.9,76.9,0.042,([G]).*,false
+19,b,?,timeout,999999.0,40,null,false
+5,b,?,timeout,999999.0,40,null,false
+85,b,?,timeout,999999.0,40,null,false
+116,b,?,timeout,999999.0,40,null,false
+21,b,?,timeout,999999.0,40,null,false
+9,b,?,timeout,999999.0,40,null,false
+58,b,?,star(<cap>): 76.74,76.74,0.026,([A-Z])*,false
+56,b,?,contain(<N>): 76.98,76.98,0.048,.*([N]).*,false
+91,b,?,timeout,999999.0,40,null,false
+117,b,?,"contain(or(<?>,<c>)): 153.76",153.76,1.198,.*((([?])|([c]))).*,false
+92,b,?,timeout,999999.0,40,null,false
+57,b,?,timeout,999999.0,40,null,false
+53,b,?,contain(<b>): 76.98,76.98,0.048,.*([b]).*,false
+33,b,?,endwith(<cap>): 76.94,76.94,0.046,.*([A-Z]),false
+70,b,?,"repeatatleast(notcc(<7>),1): 153.66",153.66,2.844,"([^7]){1,}",false
+102,b,?,"repeatrange(notcc(<G>),1,2): 153.7",153.7,1.621,"([^G]){1,2}",false
+40,b,?,endwith(<num1-9>): 76.94,76.94,0.036,.*([1-9]),false
+74,b,?,timeout,999999.0,40,null,false
+60,b,?,"repeatrange(notcc(<&>),5,25): 153.7",153.7,2.34,"([^&]){5,25}",false
+68,b,?,timeout,999999.0,40,null,false
+39,b,?,timeout,999999.0,40,null,false
+126,b,?,startwith(<low>): 76.9,76.9,0.034,([a-z]).*,false
+17,b,?,contain(<->): 76.98,76.98,0.042,.*([-]).*,false
+79,b,?,timeout,999999.0,40,null,false
+80,b,?,"repeat(<num>,10): 76.62",76.62,0.05,([0-9]){10},false
+71,b,?,star(notcc(<a>)): 153.74,153.74,0.669,([^a])*,false
+38,b,?,"concat(notcc(<1>),repeatatleast(<num>,1)): 230.2",230.2,24.33,"([^1])(([0-9]){1,})",false
+97,b,?,"concat(<%>,endwith(<%>)): 153.48000000000002",153.48000000000002,0.227,([%])(.*([%])),true
+20,b,?,timeout,999999.0,40,null,false
+25,b,?,"contain(or(<s>,<A>)): 153.76",153.76,3.176,.*((([s])|([A]))).*,false
+59,b,?,"contain(or(<_>,<2>)): 153.76",153.76,5.015,.*((([_])|([2]))).*,false
+125,b,?,"repeat(<let>,5): 76.62",76.62,0.075,([a-zA-Z]){5},false
+76,b,?,"contain(concat(<let>,concat(<let>,<s>))): 230.06",230.06,16.468,.*(([a-zA-Z])(([a-zA-Z])([s]))).*,false
+48,b,?,timeout,999999.0,40,null,false
+52,b,?,timeout,999999.0,40,null,false
+88,b,?,timeout,999999.0,40,null,false
+45,b,?,timeout,999999.0,40,null,false
+106,b,?,"repeatrange(notcc(<B>),1,26): 153.7",153.7,18.456,"([^B]){1,26}",false
+24,b,?,endwith(<c>): 76.94,76.94,0.046,.*([c]),false
+100,b,?,timeout,999999.0,40,null,false
+44,b,?,timeout,999999.0,40,null,false
+89,b,?,"contain(concat(<let>,concat(<.>,<n>))): 230.06",230.06,17.162,.*(([a-zA-Z])(([.])([n]))).*,false
+50,b,?,timeout,999999.0,40,null,false
+8,b,?,timeout,999999.0,40,null,false
+66,b,?,"repeat(notcc(<U>),11): 153.62",153.62,6.304,([^U]){11},false
+84,b,?,timeout,999999.0,40,null,false
+18,b,?,timeout,999999.0,40,null,false
+75,b,?,"or(<num>,concat(<num>,endwith(<num1-9>))): 230.26",230.26,1.824,(([0-9])|(([0-9])(.*([1-9])))),false
+22,b,?,timeout,999999.0,40,null,false
+111,b,?,"concat(<let>,or(<.>,endwith(<a>))): 230.26",230.26,2.802,([a-zA-Z])((([.])|(.*([a])))),false
+78,b,?,endwith(<5>): 76.94,76.94,0.047,.*([5]),false
+108,b,?,"repeat(<num>,9): 76.62",76.62,0.047,([0-9]){9},false
+49,b,?,timeout,999999.0,40,null,false
+26,b,?,timeout,999999.0,40,null,false
+36,b,?,contain(<2>): 76.98,76.98,0.063,.*([2]).*,false
+98,b,?,timeout,999999.0,40,null,false
+90,b,?,"repeatatleast(<num1-9>,1): 76.66",76.66,0.091,"([1-9]){1,}",false
+122,b,?,"repeat(<low>,5): 76.62",76.62,0.055,([a-z]){5},false
+43,b,?,endwith(<num1-9>): 76.94,76.94,0.033,.*([1-9]),false
+35,b,?,"startwith(or(<M>,concat(<*>,<p>))): 230.22000000000003",230.22000000000003,6.095,((([M])|(([*])([p])))).*,false
+28,b,?,"contain(concat(<_>,<.>)): 153.52",153.52,1.151,.*(([_])([.])).*,false
+1,b,?,"repeatatleast(<low>,1): 76.66",76.66,0.092,"([a-z]){1,}",false
+69,b,?,timeout,999999.0,40,null,false
+12,b,?,timeout,999999.0,40,null,false
+115,b,?,timeout,999999.0,40,null,false
+81,b,?,"repeatrange(notcc(<f>),1,8): 153.7",153.7,5.316,"([^f]){1,8}",false
+4,b,?,timeout,999999.0,40,null,false
+3,b,?,"repeatatleast(notcc(<low>),12): 153.66",153.66,5.567,"([^a-z]){12,}",false
+83,b,?,timeout,999999.0,40,null,false
+95,b,?,"contain(concat(< >,concat(<num>,<num1-9>))): 230.06",230.06,6.39,.*(([ ])(([0-9])([1-9]))).*,false
+15,b,?,timeout,999999.0,40,null,false
+30,b,?,timeout,999999.0,40,null,false
+93,b,?,"or(<num1-9>,endwith(concat(<+>,<num>))): 230.26",230.26,2.144,(([1-9])|(.*(([+])([0-9])))),false
+55,b,?,timeout,999999.0,40,null,false
+42,b,?,timeout,999999.0,40,null,false
+118,b,?,"repeat(<num>,6): 76.62",76.62,0.05,([0-9]){6},true
+51,b,?,"or(<num>,concat(<1>,endwith(<2>))): 230.26",230.26,14.942,(([0-9])|(([1])(.*([2])))),false
+46,b,?,timeout,999999.0,40,null,false
+112,b,?,startwith(<let>): 76.9,76.9,0.04,([a-zA-Z]).*,false
+101,b,?,"repeat(notcc(<D>),4): 153.62",153.62,4.385,([^D]){4},false
+41,b,?,endwith(<num>): 76.94,76.94,0.041,.*([0-9]),false
+103,b,?,endwith(<num1-9>): 76.94,76.94,0.035,.*([1-9]),false
+99,b,?,timeout,999999.0,40,null,false
+63,b,?,"concat(<num>,endwith(<num>)): 153.48000000000002",153.48000000000002,0.188,([0-9])(.*([0-9])),false
+77,b,?,"contain(or(<@>,<!>)): 153.76",153.76,3.721,.*((([@])|([!]))).*,false
+2,b,?,"contain(concat(<let>,concat(< >,<low>))): 230.06",230.06,17.358,.*(([a-zA-Z])(([ ])([a-z]))).*,false

@@ -1,0 +1,518 @@
+$ \time python exp.py --benchmark so --log_name pbe-logs-8g --sketch exp/so/sketch --mem_max 8 --synth_mode 5 --processnum 1 --timeout 40
+Buildfile: /home/mark/RegexPlus/regel/resnax/build.xml
+
+clean:
+   [delete] Deleting directory /home/mark/RegexPlus/regel/resnax/classes
+
+BUILD SUCCESSFUL
+Total time: 0 seconds
+Buildfile: /home/mark/RegexPlus/regel/resnax/build.xml
+
+build:
+    [mkdir] Created dir: /home/mark/RegexPlus/regel/resnax/classes
+     [echo] resnax: /home/mark/RegexPlus/regel/resnax/build.xml
+    [javac] Compiling 40 source files to /home/mark/RegexPlus/regel/resnax/classes
+    [javac] warning: [options] bootstrap class path not set in conjunction with -source 8
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 1 warning
+
+resnax:
+    [mkdir] Created dir: /home/mark/RegexPlus/regel/resnax/META-INF
+      [jar] Building jar: /home/mark/RegexPlus/regel/resnax/jars/resnax.jar
+   [delete] Deleting directory /home/mark/RegexPlus/regel/resnax/META-INF
+
+BUILD SUCCESSFUL
+Total time: 4 seconds
+directory_path:/home/mark/RegexPlus/regel/exp/so/benchmark
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(repeat(<low>,8)): 153.52']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(<num1-9>): 76.98']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(<low>): 76.9']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(or(<let>,<_>)): 153.68']
+sketch:[('b', '?')]
+b Started
+b Finished
+['<let>: 0.0']
+sketch:[('b', '?')]
+b Started
+b Finished
+['concat(<num>,endwith(<num1-9>)): 153.48000000000002']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(<{>): 76.9']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatatleast(notcc(<I>),11): 153.66']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatatleast(notcc(<D>),1): 153.66']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(<num1-9>): 76.9']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(or(<let>,<3>)): 153.76']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<num1-9>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(<cap>): 76.98']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<d>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['concat(<let>,contain(<h>)): 153.52']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(notcc(<f>),10): 153.62']
+sketch:[('b', '?')]
+b Started
+b Finished
+['concat(<num1-9>,contain(<0>)): 153.52']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<num>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<0>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(<G>): 76.9']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['star(<cap>): 76.74']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(<N>): 76.98']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(or(<?>,<c>)): 153.76']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(<b>): 76.98']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<cap>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatatleast(notcc(<7>),1): 153.66']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatrange(notcc(<G>),1,2): 153.7']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<num1-9>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatrange(notcc(<&>),5,25): 153.7']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(<low>): 76.9']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(<->): 76.98']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(<num>,10): 76.62']
+sketch:[('b', '?')]
+b Started
+b Finished
+['star(notcc(<a>)): 153.74']
+sketch:[('b', '?')]
+b Started
+b Finished
+['concat(notcc(<1>),repeatatleast(<num>,1)): 230.2']
+sketch:[('b', '?')]
+b Started
+b Finished
+['concat(<%>,endwith(<%>)): 153.48000000000002']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(or(<s>,<A>)): 153.76']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(or(<_>,<2>)): 153.76']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(<let>,5): 76.62']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(concat(<let>,concat(<let>,<s>))): 230.06']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatrange(notcc(<B>),1,26): 153.7']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<c>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(concat(<let>,concat(<.>,<n>))): 230.06']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(notcc(<U>),11): 153.62']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['or(<num>,concat(<num>,endwith(<num1-9>))): 230.26']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['concat(<let>,or(<.>,endwith(<a>))): 230.26']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<5>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(<num>,9): 76.62']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(<2>): 76.98']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatatleast(<num1-9>,1): 76.66']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(<low>,5): 76.62']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<num1-9>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(or(<M>,concat(<*>,<p>))): 230.22000000000003']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(concat(<_>,<.>)): 153.52']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatatleast(<low>,1): 76.66']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatrange(notcc(<f>),1,8): 153.7']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeatatleast(notcc(<low>),12): 153.66']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(concat(< >,concat(<num>,<num1-9>))): 230.06']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['or(<num1-9>,endwith(concat(<+>,<num>))): 230.26']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(<num>,6): 76.62']
+sketch:[('b', '?')]
+b Started
+b Finished
+['or(<num>,concat(<1>,endwith(<2>))): 230.26']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['startwith(<let>): 76.9']
+sketch:[('b', '?')]
+b Started
+b Finished
+['repeat(notcc(<D>),4): 153.62']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<num>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Finished
+['endwith(<num1-9>): 76.94']
+sketch:[('b', '?')]
+b Started
+b Time out
+['timeout']
+sketch:[('b', '?')]
+b Started
+b Finished
+['concat(<num>,endwith(<num>)): 153.48000000000002']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(or(<@>,<!>)): 153.76']
+sketch:[('b', '?')]
+b Started
+b Finished
+['contain(concat(<let>,concat(< >,<low>))): 230.06']
+exp.py ends
+2727.51user 117.33system 41:03.76elapsed 115%CPU (0avgtext+0avgdata 6789684maxresident)k
+4448inputs+3096outputs (22major+59616058minor)pagefaults 0swaps
