@@ -41,16 +41,24 @@ class timeout:
         signal.alarm(0)
 
 print("doin' VSA stuff")
-for i, ex in enumerate(examples.all_benchmarks):
-    print(f'Example {i}:')
-    print(ex.inputs[:NUM_EXAMPLES])
-    print(f'  correct: {ex.regex}')
-    print('  synthesized:')
-    with timeout(seconds=TIMEOUT_SEC):
-        try:
-    	    for wt, regex in synthesis.synthesize(ex.inputs[:NUM_EXAMPLES]):
-                print('   - [%.3f] %s' % (wt, regex))
-        except TimeoutError:
-            print("Timed out")
-            pass
+TIMES_PATH = f"../results/{TIMEOUT_SEC}sec_{NUM_EXAMPLES}ex_times.log"
+with open(TIMES_PATH, 'w') as f:
+    for i, ex in enumerate(examples.all_benchmarks):
+        print(f'Example {i}:')
+        print(ex.inputs[:NUM_EXAMPLES])
+        print(f'  correct: {ex.regex}')
+        print('  synthesized:')
+        with timeout(seconds=TIMEOUT_SEC):
+            try:
+                start_time = time.time()
+                synthresults = synthesis.synthesize(ex.inputs[:NUM_EXAMPLES])
+                end_time = time.time()
+                for wt, regex in synthresults:
+                    print('   - [%.3f] %s' % (wt, regex))
+                total_time = end_time - start_time
+            except TimeoutError:
+                print("Timed out")
+                total_time = -1
+            finally:
+                f.write(f'{i},{total_time}\n')
 
