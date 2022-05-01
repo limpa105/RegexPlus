@@ -35,6 +35,16 @@ class VSA:
 
 def add_backslashes(s):
     return ''.join([disambiguate_char(c) for c in s])
+def len_without_backslashes(s):
+    count = 0
+    i = 0
+    while i < len(s):
+        count += 1
+        if s[i] == '\\':
+            i += 2
+        else:
+            i += 1
+    return count
 
 def disambiguate_char(c):
     return '\\'*(c in '[]()\{\}*+?|$.\\') + c  # no ^s, greenery doesn't like escaping them
@@ -191,16 +201,16 @@ def all_the_possible_regexes(v: VSA) -> List[str]:
 
 # this determines parse order... yeck
 token_probabilities: Dict[str, float] = {
-    '[0-9]': 0.06,
-    '[0-9]+': 0.03,
-    '[a-z]': 0.06,
-    '[a-z]+': 0.03,
-    '[A-Z]': 0.06,
-    '[A-Z]+': 0.03,
-    '[a-zA-Z]': 0.06,
-    '[a-zA-Z]+': 0.03,
-    '[a-zA-Z0-9]': 0.06,
-    '[a-zA-Z0-9]+': 0.03,
+    '[0-9]': 0.095,
+    '[0-9]+': 0.0475,
+    '[a-z]': 0.095,
+    '[a-z]+': 0.0475,
+    '[A-Z]': 0.095,
+    '[A-Z]+': 0.0475,
+    '[a-zA-Z]': 0.01,
+    '[a-zA-Z]+': 0.005,
+    '[a-zA-Z0-9]': 0.005,
+    '[a-zA-Z0-9]+': 0.0025,
 }
 
 def simplicity_prob(is_opt: bool, regex: str) -> float:
@@ -211,11 +221,14 @@ def simplicity_prob(is_opt: bool, regex: str) -> float:
             return token_probabilities[regex]
     else:
         # It is a literal string
-        p = (1/96)**(len(regex)+1)
         if is_opt:
-            return p * 0.30
-        else:
+            p = (1/96)**(len_without_backslashes(regex)+1)
             return p * 0.10
+        else:
+            if len_without_backslashes(regex) == 1:
+                return 1/95
+            else:
+                return 0.
 
 def specificity_prob(num_inputs: int, is_opt: bool, old_prob: float, regex: str) -> float:
     if is_opt:
@@ -223,12 +236,12 @@ def specificity_prob(num_inputs: int, is_opt: bool, old_prob: float, regex: str)
     else:
         return old_prob
 
-def prob_of_token(num_inputs: int, is_opt: bool, tok: Dict[str, float]) -> Tuple[float, str]:
+def possible_tokens(num_inputs: int, is_opt: bool, tok: Dict[str, float]) -> List[Tuple[float, str]]:
     def whole_prob(regex, p):
         return (simplicity_prob(is_opt, regex)
                 * specificity_prob(num_inputs, is_opt, p, regex))
 
-    return max((whole_prob(regex, p), regex) for regex, p in tok.items())
+    return [(whole_prob(regex, p), regex) for regex, p in tok.items()]
 
 # for normalizing a regex (R : lego.pattern), use R.reduce()
 
@@ -242,17 +255,18 @@ def get_best_regexes(v: VSA, k=5) -> List[Tuple[float, str]]:
             # make a list of all possibilities
             cur_best = set()
             for b, regexes in v.edges[a].items():
-                prob, regex = prob_of_token(v.num_inputs, regexes[0], regexes[1])
-                if regexes[0]:
-                    # Correct the optionals probability
-                    # prob = change_to_optional(regex, prob, v.num_inputs)
-                    wt = - math.log(prob)
-                    for wt_of_b, regex_of_b in dfs(b):
-                        cur_best.add((wt + wt_of_b, '(' + regex + ')?' + regex_of_b))
-                else:
-                    wt = - math.log(prob)
-                    for wt_of_b, regex_of_b in dfs(b):
-                        cur_best.add((wt + wt_of_b, regex + regex_of_b))
+                for prob, regex in possible_tokens(v.num_inputs, regexes[0], regexes[1]):
+                    # prob, regex = prob_of_token(v.num_inputs, regexes[0], regexes[1])
+                    if prob == 0: continue
+                    if regexes[0]:
+                        # Correct the optionals probability
+                        wt = - math.log(prob)
+                        for wt_of_b, regex_of_b in dfs(b):
+                            cur_best.add((wt + wt_of_b, '(' + regex + ')?' + regex_of_b))
+                    else:
+                        wt = - math.log(prob)
+                        for wt_of_b, regex_of_b in dfs(b):
+                            cur_best.add((wt + wt_of_b, regex + regex_of_b))
             # get only the top k
             best = sorted(cur_best)[:k]
             best_from_node[a] = best
