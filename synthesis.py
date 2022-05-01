@@ -199,7 +199,6 @@ def all_the_possible_regexes(v: VSA) -> List[str]:
     yield from regexes_starting_at(v.start_node)
 
 
-# this determines parse order... yeck
 token_probabilities: Dict[str, float] = {
     '[0-9]': 0.095,
     '[0-9]+': 0.0475,
@@ -213,20 +212,23 @@ token_probabilities: Dict[str, float] = {
     '[a-zA-Z0-9]+': 0.0025,
 }
 
+end_of_regex_prob = 0.05
+
 def simplicity_prob(is_opt: bool, regex: str) -> float:
+    scale = 1 - end_of_regex_prob
     if regex in token_probabilities:
         if is_opt:
-            return 1/3 * token_probabilities[regex]
+            return scale * 1/3 * token_probabilities[regex]
         else:
-            return token_probabilities[regex]
+            return scale * token_probabilities[regex]
     else:
         # It is a literal string
         if is_opt:
             p = (1/96)**(len_without_backslashes(regex)+1)
-            return p * 0.10
+            return scale * p * 0.10
         else:
             if len_without_backslashes(regex) == 1:
-                return 1/95
+                return scale * 1/95 * 0.30
             else:
                 return 0.
 
