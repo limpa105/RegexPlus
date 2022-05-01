@@ -190,50 +190,49 @@ def all_the_possible_regexes(v: VSA) -> List[str]:
 
 
 # this determines parse order... yeck
-all_tokens: List[Tuple[str, float]] = [
-    ('[0-9]', -4),
-    ('[0-9]+', 1),    # 10
-    ('[a-z]', -4),
-    ('[a-z]+', 1),    # 26
-    ('[A-Z]', -4),
-    ('[A-Z]+', 1),    # 26
-    ('[a-zA-Z]', -3),
-    ('[a-zA-Z]+', 2), # 26 + 26 + 1
-    ('[a-zA-Z0-9]', -2),
-    ('[a-zA-Z0-9]+', 3),  # 26 + 26 + 10 + 1
-]
-token_weights: Dict[str, float] = {regex: (15*wt)+30 for regex, wt in all_tokens}
-ordered_tokens: List[str] = [regex for regex, wt in all_tokens]
+token_probabilities: Dict[str, float] = {
+    '[0-9]': 0.06,
+    '[0-9]+': 0.03,
+    '[a-z]': 0.06,
+    '[a-z]+': 0.03,
+    '[A-Z]': 0.06,
+    '[A-Z]+': 0.03,
+    '[a-zA-Z]': 0.06,
+    '[a-zA-Z]+': 0.03,
+    '[a-zA-Z0-9]': 0.06,
+    '[a-zA-Z0-9]+': 0.03,
+}
 
-def prob_of_token(tok: Dict[str, float], const_prob: float) -> Tuple[float, str]:
-    return max((p, regex) for regex, p in tok.items())
+def simplicity_prob(is_opt: bool, regex: str) -> float:
+    if regex in token_probabilities:
+        if is_opt:
+            return 1/3 * token_probabilities[regex]
+        else:
+            return token_probabilities[regex]
+    else:
+        # It is a literal string
+        p = (1/96)**(len(regex)+1)
+        if is_opt:
+            return p * 0.30
+        else:
+            return p * 0.10
 
-# def wt_of_token(tok: Dict[str, float], const_prob: float) -> Tuple[float, str]:
-#     special_things = set(reg_strs)
-#     if len(tok.difference(special_things)) > 0:
-#         # it has a literal string
-#         s, = tok.difference(special_things)
-#         return -26*const_prob, s
-#     else:
-#         for t in ordered_tokens:
-#             if t in tok:
-#                 if "+" in t:
-#                     return token_weights[t], t
-#                 else:
-#                      if const_prob < .99 and token_weights[t]<0:
-#                          return -1*token_weights[t]*const_prob, t 
-#                      else: 
-#                          return token_weights[t]*const_prob, t 
+def specificity_prob(num_inputs: int, is_opt: bool, old_prob: float, regex: str) -> float:
+    if is_opt:
+        return change_to_optional(regex, old_prob, num_inputs)
+    else:
+        return old_prob
 
-#     return math.inf, ""
-#     # # set is probably empty
-#     # assert len(tok) == 0
-#     # # there is no regex
-#     # raise Exception('no possible regex')
+def prob_of_token(num_inputs: int, is_opt: bool, tok: Dict[str, float]) -> Tuple[float, str]:
+    def whole_prob(regex, p):
+        return (simplicity_prob(is_opt, regex)
+                * specificity_prob(num_inputs, is_opt, p, regex))
+
+    return max((whole_prob(regex, p), regex) for regex, p in tok.items())
 
 # for normalizing a regex (R : lego.pattern), use R.reduce()
 
-def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tuple[float, str]]:
+def get_best_regexes(v: VSA, k=5) -> List[Tuple[float, str]]:
     '''Return the top k regexes. By default k = 5'''
     best_from_node = { v.end_node: [(0, "")] }
     def dfs(a):
@@ -243,10 +242,10 @@ def get_best_regexes(v: VSA, const_prob:float, opt_prob:float, k=5) -> List[Tupl
             # make a list of all possibilities
             cur_best = set()
             for b, regexes in v.edges[a].items():
-                prob, regex = prob_of_token(regexes[1], const_prob)
+                prob, regex = prob_of_token(v.num_inputs, regexes[0], regexes[1])
                 if regexes[0]:
                     # Correct the optionals probability
-                    prob = change_to_optional(regex, prob, v.num_inputs)
+                    # prob = change_to_optional(regex, prob, v.num_inputs)
                     wt = - math.log(prob)
                     for wt_of_b, regex_of_b in dfs(b):
                         cur_best.add((wt + wt_of_b, '(' + regex + ')?' + regex_of_b))
@@ -316,7 +315,7 @@ def synthesize(inputs):
     print("there are %d nodes" % vsa.num_nodes)
 
     print("Doing DFS...")
-    regs_with_dupes = get_best_regexes(vsa, 1234567, 7, k=20)
+    regs_with_dupes = get_best_regexes(vsa, k=20)
     # print(f"Best regex: {regex} (weight {wt})")
 
     print("Simplifying and ranking...")
