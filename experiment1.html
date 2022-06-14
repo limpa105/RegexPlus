@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="https://unpkg.com/jspsych@7.2.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
+ <script src="https://unpkg.com/@jspsych/plugin-survey-text"></script>
+    <link href="https://unpkg.com/jspsych@7.2.3/css/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+  <script>
+  	var jsPsych = initJsPsych();
+  	var timeline = [];
+  	var welcome = {
+  	type: jsPsychHtmlKeyboardResponse,
+  	stimulus: `<p> Welcome to the regular expressions experiment!</p>
+  	 <p> Press any key to begin. </p> `
+	};
+	var instructions = {
+  	type: jsPsychHtmlKeyboardResponse,
+  	stimulus: `
+    <p>In this experiment, you will be shown descritpions of different groups of strings. </p>
+  	<p> Ex: All strings that start with "a", all strings that contain one capital letter etc.. </p>
+    <p> <strong> For each description your goal is to provide examples of the strings that fit the descirption and allow someone
+    who has never seen the description to guess it. </strong> </p>
+    <p>Please type in examples seperated by commas; you may provide as many or as little examples as you wish.</p>
+    <p>Press any key to begin.</p>
+  `
+};
+
+	var trial = {
+	timeline: [
+	{
+  	type: jsPsychSurveyText,
+  	preamble: jsPsych.timelineVariable('description'),
+  	questions: [
+    {prompt: "Provide examples of strings that will allow someone to guess the description above", rows: 15, columns: 75}]
+    }
+    ],
+	
+    timeline_variables: [
+        { description: 'Description: All strings that have at least one lower case letter' },
+        { description: 'Description: All strings that contain a lowercase letter and at least one alphanumeric character' },
+        { description: 'Description: All strings that start with 09 and contain nine digits total'  },
+        { description: 'Description: All strings that fit the Page \<blank\> of \<blank\> format with blank filled by at least one digit' },
+        { description: 'Description: All strings that start with abc. and have at least one digits after the dot' },
+        { description: 'Description: All strings made up of 6 digits' },
+        { description: 'Description: All strings that have 6 digits followed by a dot followed by 3 digits' },
+        { description: 'Description: All strings that have 3 digits followed by a dash followed by 3 digits followed by a dash followed by four digits' },
+        { description: 'Description: All strings that start with a digits have an optional dot followed by an optional digit' },
+        { description: 'Description: All strings that contain 1 to 3 lower case letters followed by a dash followed by 1 to 2 lower case letters  followed by a dash followed by 1 to 4 digits'},
+        { description: 'Description: All strings that contain 1 to 3 lower case letters followed by a dash followed by 1 to 2 lower case letters  followed by a dash followed by 1 to 4 digits'},
+        { description: 'Description: All strings made up of lower case letters of at least length 2 optionally starting with * and optionally ending with *'},
+        { description: 'Description: All strings made up of at least one digits optionally starting with a plus'},
+        { description: 'Description: All strings made up of two digits followed by a .5'},
+        { description: 'Description: All strings made up of C0 followed by 4 digits'},
+        { description: 'Description: All strings made up of C0 followed by 4 digits'},
+        { description: 'Description: All strings that start with either a lowercase or capital case letter followed by 5 digits'},
+        { description: 'Description: All strings made up of two words seperated by space; each made up of a capital letter followed by lowercase letters' },
+        { description: 'Description: All strings made up of 9 followed by 9 digits' },
+        { description: 'Description: All strings that contain at least one alphanumeric character' },
+        { description: 'Description: All strings that contain at least one digit' },
+    ],
+    randomize_order: true
+
+	}
+
+
+	timeline.push(welcome);
+	timeline.push(instructions);
+	timeline.push(trial);
+	
+	jsPsych.run(timeline);
+  </script>
+</html>
