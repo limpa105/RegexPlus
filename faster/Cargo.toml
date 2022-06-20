@@ -1,0 +1,15 @@
+[package]
+name = "regex-plus"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "regex_plus"
+path = "src/lib.rs"
+
+[[bin]]
+name = "regex-plus"
+path = "src/main.rs"
+
+[dependencies]
+typed-arena = "2.0.1"
