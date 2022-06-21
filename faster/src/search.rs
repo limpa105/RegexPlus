@@ -3,16 +3,6 @@
 use crate::setup::*;
 use typed_arena::Arena;
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-enum Atom {
-    Digit,
-    Lower,
-    Upper,
-    Alpha,
-    Alnum,
-    Literal,
-}
-
 fn atom_to_string(interner: &Interner<'_>, atom: Atom, edge: Edge) -> String {
     let is_repeated = edge.flags & ONE_CHAR_BIT == 0;
     let is_opt = edge.flags & NON_OPTIONAL_BIT == 0;
@@ -40,32 +30,9 @@ fn atom_to_string(interner: &Interner<'_>, atom: Atom, edge: Edge) -> String {
     }
 }
 
-fn char_class_cost(
-    num_inputs: usize,
-    edge: Edge,
-    from_sum: usize,
-    to_sum: usize,
-    size: f32,
-    mask: Flags,
-) -> f32 {
-    if edge.flags & mask == 0 {
-        return f32::INFINITY;
-    }
-    let is_repeated = edge.flags & ONE_CHAR_BIT == 0;
-    let is_opt = edge.flags & NON_OPTIONAL_BIT == 0;
-    match (is_repeated, is_opt) {
-        (false, false) => num_inputs as f32 * size.ln(), // [a-z]
-        (false, true) => num_inputs as f32 * (size + 1.).ln(), // [a-z]?
-        (true, false) => {
-            // [a-z]+
-            (to_sum - from_sum) as f32 * (size + 1.).ln() + num_inputs as f32 * size.ln()
-        }
-        (true, true) => (to_sum - from_sum + num_inputs) as f32 * (size + 1.).ln(), // [a-z]*
-    }
-}
-
 fn process_edge(
     interner: &Interner<'_>,
+    edge_cache: &EdgeCache,
     num_inputs: usize,
     edge: Edge,
     from_sum: usize,
@@ -74,17 +41,6 @@ fn process_edge(
     let cost_of_atom = -0.95f32.ln();
     let is_repeated = edge.flags & ONE_CHAR_BIT == 0;
     let is_opt = edge.flags & NON_OPTIONAL_BIT == 0;
-    let extra_cost_cc = cost_of_atom
-        + if is_opt { 3f32.ln() } else { 0. }
-        + if is_repeated { 2f32.ln() } else { 0. };
-    let cc_cost = |size, mask| {
-        char_class_cost(num_inputs, edge, from_sum, to_sum, size, mask) + extra_cost_cc
-    };
-    let digit_cost = cc_cost(10., DIGIT_BIT) - 0.19f32.ln();
-    let lower_cost = cc_cost(26., LOWER_BIT) - 0.19f32.ln();
-    let upper_cost = cc_cost(26., UPPER_BIT) - 0.19f32.ln();
-    let alpha_cost = cc_cost(52., ALPHA_BIT) - 0.02f32.ln();
-    let alnum_cost = cc_cost(62., ALNUM_BIT) - 0.01f32.ln();
     let literal_cost = cost_of_atom
         + if edge.literal as usize > MAX_STR_ID {
             f32::INFINITY
@@ -97,21 +53,15 @@ fn process_edge(
         } else {
             95f32.ln() - 0.3f32.ln()
         };
-    use Atom::*;
-    [
-        (Digit, digit_cost),
-        (Lower, lower_cost),
-        (Upper, upper_cost),
-        (Alpha, alpha_cost),
-        (Alnum, alnum_cost),
-        (Literal, literal_cost),
-    ]
-    .into_iter()
-    .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
-    .unwrap()
+    let (cc, cc_cost) = edge_cache[to_sum - from_sum][edge.flags as usize];
+    if cc_cost < literal_cost {
+        (cc, cc_cost)
+    } else {
+        (Atom::Literal, literal_cost)
+    }
 }
 
-pub fn search(interner: &Interner<'_>, inputs: &[Input]) -> String {
+pub fn search(interner: &Interner<'_>, edge_cache: &EdgeCache, inputs: &[Input]) -> String {
     let arena = Arena::new();
 
     // Make a list of all the nodes
@@ -160,7 +110,8 @@ pub fn search(interner: &Interner<'_>, inputs: &[Input]) -> String {
                 .reduce(Edge::intersect)
                 .unwrap();
 
-            let (atom, edge_wt) = process_edge(interner, inputs.len(), edge, from_sum, to_sum);
+            let (atom, edge_wt) =
+                process_edge(interner, edge_cache, inputs.len(), edge, from_sum, to_sum);
             let wt = costs[from_idx] + edge_wt;
 
             // Do a min-reduce

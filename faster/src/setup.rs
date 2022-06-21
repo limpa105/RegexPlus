@@ -179,3 +179,92 @@ pub fn preprocess<'a>(input: &'a str, interner: &mut Interner<'a>) -> Input {
     }
     Input { text, edges }
 }
+
+// Precomputing edge costs
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum Atom {
+    Digit,
+    Lower,
+    Upper,
+    Alpha,
+    Alnum,
+    Literal,
+}
+
+fn char_class_cost(
+    num_inputs: usize,
+    flags: Flags,
+    num_chars: usize,
+    size: f32,
+    mask: Flags,
+) -> f32 {
+    if flags & mask == 0 {
+        return f32::INFINITY;
+    }
+    let is_repeated = flags & ONE_CHAR_BIT == 0;
+    let is_opt = flags & NON_OPTIONAL_BIT == 0;
+    match (is_repeated, is_opt) {
+        (false, false) => num_inputs as f32 * size.ln(), // [a-z]
+        (false, true) => num_inputs as f32 * (size + 1.).ln(), // [a-z]?
+        (true, false) => {
+            // [a-z]+
+            num_chars as f32 * (size + 1.).ln() + num_inputs as f32 * size.ln()
+        }
+        (true, true) => (num_chars + num_inputs) as f32 * (size + 1.).ln(), // [a-z]*
+    }
+}
+
+fn precompute_char_classes(num_inputs: usize, flags: Flags, num_chars: usize) -> (Atom, f32) {
+    let cost_of_atom = -0.95f32.ln();
+    let is_repeated = flags & ONE_CHAR_BIT == 0;
+    let is_opt = flags & NON_OPTIONAL_BIT == 0;
+    let extra_cost = cost_of_atom
+        + if is_opt { 3f32.ln() } else { 0. }
+        + if is_repeated { 2f32.ln() } else { 0. };
+    let cc_cost =
+        |size, mask| char_class_cost(num_inputs, flags, num_chars, size, mask) + extra_cost;
+    let digit_cost = cc_cost(10., DIGIT_BIT) - 0.19f32.ln();
+    let lower_cost = cc_cost(26., LOWER_BIT) - 0.19f32.ln();
+    let upper_cost = cc_cost(26., UPPER_BIT) - 0.19f32.ln();
+    let alpha_cost = cc_cost(52., ALPHA_BIT) - 0.02f32.ln();
+    let alnum_cost = cc_cost(62., ALNUM_BIT) - 0.01f32.ln();
+    // let literal_cost = cost_of_atom
+    //     + if edge.literal as usize > MAX_STR_ID {
+    //         f32::INFINITY
+    //     } else if is_opt {
+    //         let simplicity = 10f32.ln() + interner.cost_of_id(edge.literal);
+    //         let specificity = num_inputs as f32 * 2f32.ln();
+    //         simplicity + specificity
+    //     } else if is_repeated {
+    //         0. // don't have repeated non-optional literals
+    //     } else {
+    //         95f32.ln() - 0.3f32.ln()
+    //     };
+    use Atom::*;
+    [
+        (Digit, digit_cost),
+        (Lower, lower_cost),
+        (Upper, upper_cost),
+        (Alpha, alpha_cost),
+        (Alnum, alnum_cost),
+    ]
+    .into_iter()
+    .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+    .unwrap()
+}
+
+pub type EdgeCache = Vec<[(Atom, f32); 128]>;
+
+pub fn edge_cache(inputs: &[Input]) -> EdgeCache {
+    let upper_bound = inputs.iter().map(|i| i.num_nodes()).sum::<usize>() + 1;
+    (0..upper_bound)
+        .map(|num_chars| {
+            let mut cache = [(Atom::Literal, f32::INFINITY); 128];
+            for flags in 0..128 {
+                cache[flags as usize] = precompute_char_classes(inputs.len(), flags, num_chars);
+            }
+            cache
+        })
+        .collect()
+}

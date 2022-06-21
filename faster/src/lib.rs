@@ -12,5 +12,7 @@ pub fn syn(inputs: &[String]) -> String {
         .map(|i| preprocess(i, &mut interner))
         .collect();
 
-    search(&interner, &inputs)
+    let edge_cache = edge_cache(&inputs);
+
+    search(&interner, &edge_cache, &inputs)
 }
