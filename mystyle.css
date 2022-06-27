@@ -9,3 +9,8 @@ input, select, textarea{
 .correct{
 	color:green;
 }
+
+ol { 
+	display: inline-block; 
+	text-align: left; 
+	}

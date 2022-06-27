@@ -13,7 +13,7 @@
   <script>
 
 
-    var regexes = ['[a-z]+$', '[A-Za-z0-9]*[a-z][A-Za-z0-9]*$']
+    var regexes = ['^[a-z]+$', '^[A-Za-z0-9]*[a-z][A-Za-z0-9]*$', '^09\\d{7}$', '^Page \\d+ of \\d+$', 'abc\.\\d+', '^\\d{6}$',  '^\\d{6}\.\\d{3}$', '^\\d{3}-\\d{3}-\\d{4}$', '^\\d+\\.?\\d*$' ]
 
   	var jsPsych = initJsPsych({
 
@@ -28,26 +28,64 @@
   	var welcome = {
   	type: jsPsychHtmlKeyboardResponse,
   	stimulus: `<p> Welcome to the regular expressions experiment!</p>
-  	 <p> Press any key to begin. </p> `
+  	 <p> Press any key to continue. </p> `
 	};
 	 var instructions = {
   	type: jsPsychHtmlKeyboardResponse,
   	stimulus: `
     <p>In this experiment, you will be shown descritpions of different groups of strings. </p>
-  	<p> Ex: All strings that start with "a", all strings that contain one capital letter etc.. </p>
-    <p> <strong> For each description your goal is to provide examples of the strings that fit the descirption and allow someone
-    who has never seen the description to guess it. </strong> </p>
-    <p>Please type in examples seperated by commas; you may provide as many or as little examples as you wish.</p>
+    <p> <strong> For each description your goal is to provide examples of strings that fit the description and allow someone who has never seen the description to guess it based solely on the examples. </strong> </p>
+    <p> You will be given 20 blank text boxes. Please put each example into a separate box. If your example fits the string it will turn green; otherwise it will remain red. You may provide as many or as few examples as you deem necessary to describe the description.  </p>
+    <p>Press any key to continue.</p>,`,
+};
+
+   var example = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+    <p> Below is an example of the task  </p>
+    <p> <br> <br> <stong> Description </strong>:All strings made up of only capital letters and the empty string
+  <br> <stong>  Corresponding Regex </strong>: [A-Z]* </p>
+  <ol>
+               <li> </li>
+               <li> A </a> </li>
+               <li> BOLD </li>
+               <li> REGEXES </li>
+  </ol>
+
     <p>Press any key to begin.</p>,`,
 };
 
+
 var trial1 = {
+  timeline: [ {
   type: jsPsychSurveyHtmlForm,
-  preamble: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Descritpion </strong>: All non empty lowercase strings <br> <stong>  Corresponding Regex </strong>: [a-z]+' ,
+  preamble: jsPsych.timelineVariable('description') ,
   html: '<p> <br> Example 1: <input name="first" type="text" class="wrong" class = "example"/> <br> Example 2: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 3: <input name="third" type="text" class="wrong" id = "example" /> <br> Example 4: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 5: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 6: <input name="second" class="wrong" type="text" id = "example" /><br> Example 7: <input name="second" class="wrong" type="text" id = "example" /><br> Example 8: <input name="second" class="wrong" type="text" id = "example" /><br> Example 9: <input name="second" class="wrong" type="text" id = "example" /><br> Example 10: <input name="second" class="wrong" type="text" id = "example" /><br> Example 11: <input name="second" class="wrong" type="text" id = "example" /><br> Example 12: <input name="second" class="wrong" type="text" id = "example" /><br> Example 13: <input name="second" class="wrong" type="text" id = "example" /><br> Example 14: <input name="second" class="wrong" type="text" id = "example" /><br> Example 14: <input name="second" class="wrong" type="text" id = "example" />   <br> Example 15: <input name="second" class="wrong" type="text" id = "example" />  <br> Example 16: <input name="second" class="wrong" type="text" id = "example" />  <br> Example 17: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 18: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 19: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 20: <input name="second" class="wrong" type="text" id = "example" /> </p>',
   description: '[a-z]+$',
   on_start: console.log("hi")
+  }],
+timeline_variables: [
+  { description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All non empty lowercase strings <br> <stong>  Corresponding Regex </strong>: [a-z]+' },
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings that contain at least one lowercase letter <br> <stong>  Corresponding Regex </strong>: [A-Za-z0-9]*[a-z][A-Za-z0-9]*'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 09 followed by 7 digits  <br> <stong>  Corresponding Regex </strong>: 09\\d{7}'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “Page “ followed by at least one digit followed by “ of “ and at least one digit <br> <stong>  Corresponding Regex </strong>: Page \\d+ of \\d+'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “abc.” followed by at least one digit <br> <stong>  Corresponding Regex </strong>: abc\\.\\d+'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits <br> <stong>  Corresponding Regex </strong>:  \\d{6}'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits followed by a dot followed by 3 digits <br> <stong>  Corresponding Regex </strong>: \\d{6}\\.\\d{3}'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: Phone numbers: All strings made up of 3 digits followed by a dash followed by 3 digits followed by a dash followed by 4 digits  <br> <stong>  Corresponding Regex </strong>: \d{3}-\d{3}-\d{4}'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of at least one digit optionally followed by l “.” which is optionally followed by any number of digits  <br> <stong>  Corresponding Regex </strong>: \\d+\\.?\\d*'},
+   ]   
+  }
+
+  var thank = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+    <p> Thank you for partcipating in our study! </p>` 
 };
+
+
+
+
 
 async function change_color(){
 
@@ -68,9 +106,6 @@ async function change_color(){
           cell.addEventListener('change', (e) => {  
           console.log(e.target.value)
           console.log(e.target)
-          //console.log(e.target.style.color)
-          //e.target.classList.remove('correct')
-          //e.traget.classList.remove('wrong')
           if ( re.test(e.target.value)) {
             e.target.classList.add("correct") 
         } else {
@@ -87,7 +122,9 @@ async function change_color(){
 
 	timeline.push(welcome);
 	timeline.push(instructions);
+  timeline.push(example);
 	timeline.push(trial1);
+  timeline.push(thank);
 	
 	jsPsych.run(timeline);
   </script>
