@@ -60,20 +60,19 @@ var trial1 = {
   timeline: [ {
   type: jsPsychSurveyHtmlForm,
   preamble: jsPsych.timelineVariable('description') ,
-  html: '<p> <br> Example 1: <input name="first" type="text" class="wrong" class = "example"/> <br> Example 2: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 3: <input name="third" type="text" class="wrong" id = "example" /> <br> Example 4: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 5: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 6: <input name="second" class="wrong" type="text" id = "example" /><br> Example 7: <input name="second" class="wrong" type="text" id = "example" /><br> Example 8: <input name="second" class="wrong" type="text" id = "example" /><br> Example 9: <input name="second" class="wrong" type="text" id = "example" /><br> Example 10: <input name="second" class="wrong" type="text" id = "example" /><br> Example 11: <input name="second" class="wrong" type="text" id = "example" /><br> Example 12: <input name="second" class="wrong" type="text" id = "example" /><br> Example 13: <input name="second" class="wrong" type="text" id = "example" /><br> Example 14: <input name="second" class="wrong" type="text" id = "example" /><br> Example 14: <input name="second" class="wrong" type="text" id = "example" />   <br> Example 15: <input name="second" class="wrong" type="text" id = "example" />  <br> Example 16: <input name="second" class="wrong" type="text" id = "example" />  <br> Example 17: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 18: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 19: <input name="second" class="wrong" type="text" id = "example" /> <br> Example 20: <input name="second" class="wrong" type="text" id = "example" /> </p>',
+  html: '<p> <div> <br> <button class="remove" type="button" onclick = RemoveEx(this)> Remove </button> <span> Example: </span> <input name="first" type="text" class = "example"/> <span class = "wrong"> Invalid </span>  </div> </p> <button class="add" type="button" onclick = AddEx(this)> Add Example </button> ',
   description: '[a-z]+$',
-  on_start: console.log("hi")
   }],
 timeline_variables: [
-  { description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All non empty lowercase strings <br> <stong>  Corresponding Regex </strong>: [a-z]+' },
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings that contain at least one lowercase letter <br> <stong>  Corresponding Regex </strong>: [A-Za-z0-9]*[a-z][A-Za-z0-9]*'},
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 09 followed by 7 digits  <br> <stong>  Corresponding Regex </strong>: 09\\d{7}'},
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “Page “ followed by at least one digit followed by “ of “ and at least one digit <br> <stong>  Corresponding Regex </strong>: Page \\d+ of \\d+'},
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “abc.” followed by at least one digit <br> <stong>  Corresponding Regex </strong>: abc\\.\\d+'},
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits <br> <stong>  Corresponding Regex </strong>:  \\d{6}'},
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits followed by a dot followed by 3 digits <br> <stong>  Corresponding Regex </strong>: \\d{6}\\.\\d{3}'},
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: Phone numbers: All strings made up of 3 digits followed by a dash followed by 3 digits followed by a dash followed by 4 digits  <br> <stong>  Corresponding Regex </strong>: \d{3}-\d{3}-\d{4}'},
-  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of at least one digit optionally followed by l “.” which is optionally followed by any number of digits  <br> <stong>  Corresponding Regex </strong>: \\d+\\.?\\d*'},
+  { description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All non empty lowercase strings <br> <stong>  Corresponding Regex </strong>: [a-z]+', regex: 'a' },
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings that contain at least one lowercase letter <br> <stong>  Corresponding Regex </strong>: [A-Za-z0-9]*[a-z][A-Za-z0-9]*', regex: 'b'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 09 followed by 7 digits  <br> <stong>  Corresponding Regex </strong>: 09\\d{7}', regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “Page “ followed by at least one digit followed by “ of “ and at least one digit <br> <stong>  Corresponding Regex </strong>: Page \\d+ of \\d+' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “abc.” followed by at least one digit <br> <stong>  Corresponding Regex </strong>: abc\\.\\d+' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits <br> <stong>  Corresponding Regex </strong>:  \\d{6}' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits followed by a dot followed by 3 digits <br> <stong>  Corresponding Regex </strong>: \\d{6}\\.\\d{3}' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: Phone numbers: All strings made up of 3 digits followed by a dash followed by 3 digits followed by a dash followed by 4 digits  <br> <stong>  Corresponding Regex </strong>: \d{3}-\d{3}-\d{4}' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of at least one digit optionally followed by l “.” which is optionally followed by any number of digits  <br> <stong>  Corresponding Regex </strong>: \\d+\\.?\\d*' , regex: 'c'},
    ]   
   }
 
@@ -83,8 +82,60 @@ timeline_variables: [
     <p> Thank you for partcipating in our study! </p>` 
 };
 
+async function RemoveEx(e){
+  console.log(e)
+  div = e.parentNode
+  console.log(div)
+  div.remove()
+}
 
+async function AddEx(e){
+  var main = document.createElement("div")
+  var br = document.createElement("br");
+   main.appendChild(br)
+  var button = document.createElement("button")
+  button.type = "button";
+  button.innerHTML = "Remove";
+  main.appendChild(button)
+  button.addEventListener('click', (e) => {RemoveEx(e.target)})
+  var ex = document.createElement("span")
+  //TODO: Add a way to check for empty string!
+  ex.innerHTML = " Example: "
+  main.appendChild(ex)
+  var input = document.createElement("input")
+  input.type = "text"
+  //TODO: REMOVE DUPLICATE CODE
+  input.addEventListener('change', (e) => {  
+          console.log(e.target.value)
+          console.log(e.target)
+          var re = new RegExp(regexes[counter]);
+          if ( re.test(e.target.value)) {
+            console.log(e.target)
+            parent = e.target.parentNode
+            feedback = parent.getElementsByTagName("span")[1]
+            feedback.innerHTML = " Valid"
+            feedback.className  = "correct"
+            //e.target.classList.add("correct") 
+        } else {
+          parent = e.target.parentNode
+          feedback = parent.getElementsByTagName("span")[1]
+          feedback.innerHTML = " Invalid"
+          feedback.className  = "wrong"
+          //if (e.target.classList[1] == "correct"){
+            //e.target.classList.remove('correct')
 
+            //} 
+  } })
+  var correct = document.createElement("span")
+  //TODO: Add a way to check for empty string!
+  correct.innerHTML = "Invalid"
+  correct.className = "wrong"
+  main.appendChild(input)
+  main.appendChild(correct)
+  div = e.parentNode
+  console.log(main)
+  document.getElementsByTagName("p")[1].appendChild(main)
+}
 
 
 async function change_color(){
@@ -107,13 +158,21 @@ async function change_color(){
           console.log(e.target.value)
           console.log(e.target)
           if ( re.test(e.target.value)) {
-            e.target.classList.add("correct") 
+            console.log(e.target)
+            parent = e.target.parentNode
+            feedback = parent.getElementsByTagName("span")[1]
+            feedback.innerHTML = "Valid"
+            feedback.className  = "correct"
+            //e.target.classList.add("correct") 
         } else {
-          console.log(e.target.classList[1])
-          if (e.target.classList[1] == "correct"){
-            e.target.classList.remove('correct')
+          parent = e.target.parentNode
+          feedback = parent.getElementsByTagName("span")[1]
+          feedback.innerHTML = "Invalid"
+          feedback.className  = "wrong"
+          //if (e.target.classList[1] == "correct"){
+            //e.target.classList.remove('correct')
 
-            } 
+            //} 
         } })
       }
   }

@@ -1,5 +1,6 @@
 input, select, textarea{
-    width: 300px;
+    width: 250px;
+    color: black;
 }
 
 .wrong{
