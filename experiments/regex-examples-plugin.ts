@@ -37,15 +37,21 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
     var html = "";
     // TODO: make it be good (like in experiment1.html)
     html += `
-    <div>this is the intro to this problem</div>
+    <div>Please provide examples for the description below!</div>
     <p><strong>Description:</strong> <span class=description>${trial.description}<span></p>
-    <p><strong>Regex:</strong> <pre>${trial.regex}</pre></p>
+    <p><strong>Regex:</strong> ${trial.regex}</p>
     `;
     // start form
     html += '<form id="regex-examples-form" autocomplete="off">';
 
+
+    
+
     // add form HTML / input elements
     // TODO: add the actual input elements (like from experiment1.html)
+
+    //html += `<p id="the_examples"> <div> <br> <button id='remove' class="remove" type="button")> Remove </button> <span> Example: </span> <input name="first" type="text" class = "example"/> <span class = "wrong"> Invalid </span>  </div> </p> <button id="add" type="button"> Add Example </button>`
+    html += `<p id="the_examples"></p> <button id="add" type="button"> Add Example </button>`
 
     // add submit button
     html +=
@@ -55,6 +61,12 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
     display_element.innerHTML = html;
 
     const startTime = performance.now();
+
+    const add_button = display_element.querySelector("#add");
+    add_button.addEventListener("click", () => AddEx(trial.regex, (add_button as any)));
+
+    // Add the first example box
+    AddEx(trial.regex, add_button as any);
 
     const this_form = display_element.querySelector("#regex-examples-form");
     this_form
@@ -139,3 +151,65 @@ function objectifyForm(formArray: any) {
   }
   return returnArray;
 }
+
+
+/*********** Handlers for various interation events ************/
+
+// Our functions :) 
+async function RemoveEx(e : HTMLElement) {
+  console.log(e);
+  const div = e.parentNode;
+  console.log(div);
+  (div as any).remove();
+}
+
+async function AddEx(regex: string, e: HTMLElement) {
+  const main = document.createElement("div")
+  const br = document.createElement("br");
+  main.appendChild(br)
+  const button = document.createElement("button")
+  button.type = "button";
+  button.innerHTML = "Remove";
+  main.appendChild(button)
+  button.addEventListener('click', (e) => {RemoveEx(e.target as any)})
+  const ex = document.createElement("span")
+  //TODO: Add a way to check for empty string!
+  ex.innerHTML = " Example: "
+  main.appendChild(ex)
+  var input = document.createElement("input")
+  input.type = "text"
+  //TODO: REMOVE DUPLICATE CODE
+  input.addEventListener('change', (e) => {
+    const target = e.target as any;
+    console.log((e.target as any).value)
+    console.log(e.target)
+    const re = new RegExp("^" + regex + "$");
+    console.log(regex)
+    if ( re.test((e.target as any).value)) {
+      console.log("I MATCH")
+      const parent = (e.target as any).parentNode
+      const feedback = parent.getElementsByTagName("span")[1]
+      feedback.innerHTML = "Valid"
+      feedback.className  = "correct"
+      //e.target.classList.add("correct") 
+    } else {
+      console.log("Not matching :(");
+      const parent = (e.target as any).parentNode
+      const feedback = parent.getElementsByTagName("span")[1]
+      feedback.innerHTML = " Invalid"
+      feedback.className  = "wrong"
+      //if (e.target.classList[1] == "correct"){
+      //e.target.classList.remove('correct')
+      //} 
+  } })
+  const correct = document.createElement("span")
+  //TODO: Add a way to check for empty string!
+  correct.innerHTML = " Invalid"
+  correct.className = "wrong"
+  main.appendChild(input)
+  main.appendChild(correct)
+  const div = e.parentNode
+  console.log(main)
+  document.getElementById("the_examples").appendChild(main)
+}
+
