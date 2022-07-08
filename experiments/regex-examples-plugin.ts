@@ -74,6 +74,11 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
         // don't submit form
         event.preventDefault();
 
+        if ( document.getElementsByClassName("wrong").length > 0 ) {
+          alert("Not all your examples are valid >:(");
+          return
+        }
+
         // measure response time
         const endTime = performance.now();
         const response_time = Math.round(endTime - startTime);
@@ -90,7 +95,8 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
 
         // next trial
         this.jsPsych.finishTrial(trialdata);
-      });
+      }
+      );
   }
 }
 
@@ -171,45 +177,49 @@ async function AddEx(regex: string, e: HTMLElement) {
   button.type = "button";
   button.innerHTML = "Remove";
   main.appendChild(button)
-  button.addEventListener('click', (e) => {RemoveEx(e.target as any)})
+  button.addEventListener('click', (e) => RemoveEx(e.target as any))
   const ex = document.createElement("span")
   //TODO: Add a way to check for empty string!
   ex.innerHTML = " Example: "
   main.appendChild(ex)
-  var input = document.createElement("input")
+  const input = document.createElement("input")
   input.type = "text"
   //TODO: REMOVE DUPLICATE CODE
-  input.addEventListener('change', (e) => {
-    const target = e.target as any;
-    console.log((e.target as any).value)
-    console.log(e.target)
-    const re = new RegExp("^" + regex + "$");
-    console.log(regex)
-    if ( re.test((e.target as any).value)) {
-      console.log("I MATCH")
-      const parent = (e.target as any).parentNode
-      const feedback = parent.getElementsByTagName("span")[1]
-      feedback.innerHTML = "Valid"
-      feedback.className  = "correct"
-      //e.target.classList.add("correct") 
-    } else {
-      console.log("Not matching :(");
-      const parent = (e.target as any).parentNode
-      const feedback = parent.getElementsByTagName("span")[1]
-      feedback.innerHTML = " Invalid"
-      feedback.className  = "wrong"
-      //if (e.target.classList[1] == "correct"){
-      //e.target.classList.remove('correct')
-      //} 
-  } })
+  input.addEventListener('change', (e) => updateWhetherItIsValid(regex, e.target))
   const correct = document.createElement("span")
   //TODO: Add a way to check for empty string!
   correct.innerHTML = " Invalid"
   correct.className = "wrong"
   main.appendChild(input)
   main.appendChild(correct)
+  updateWhetherItIsValid(regex,input)
   const div = e.parentNode
   console.log(main)
   document.getElementById("the_examples").appendChild(main)
 }
 
+function updateWhetherItIsValid(regex: string, t: any) {
+  //const target = e.target as any;
+  console.log(t.value)
+  console.log(t)
+  const re = new RegExp("^" + regex + "$");
+  console.log(regex)
+
+  if ( re.test(t.value)) {
+    console.log("I MATCH :)")
+    const parent = t.parentNode
+    const feedback = parent.getElementsByTagName("span")[1]
+    feedback.innerHTML = "Valid"
+    feedback.className  = "correct"
+    //e.target.classList.add("correct") 
+  } else {
+    console.log("Not matching :(");
+    const parent = t.parentNode
+    const feedback = parent.getElementsByTagName("span")[1]
+    feedback.innerHTML = " Invalid"
+    feedback.className  = "wrong"
+    //if (e.target.classList[1] == "correct"){
+    //e.target.classList.remove('correct')
+    //}
+  }
+}
