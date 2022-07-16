@@ -1,0 +1,17 @@
+input, select, textarea{
+    width: 250px;
+    color: black;
+}
+
+.wrong{
+	color:red;
+}
+
+.correct{
+	color:green;
+}
+
+ol { 
+	display: inline-block; 
+	text-align: left; 
+	}

@@ -5,70 +5,185 @@
     <script src="https://unpkg.com/jspsych@7.2.3"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
  <script src="https://unpkg.com/@jspsych/plugin-survey-text"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey-html-form"></script>
     <link href="https://unpkg.com/jspsych@7.2.3/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="mystyle.css">
   </head>
   <body></body>
   <script>
-  	var jsPsych = initJsPsych();
+
+
+    var regexes = ['^[a-z]+$', '^[A-Za-z0-9]*[a-z][A-Za-z0-9]*$', '^09\\d{7}$', '^Page \\d+ of \\d+$', 'abc\.\\d+', '^\\d{6}$',  '^\\d{6}\.\\d{3}$', '^\\d{3}-\\d{3}-\\d{4}$', '^\\d+\\.?\\d*$' ]
+
+  	var jsPsych = initJsPsych({
+
+    on_data_update: function(data) {
+    console.log('Just added new data. The contents of the data are: '+JSON.stringify(data));
+    console.log(JSON.stringify(data).description)
+    change_color()
+  }
+      });
   	var timeline = [];
+    var counter = -2;
   	var welcome = {
   	type: jsPsychHtmlKeyboardResponse,
   	stimulus: `<p> Welcome to the regular expressions experiment!</p>
-  	 <p> Press any key to begin. </p> `
+  	 <p> Press any key to continue. </p> `
 	};
-	var instructions = {
+	 var instructions = {
   	type: jsPsychHtmlKeyboardResponse,
   	stimulus: `
     <p>In this experiment, you will be shown descritpions of different groups of strings. </p>
-  	<p> Ex: All strings that start with "a", all strings that contain one capital letter etc.. </p>
-    <p> <strong> For each description your goal is to provide examples of the strings that fit the descirption and allow someone
-    who has never seen the description to guess it. </strong> </p>
-    <p>Please type in examples seperated by commas; you may provide as many or as little examples as you wish.</p>
-    <p>Press any key to begin.</p>
-  `
+    <p> <strong> For each description your goal is to provide examples of strings that fit the description and allow someone who has never seen the description to guess it based solely on the examples. </strong> </p>
+    <p> You will be given 20 blank text boxes. Please put each example into a separate box. If your example fits the string it will turn green; otherwise it will remain red. You may provide as many or as few examples as you deem necessary to describe the description.  </p>
+    <p>Press any key to continue.</p>,`,
 };
 
-	var trial = {
-	timeline: [
-	{
-  	type: jsPsychSurveyText,
-  	preamble: jsPsych.timelineVariable('description'),
-  	questions: [
-    {prompt: "Provide examples of strings that will allow someone to guess the description above", rows: 15, columns: 75}]
-    }
-    ],
-	
-    timeline_variables: [
-        { description: 'Description: All strings that have at least one lower case letter' },
-        { description: 'Description: All strings that contain a lowercase letter and at least one alphanumeric character' },
-        { description: 'Description: All strings that start with 09 and contain nine digits total'  },
-        { description: 'Description: All strings that fit the Page \<blank\> of \<blank\> format with blank filled by at least one digit' },
-        { description: 'Description: All strings that start with abc. and have at least one digits after the dot' },
-        { description: 'Description: All strings made up of 6 digits' },
-        { description: 'Description: All strings that have 6 digits followed by a dot followed by 3 digits' },
-        { description: 'Description: All strings that have 3 digits followed by a dash followed by 3 digits followed by a dash followed by four digits' },
-        { description: 'Description: All strings that start with a digits have an optional dot followed by an optional digit' },
-        { description: 'Description: All strings that contain 1 to 3 lower case letters followed by a dash followed by 1 to 2 lower case letters  followed by a dash followed by 1 to 4 digits'},
-        { description: 'Description: All strings that contain 1 to 3 lower case letters followed by a dash followed by 1 to 2 lower case letters  followed by a dash followed by 1 to 4 digits'},
-        { description: 'Description: All strings made up of lower case letters of at least length 2 optionally starting with * and optionally ending with *'},
-        { description: 'Description: All strings made up of at least one digits optionally starting with a plus'},
-        { description: 'Description: All strings made up of two digits followed by a .5'},
-        { description: 'Description: All strings made up of C0 followed by 4 digits'},
-        { description: 'Description: All strings made up of C0 followed by 4 digits'},
-        { description: 'Description: All strings that start with either a lowercase or capital case letter followed by 5 digits'},
-        { description: 'Description: All strings made up of two words seperated by space; each made up of a capital letter followed by lowercase letters' },
-        { description: 'Description: All strings made up of 9 followed by 9 digits' },
-        { description: 'Description: All strings that contain at least one alphanumeric character' },
-        { description: 'Description: All strings that contain at least one digit' },
-    ],
-    randomize_order: true
+   var example = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+    <p> Below is an example of the task  </p>
+    <p> <br> <br> <stong> Description </strong>:All strings made up of only capital letters and the empty string
+  <br> <stong>  Corresponding Regex </strong>: [A-Z]* </p>
+  <ol>
+               <li> </li>
+               <li> A </a> </li>
+               <li> BOLD </li>
+               <li> REGEXES </li>
+  </ol>
 
-	}
+    <p>Press any key to begin.</p>,`,
+};
 
+
+var trial1 = {
+  timeline: [ {
+  type: jsPsychSurveyHtmlForm,
+  preamble: jsPsych.timelineVariable('description') ,
+  html: '<p> <div> <br> <button class="remove" type="button" onclick = RemoveEx(this)> Remove </button> <span> Example: </span> <input name="first" type="text" class = "example"/> <span class = "wrong"> Invalid </span>  </div> </p> <button class="add" type="button" onclick = AddEx(this)> Add Example </button> ',
+  description: '[a-z]+$',
+  }],
+timeline_variables: [
+  { description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All non empty lowercase strings <br> <stong>  Corresponding Regex </strong>: [a-z]+', regex: 'a' },
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings that contain at least one lowercase letter <br> <stong>  Corresponding Regex </strong>: [A-Za-z0-9]*[a-z][A-Za-z0-9]*', regex: 'b'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 09 followed by 7 digits  <br> <stong>  Corresponding Regex </strong>: 09\\d{7}', regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “Page “ followed by at least one digit followed by “ of “ and at least one digit <br> <stong>  Corresponding Regex </strong>: Page \\d+ of \\d+' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “abc.” followed by at least one digit <br> <stong>  Corresponding Regex </strong>: abc\\.\\d+' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits <br> <stong>  Corresponding Regex </strong>:  \\d{6}' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 6 digits followed by a dot followed by 3 digits <br> <stong>  Corresponding Regex </strong>: \\d{6}\\.\\d{3}' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: Phone numbers: All strings made up of 3 digits followed by a dash followed by 3 digits followed by a dash followed by 4 digits  <br> <stong>  Corresponding Regex </strong>: \d{3}-\d{3}-\d{4}' , regex: 'c'},
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of at least one digit optionally followed by l “.” which is optionally followed by any number of digits  <br> <stong>  Corresponding Regex </strong>: \\d+\\.?\\d*' , regex: 'c'},
+   ]   
+  }
+
+  var thank = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+    <p> Thank you for partcipating in our study! </p>` 
+};
+
+async function RemoveEx(e){
+  console.log(e)
+  div = e.parentNode
+  console.log(div)
+  div.remove()
+}
+
+async function AddEx(e){
+  var main = document.createElement("div")
+  var br = document.createElement("br");
+   main.appendChild(br)
+  var button = document.createElement("button")
+  button.type = "button";
+  button.innerHTML = "Remove";
+  main.appendChild(button)
+  button.addEventListener('click', (e) => {RemoveEx(e.target)})
+  var ex = document.createElement("span")
+  //TODO: Add a way to check for empty string!
+  ex.innerHTML = " Example: "
+  main.appendChild(ex)
+  var input = document.createElement("input")
+  input.type = "text"
+  //TODO: REMOVE DUPLICATE CODE
+  input.addEventListener('change', (e) => {  
+          console.log(e.target.value)
+          console.log(e.target)
+          var re = new RegExp(regexes[counter]);
+          if ( re.test(e.target.value)) {
+            console.log(e.target)
+            parent = e.target.parentNode
+            feedback = parent.getElementsByTagName("span")[1]
+            feedback.innerHTML = " Valid"
+            feedback.className  = "correct"
+            //e.target.classList.add("correct") 
+        } else {
+          parent = e.target.parentNode
+          feedback = parent.getElementsByTagName("span")[1]
+          feedback.innerHTML = " Invalid"
+          feedback.className  = "wrong"
+          //if (e.target.classList[1] == "correct"){
+            //e.target.classList.remove('correct')
+
+            //} 
+  } })
+  var correct = document.createElement("span")
+  //TODO: Add a way to check for empty string!
+  correct.innerHTML = "Invalid"
+  correct.className = "wrong"
+  main.appendChild(input)
+  main.appendChild(correct)
+  div = e.parentNode
+  console.log(main)
+  document.getElementsByTagName("p")[1].appendChild(main)
+}
+
+
+async function change_color(){
+
+  console.log("hi")
+  counter = counter +1 
+  console.log(counter)
+  setTimeout(function(){
+  var re = new RegExp(regexes[counter]);
+  var els = document.getElementsByTagName('input');
+  console.log(els)
+  if (els.length >1 ) {
+        console.log("Trial Started")
+        console.log(els)
+        console.log(els.length)
+        for (var i = 0; i < els.length-1; i++) {
+          console.log("DEBUG")
+          var cell = els[i];
+          cell.addEventListener('change', (e) => {  
+          console.log(e.target.value)
+          console.log(e.target)
+          if ( re.test(e.target.value)) {
+            console.log(e.target)
+            parent = e.target.parentNode
+            feedback = parent.getElementsByTagName("span")[1]
+            feedback.innerHTML = "Valid"
+            feedback.className  = "correct"
+            //e.target.classList.add("correct") 
+        } else {
+          parent = e.target.parentNode
+          feedback = parent.getElementsByTagName("span")[1]
+          feedback.innerHTML = "Invalid"
+          feedback.className  = "wrong"
+          //if (e.target.classList[1] == "correct"){
+            //e.target.classList.remove('correct')
+
+            //} 
+        } })
+      }
+  }
+  }, 500); 
+ }
 
 	timeline.push(welcome);
 	timeline.push(instructions);
-	timeline.push(trial);
+  timeline.push(example);
+	timeline.push(trial1);
+  timeline.push(thank);
 	
 	jsPsych.run(timeline);
   </script>
