@@ -24,7 +24,7 @@
   }
       });
   	var timeline = [];
-    var counter = -2;
+    var counter = -3;
   	var welcome = {
   	type: jsPsychHtmlKeyboardResponse,
   	stimulus: `<p> Welcome to the regular expressions experiment!</p>
@@ -64,7 +64,7 @@ var trial1 = {
   description: '[a-z]+$',
   }],
 timeline_variables: [
-  { description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All non empty lowercase strings <br> <stong>  Corresponding Regex </strong>: [a-z]+', regex: 'a' },
+  {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All non empty lowercase strings <br> <stong>  Corresponding Regex </strong>: [a-z]+', regex: 'a' },
   {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings that contain at least one lowercase letter <br> <stong>  Corresponding Regex </strong>: [A-Za-z0-9]*[a-z][A-Za-z0-9]*', regex: 'b'},
   {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of 09 followed by 7 digits  <br> <stong>  Corresponding Regex </strong>: 09\\d{7}', regex: 'c'},
   {description: 'Provide up to 20 examples of strings that will allow someone to guess the description below. Feel free to provide as many or as few examples as you think are needed to guess the description <br> <br> <stong> Description </strong>: All strings made up of “Page “ followed by at least one digit followed by “ of “ and at least one digit <br> <stong>  Corresponding Regex </strong>: Page \\d+ of \\d+' , regex: 'c'},
@@ -145,6 +145,7 @@ async function change_color(){
   console.log(counter)
   setTimeout(function(){
   var re = new RegExp(regexes[counter]);
+  console.log(regexes[counter])
   var els = document.getElementsByTagName('input');
   console.log(els)
   if (els.length >1 ) {
@@ -157,6 +158,7 @@ async function change_color(){
           cell.addEventListener('change', (e) => {  
           console.log(e.target.value)
           console.log(e.target)
+          console.log(re.test(e.target.value))
           if ( re.test(e.target.value)) {
             console.log(e.target)
             parent = e.target.parentNode
