@@ -15,6 +15,7 @@ After a change, to rebuild: run `npm run build-web`. This runs all the
 build tools, and dumps `index.html` and `bundle.js` into `build/`.
 
 To run a server, locally:
+ - Remember to rebuild with `npm run build-web`!
  - Run `node server.js`
  - Go to `http://localhost:8888/index.html` in your browser
 
