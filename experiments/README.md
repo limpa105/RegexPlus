@@ -12,9 +12,10 @@ Also needed to:
  - 
 
 After a change, to rebuild: run `npm run build-web`. This runs all the
-build tools, and dumps `index.html` and `bundle.js` into `build/`. Open
-`build/index.html` in your browser.
+build tools, and dumps `index.html` and `bundle.js` into `build/`.
 
-To run a server: haven't figured out this part yet.
+To run a server, locally:
+ - Run `node server.js`
+ - Go to `http://localhost:8888/index.html` in your browser
 
 

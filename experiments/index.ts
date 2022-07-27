@@ -6,9 +6,29 @@ import {initJsPsych} from 'jspsych';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 import {RegexExamplesPlugin, RegexExampleData} from './regex-examples-plugin';
 
-const jsPsych = initJsPsych({
+var queryString = window.location.search;
+var urlParams = new URLSearchParams(queryString);
+var prolificID = urlParams.get("PROLIFIC_PID"); // ID unique to the participant
+var studyID = urlParams.get("STUDY_ID"); // ID unique to the study
+var sessionID = urlParams.get("SESSION_ID"); // ID unique to the particular submission
+var projName = urlParams.get("projName");
+var expName = urlParams.get("expName");
+var iterName = urlParams.get("iterName");
+
+
+var jsPsych = initJsPsych({
   /* options go here */
+  on_data_update: function() {
+    saveData(jsPsych.data.get().csv());
+  },
 });
+
+function saveData(data: string) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/have_some_data');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({ prolificID, studyID, sessionID, data }));
+}
 
 /*********** The main content ***********/
 /* We could change it to get the content from a server, or from somewhere else,
@@ -165,6 +185,4 @@ const timeline = [
 ];
 
 jsPsych.run(timeline);
-
-
 
