@@ -38,10 +38,13 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
     html += `
     <div>Please provide examples for the description below!</div>
     <p><strong>Description:</strong> <span class=description>${trial.description}<span></p>
-    <p><strong>Regex:</strong> ${trial.regex}</p>
+    <p><strong>Corresponding Regex:</strong> ${trial.regex}</p>
     `;
     // start form
-    html += '<form id="regex-examples-form" autocomplete="off">';
+    html += `<form id="regex-examples-form" autocomplete="off">
+    <!-- Prevent implicit submission of the form; see https://stackoverflow.com/a/51507806 -->
+    <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+    `;
 
     // add form HTML / input elements
     html += `<p id="the_examples"></p> <button id="add" type="button"> Add Example </button>`
@@ -68,6 +71,10 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
 
       if (document.getElementsByClassName("wrong").length > 0) {
         alert("Not all your examples are valid: please make sure they match the description");
+        return;
+      }
+      if (document.getElementsByClassName("correct").length < 1) {
+        alert("Please add at least one example!");
         return;
       }
 
