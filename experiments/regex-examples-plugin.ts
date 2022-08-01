@@ -33,12 +33,12 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
   constructor(private jsPsych: JsPsych) {}
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
-    console.log(`Asking for examples for ${trial.regex}`);
+    console.log(`Asking for examples for <tt> ${trial.regex} </tt>`);
     var html = "";
     html += `
     <div>Please provide examples for the description below!</div>
     <p><strong>Description:</strong> <span class=description>${trial.description}<span></p>
-    <p><strong>Corresponding Regex:</strong> ${trial.regex}</p>
+    <p><strong>Corresponding Regex:</strong> <tt>  ${trial.regex} </tt> </p>
     `;
     // start form
     html += `<form id="regex-examples-form" autocomplete="off">

@@ -45,15 +45,15 @@ const problems: RegexExampleData[] = [
     regex: "[A-Za-z0-9]*[a-z][A-Za-z0-9]*",
   },
   {
-    description: "All strings made up of “09” followed by 7 digits",
+    description: "All strings made up of “<tt>  09 </tt> ” followed by 7 digits",
     regex: "09\\d{7}",
   },
   {
-    description: "All strings made up of “Page ” followed by at least one digit followed by “ of ” and at least one digit",
+    description: "All strings made up of “<tt>Page  </tt>” followed by at least one digit followed by “<tt>  of </tt>” and at least one digit",
     regex: "Page \\d+ of \\d+",
   },
   {
-    description: "All strings made up of “abc.” followed by at least one digit",
+    description: "All strings made up of “<tt>abc.</tt>” followed by at least one digit",
     regex: "abc\\.\\d+",
   },
   {
@@ -61,39 +61,39 @@ const problems: RegexExampleData[] = [
     regex: "\\d{6}",
   },
   {
-    description: "All strings made up of 6 digits followed by “.” followed by 3 digits",
+    description: "All strings made up of 6 digits followed by “<tt>.</tt> ” followed by 3 digits",
     regex: "\\d{6}\\.\\d{3}",
   },
   {
-    description: "All strings made up of 3 digits followed by “-” followed by 3 digits followed by “-” followed by 4 digits",
+    description: "All strings made up of 3 digits followed by “<tt>-</tt> ” followed by 3 digits followed by “<tt>-</tt>” followed by 4 digits",
     regex: "\\d{3}-\\d{3}-\\d{4}",
   },
   {
-    description: "All strings made up of at least one digit optionally followed by “.” followed by any number of digits",
+    description: "All strings made up of at least one digit optionally followed by “<tt>.</tt>” followed by any number of digits",
     regex: "\\d+(\\.)?\\d*",
   },
   {
-    description: "All strings made up of 1 to 3 lowercase letters followed by “-” followed by 1 to 2 lowercase letters followed by “-” followed by 1 to 4 digits",
+    description: "All strings made up of 1 to 3 lowercase letters followed by “<tt>-</tt>” followed by 1 to 2 lowercase letters followed by “<tt>-</tt>” followed by 1 to 4 digits",
     regex: "[a-z]{1,3}-[a-z]{1,2}-\\d{1,4}",
   },
   {
-    description: "All strings made up of at least one digit followed by “.” followed by 1 to 4 digits",
+    description: "All strings made up of at least one digit followed by “<tt>.</tt>” followed by 1 to 4 digits",
     regex: "\\d+\\.\\d{1,4}",
   },
   {
-    description: "All strings made up of an optional “*” followed by at least two lowercase letters followed by an optional “*”",
+    description: "All strings made up of an optional “<tt>*</tt>” followed by at least two lowercase letters followed by an optional “<tt>*</tt>”",
     regex: "(\\*)?[a-z]{2,}(\\*)?",
   },
   {
-    description: "All strings made up of one or more digits, with an optional “+” in front",
+    description: "All strings made up of one or more digits, with an optional “<tt>+</tt>” in front",
     regex: "(\\+)?\\d+",
   },
   {
-    description: "All strings made up of two digits followed by “.5”",
+    description: "All strings made up of two digits followed by “<tt>.5</tt>”",
     regex: "\\d{2}\\.5",
   },
   {
-    description: "All strings made up of “C0” followed by four digits",
+    description: "All strings made up of “<tt>C0</tt>” followed by four digits",
     regex: "C0\\d{4}",
   },
   {
@@ -135,29 +135,32 @@ const instructions = {
   type: htmlKeyboardResponse,
   stimulus: `
    <p>In this experiment, you will be shown descriptions of different groups of strings. Each description corresponds to a regular expression (regex).</p>
-    <p> <strong> For each description your goal is to provide examples of strings that fit the description and would allow someone who has never seen the description to guess it based solely on the examples. </strong> </p>
-    <p> Press a button to either add or remove examples. If your example fits the description it will have "Valid" appear next to it in green, and if it doesn't it will be labelled "Invalid".</p>
-    <p> All of your examples need to be valid. </p> 
-    <p> You may provide as many or as few examples as you deem necessary to convey the description.</p>
+    <p> <strong> For each description your goal is to provide examples of strings that would allow someone who has never seen the description to guess it based solely on the examples. </strong> </p>
+    <p> <br> For example: </p>
+    <div class=task_ex>
+    <p>  <strong>Description:</strong> All strings made up of only capital letters 
+    <br> <strong>Corresponding Regex:</strong> <tt> [A-Z]*  </tt> </p>
+    <ol>
+      <li> </li>
+      <li> I </li>
+      <li> LOVE </li>
+      <li> REGEXES </li>
+    </ol>
+    </div class=task_ex>
     <p>Press any key to continue.</p>
+    </div class=task_ex>
   `
 };
 const example = {
   type: htmlKeyboardResponse,
   stimulus: `
-    <p> Below is an example of the task. </p>
-    <p> <br> <br> <strong>Description:</strong> All strings made up of only capital letters 
-  <br> <strong>Corresponding Regex:</strong> [A-Z]* </p>
-  <ol>
-    <li> </li>
-    <li> I </li>
-    <li> LOVE </li>
-    <li> REGEXES </li>
-  </ol>
-
+  <p> Press a button to either add or remove examples. If your example fits the description it will have "Valid" appear next to it in green, and if it doesn't it will be labelled "Invalid".</p>
+  <p> All of your examples need to be valid. </p> 
+  <p> You may provide as many or as few examples as you deem necessary to convey the description.</p>
   <p>Press any key to begin.</p>
   `
 };
+
 
 const thank = {
   type: htmlKeyboardResponse,

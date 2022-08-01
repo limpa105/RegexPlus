@@ -15,3 +15,11 @@ ol {
 	display: inline-block; 
 	text-align: left; 
 	}
+
+.task_ex {
+  width:550px;
+  border-style:solid;
+  text-align: center;
+  margin: auto;
+
+}
