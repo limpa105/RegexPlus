@@ -136,7 +136,7 @@ const instructions = {
   stimulus: `
    <p>In this experiment, you will be shown descriptions of different groups of strings. Each description corresponds to a regular expression (regex).</p>
     <p> <strong> For each description your goal is to provide examples of strings that would allow someone who has never seen the description to guess it based solely on the examples. </strong> </p>
-    <p> <br> For example: </p>
+    <p> <br> Below is an example of the task: </p>
     <div class=task_ex>
     <p>  <strong>Description:</strong> All strings made up of only capital letters 
     <br> <strong>Corresponding Regex:</strong> <tt> [A-Z]*  </tt> </p>
