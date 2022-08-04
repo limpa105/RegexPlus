@@ -195,101 +195,99 @@ def train(input_regex, input_tensor, target_tensor, encoder, decoder, encoder_op
     #use_true_probabilities = False
     #if random.random() < teacher_forcing_ratio else False
 
-    # Teacher forcing: Feed the target as the next input
-    if USE_TRUE_PROB:
-      if USE_NFA:
-        state = next_chars.regex_to_nfa(input_regex)
-        chosen_token = np.inf
-        count = 0
-        total = 0
-        reached_end = False
-        while chosen_token!=EOS_token and count < MAX_LENGTH:
-        #print(count)
-            count +=1
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-              decoder_input, decoder_hidden, encoder_outputs)
-            poss_chars = next_chars.possible_next_chars(state)
+    # # Teacher forcing: Feed the target as the next input
+    # if USE_TRUE_PROB:
+    #   if USE_NFA:
+    #     state = next_chars.regex_to_nfa(input_regex)
+    #     chosen_token = np.inf
+    #     count = 0
+    #     total = 0
+    #     reached_end = False
+    #     while chosen_token!=EOS_token and count < MAX_LENGTH:
+    #     #print(count)
+    #         count +=1
+    #         decoder_output, decoder_hidden, decoder_attention = decoder(
+    #           decoder_input, decoder_hidden, encoder_outputs)
+    #         poss_chars = next_chars.possible_next_chars(state)
 
-            indexed_chars = indexesFromList(output_lang, poss_chars)
-            true_tensor = torch.zeros(output_lang.n_words)
-            true_tensor = true_tensor.to(device)
-            if next_chars.end_token_is_allowed_here(state):
-              indexed_chars.append(EOS_token)
-            for i in indexed_chars:
-              true_tensor[i] = 1/ len(indexed_chars) 
-        # create a tensor that gives equal probabilities to next chars 
-            loss += criterion(decoder_output, true_tensor.reshape(1, output_lang.n_words))
-            chosen_token = random.choice(indexed_chars)
-            next_tensor = torch.zeros(output_lang.n_words)
-            next_tensor[chosen_token] = 1
-            if (chosen_token == EOS_token):
-                reached_end = True 
-                break
-            state = next_chars.consume_a_char(state, output_lang.index2word[chosen_token])
-        #print(output_lang.index2word[chosen_token])
-        #re.complie(#amount of regex we have consumed so far)
-        # 0 or 1
-        #chosen_tensor = torch.tensor(chosen_token)
-            decoder_input = torch.tensor(chosen_token, device = device)  # Teacher forcing
-      else:
-        nfa = next_chars.regex_to_nfa(input_regex)
-        dfa = next_chars.DFA(nfa)
-        state = dfa.nodes[0]
-        ch = np.inf
-        count = 0
-        reached_end = False
-        while ch!='END' and count < MAX_LENGTH:
-        #print(count)
-            count +=1
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-              decoder_input, decoder_hidden, encoder_outputs)
-            poss_chars = list(state.transitions.keys())
+    #         indexed_chars = indexesFromList(output_lang, poss_chars)
+    #         true_tensor = torch.zeros(output_lang.n_words)
+    #         true_tensor = true_tensor.to(device)
+    #         if next_chars.end_token_is_allowed_here(state):
+    #           indexed_chars.append(EOS_token)
+    #         for i in indexed_chars:
+    #           true_tensor[i] = 1/ len(indexed_chars) 
+    #     # create a tensor that gives equal probabilities to next chars 
+    #         loss += criterion(decoder_output, true_tensor.reshape(1, output_lang.n_words))
+    #         chosen_token = random.choice(indexed_chars)
+    #         next_tensor = torch.zeros(output_lang.n_words)
+    #         next_tensor[chosen_token] = 1
+    #         if (chosen_token == EOS_token):
+    #             reached_end = True 
+    #             break
+    #         state = next_chars.consume_a_char(state, output_lang.index2word[chosen_token])
+    #     #print(output_lang.index2word[chosen_token])
+    #     #re.complie(#amount of regex we have consumed so far)
+    #     # 0 or 1
+    #     #chosen_tensor = torch.tensor(chosen_token)
+    #         decoder_input = torch.tensor(chosen_token, device = device)  # Teacher forcing
+    #   else:
+    #     nfa = next_chars.regex_to_nfa(input_regex)
+    #     dfa = next_chars.DFA(nfa)
+    #     state = dfa.nodes[0]
+    #     ch = np.inf
+    #     count = 0
+    #     reached_end = False
+    #     while ch!='END' and count < MAX_LENGTH:
+    #     #print(count)
+    #         count +=1
+    #         decoder_output, decoder_hidden, decoder_attention = decoder(
+    #           decoder_input, decoder_hidden, encoder_outputs)
+    #         poss_chars = list(state.transitions.keys())
 
-            indexed_chars = indexesFromList(output_lang, poss_chars)
-            true_tensor = torch.zeros(output_lang.n_words)
-            true_tensor = true_tensor.to(device)
-            #if next_chars.end_token_is_allowed_here(state):
-              #indexed_chars.append(EOS_token)
-            for index, i in enumerate(indexed_chars):
-              true_tensor[i] = state.transitions[poss_chars[index]][1]
-            true_tensor[EOS_token] = state.p_end
-            loss += criterion(decoder_output, true_tensor.reshape(1, output_lang.n_words))
-            ch = np.random.choice(np.array(list(state.transitions.keys()) + ['END']),
-                    p=np.array(list(w for j, w in state.transitions.values()) +
-                        [state.p_end]))
-            if ch == 'END':
-                reached_end = True 
-                break
-            # move the dfa
-            state = dfa.nodes[state.transitions[ch][0]]
-            # get index of chose character 
-            chosen_index = output_lang.word2index[ch]
-            next_tensor = torch.zeros(output_lang.n_words)
-            next_tensor[chosen_index] = 1
+    #         indexed_chars = indexesFromList(output_lang, poss_chars)
+    #         true_tensor = torch.zeros(output_lang.n_words)
+    #         true_tensor = true_tensor.to(device)
+    #         #if next_chars.end_token_is_allowed_here(state):
+    #           #indexed_chars.append(EOS_token)
+    #         for index, i in enumerate(indexed_chars):
+    #           true_tensor[i] = state.transitions[poss_chars[index]][1]
+    #         true_tensor[EOS_token] = state.p_end
+    #         loss += criterion(decoder_output, true_tensor.reshape(1, output_lang.n_words))
+    #         ch = np.random.choice(np.array(list(state.transitions.keys()) + ['END']),
+    #                 p=np.array(list(w for j, w in state.transitions.values()) +
+    #                     [state.p_end]))
+    #         if ch == 'END':
+    #             reached_end = True 
+    #             break
+    #         # move the dfa
+    #         state = dfa.nodes[state.transitions[ch][0]]
+    #         # get index of chose character 
+    #         chosen_index = output_lang.word2index[ch]
+    #         next_tensor = torch.zeros(output_lang.n_words)
+    #         next_tensor[chosen_index] = 1
 
-    else:
-       reached_end = True 
-       count =0
-       target_length = target_tensor.size(0)
-       #print(target_length)
-       for di in range(target_length):
-            count+=1
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
-            #print(decoder_output)
-            #print(target_tensor[di])
-            loss += criterion(decoder_output, target_tensor[di])
-            decoder_input = target_tensor[di]  # Teacher forcing
-            if count >= MAX_LENGTH:
-              reached_end = False 
+    # else:
+    reached_end = True 
+    count =0
+    target_length = target_tensor.size(0)
+    #print(target_length)
+    for di in range(target_length):
+        count+=1
+        decoder_output, decoder_hidden, decoder_attention = decoder(
+            decoder_input, decoder_hidden, encoder_outputs)
+        #print(decoder_output)
+        #print(target_tensor[di])
+        loss += criterion(decoder_output, target_tensor[di])
+        decoder_input = target_tensor[di]  # Teacher forcing
+        if count >= MAX_LENGTH:
+            reached_end = False 
         
 
-
     if reached_end:
-       loss.backward()
-     
-       encoder_optimizer.step()
-       decoder_optimizer.step()
+        loss.backward()
+        encoder_optimizer.step()
+        decoder_optimizer.step()
 
     return loss.item() / count
 
@@ -311,7 +309,7 @@ def timeSince(since, percent):
     return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
 
 
-def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, learning_rate=0.01, optimizer='SGD'):
+def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, learning_rate=0.01, optimizer='SGD', file=None):
     start = time.time()
     plot_losses = []
     print_loss_total = 0  # Reset every print_every
@@ -341,9 +339,9 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
           output_tensor = ex_tuple[2]
         else: 
           output_tensor = None
-
         loss = train(input_regex, input_tensor, output_tensor,  encoder,
                      decoder, encoder_optimizer, decoder_optimizer, criterion)
+    
         print_loss_total += loss
         plot_loss_total += loss
 
@@ -353,7 +351,9 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             # Print out in some CSV format
             stats_test = accuracy_stats_for(encoder, decoder, dataset='testing')
             stats_train = accuracy_stats_for(encoder, decoder, dataset='training')
-            print(f'{timeSince(start, iter / n_iters)},{iter},{print_loss_avg},{stats_test},{stats_train}')
+            output = f'{timeSince(start, iter)},{iter},{print_loss_avg},{stats_test},{stats_train}'
+            print(output)
+            if file: file.write(output + '\n')
             #print('%s (%d %d%%) %.4f' % (timeSince(start, iter / n_iters),
             #                             iter, iter / n_iters * 100, print_loss_avg))
 
@@ -361,7 +361,6 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             plot_loss_avg = plot_loss_total / plot_every
             plot_losses.append(plot_loss_avg)
             plot_loss_total = 0
-
 
 def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     with torch.no_grad():
@@ -429,18 +428,21 @@ def accuracy_stats_for(encoder, decoder, dataset='testing', maxsize=1000):
 
 def train_neural_network(hidden_size=256, dropout_p=0.1, optimizer='SGD', learning_rate =0.01):
     print(f'Training {hidden_size=} {dropout_p=} {optimizer=} {learning_rate=}...')
+    file = open(f'Data for {hidden_size=} {dropout_p=} {optimizer=} {learning_rate=}.csv', 'w')
+    file.write('time,iteration,loss,test accuracy,test end,train accuracy,train end\n')
     encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
     attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
-    trainIters(encoder1, attn_decoder1, 40000, print_every=1000, optimizer=optimizer, learning_rate=learning_rate)
-    
+    trainIters(encoder1, attn_decoder1, 1200000, print_every=1000, optimizer=optimizer, learning_rate=learning_rate, file=file)
+    file.close()
+
 setups = [
     { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
-    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'Adam', 'learning_rate': 0.01 },
-    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.1 },
+    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
     { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.001 },
     { 'hidden_size': 128, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
     { 'hidden_size': 512, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
     { 'hidden_size': 256, 'dropout_p': 0.0, 'optimizer': 'SGD', 'learning_rate': 0.01 },
+    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'Adam', 'learning_rate': 0.01 },
 ]
 
 for setup in setups:
