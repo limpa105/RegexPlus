@@ -348,7 +348,7 @@ def synthesize(inputs):
 
     return best_regs
 
-USE_OPTIONALS = False  # lol
+USE_OPTIONALS = True  # lol
 if __name__ == '__main__':
     print('Enter examples, leave blank when done')
     inputs = []
