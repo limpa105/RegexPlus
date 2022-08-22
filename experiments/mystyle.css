@@ -23,3 +23,9 @@ ol {
   margin: auto;
 
 }
+
+.space {
+  width: 10px;
+  height: auto;
+  display: inline-block;
+}

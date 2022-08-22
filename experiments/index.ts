@@ -4,6 +4,7 @@
 
 import {initJsPsych} from 'jspsych';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
+import instructions from '@jspsych/plugin-instructions';
 import {RegexExamplesPlugin, RegexExampleData} from './regex-examples-plugin';
 
 var queryString = window.location.search;
@@ -122,43 +123,73 @@ const problems: RegexExampleData[] = [
   },
 ];
 
+
 /*********** Intro slides ***********/
+
+
+const consentHTML = ["<u><p id='legal'>Consent to Participate</p></u>\
+    <p id='legal'>By completing this HIT, you are participating in a \
+  study being performed by cognitive scientists in the UC San Diego \
+  Department of Psychology. The purpose of this research is to find out\
+  how people understand visual information. \
+  You must be at least 18 years old to participate. There are neither\
+  specific benefits nor anticipated risks associated with participation\
+  in this study. Your participation in this study is completely voluntary\
+  and you can withdraw at any time by simply exiting the study. You may \
+  decline to answer any or all of the following questions. Choosing not \
+  to participate or withdrawing will result in no penalty. Your anonymity \
+  is assured; the researchers who have requested your participation will \
+  not receive any personal information about you, and any information you \
+  provide will not be shared in association with any personally identifying \
+  information.</p> \
+  <p> If you have questions about this research, please contact the \
+  researchers by sending an email to \
+  <b><a href='mailto://cogtoolslab.requester@gmail.com'>cogtoolslab.requester@gmail.com</a></b>. \
+  These researchers will do their best to communicate with you in a timely, \
+  professional, and courteous manner. If you have questions regarding your \
+  rights as a research subject, or if problems arise which you do not feel \
+  you can discuss with the researchers, please contact the UC San Diego \
+  Institutional Review Board.</p><p>Click 'Next' to continue \
+  participating in this HIT.</p>"];
+
+const storyHTML = ['<p> In this study you will be a space explorer traveling from planet to planet in a new solar system called Gacradus. \
+ This galaxy has a very elaborate etiquette system. On every planet, there are strict rules for which words you are allowed to use to talk to the inhabitants. \
+You are corresponding with your friend Charlie on Earth, who is charged with documenting the intricate language system of this new solar system. \
+Your goal is to communicate all of the details about the language of each planet to Charlie, but Gacradians are screening your letters and only allowing you to send words that are in their language. \
+</p> <p> Become a world-famous explorer by explaining all of the details of each planet’s language through examples of allowed words! </p> \
+<img src="images/conversation.png"  width="450" height="300"<br>']
+
+const exampleHTML = ['<p>In this experiment, you will be shown descriptions of different groups of strings. Each description corresponds to a regular expression (regex).</p> \
+<p> <strong> For each description your goal is to provide examples of strings that would allow someone who has never seen the description to guess \
+it based solely on the examples. </strong> </p> <p> <br> Below is an example of the task: </p> <div class=task_ex> \
+<p>  <strong>Description:</strong> All strings made up of only capital letters \
+<br> <strong>Corresponding Regex:</strong> <tt> [A-Z]*  </tt> </p> \
+<ol> \
+  <li> </li> \
+  <li> I </li> \
+  <li> LOVE </li> \
+  <li> REGEXES </li> \
+</ol> \
+</div class=task_ex> \
+<p>Press any key to continue.</p> \
+</div class=task_ex>']
+
+const instructionsHTML = ['<p> Press a button to either add or remove examples. \
+If your example fits the description it will have "Valid" appear next to it in green, \
+and if it doesn\'t it will be labelled "Invalid".</p> \
+<p> All of your examples need to be valid. </p>  \
+<p> You may provide as many or as few examples as you deem necessary to convey the description.</p> \
+<p>Click next to begin the experiment!.</p>']
+
+
 const welcome = {
-  type: htmlKeyboardResponse,
-  stimulus: `
-    <p>Welcome to this experiment!</p>
-    <p>By continuing, you are consenting to participate in it.</p>
-    <p>Press any key to continue.</p>
-  `
-};
-const instructions = {
-  type: htmlKeyboardResponse,
-  stimulus: `
-   <p>In this experiment, you will be shown descriptions of different groups of strings. Each description corresponds to a regular expression (regex).</p>
-    <p> <strong> For each description your goal is to provide examples of strings that would allow someone who has never seen the description to guess it based solely on the examples. </strong> </p>
-    <p> <br> Below is an example of the task: </p>
-    <div class=task_ex>
-    <p>  <strong>Description:</strong> All strings made up of only capital letters 
-    <br> <strong>Corresponding Regex:</strong> <tt> [A-Z]*  </tt> </p>
-    <ol>
-      <li> </li>
-      <li> I </li>
-      <li> LOVE </li>
-      <li> REGEXES </li>
-    </ol>
-    </div class=task_ex>
-    <p>Press any key to continue.</p>
-    </div class=task_ex>
-  `
-};
-const example = {
-  type: htmlKeyboardResponse,
-  stimulus: `
-  <p> Press a button to either add or remove examples. If your example fits the description it will have "Valid" appear next to it in green, and if it doesn't it will be labelled "Invalid".</p>
-  <p> All of your examples need to be valid. </p> 
-  <p> You may provide as many or as few examples as you deem necessary to convey the description.</p>
-  <p>Press any key to begin.</p>
-  `
+  type: instructions,
+  pages: [ 
+    consentHTML,
+    storyHTML,
+    exampleHTML,
+    instructionsHTML],
+    show_clickable_nav: true
 };
 
 
@@ -183,8 +214,6 @@ const main_experiment = {
 
 const timeline = [
   welcome,
-  instructions,
-  example,
   main_experiment,
   thank,
 ];

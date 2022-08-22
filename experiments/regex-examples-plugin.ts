@@ -36,7 +36,7 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
     console.log(`Asking for examples for <tt> ${trial.regex} </tt>`);
     var html = "";
     html += `
-    <div>Please provide examples for the description below!</div>
+    <div>Please provide examples conveying the description below!</div>
     <p><strong>Description:</strong> <span class=description>${trial.description}<span></p>
     <p><strong>Corresponding Regex:</strong> <tt>  ${trial.regex} </tt> </p>
     `;
@@ -47,11 +47,11 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
     `;
 
     // add form HTML / input elements
-    html += `<p id="the_examples"></p> <button id="add" type="button"> Add Example </button>`
-
+    html += `<p id="the_examples"></p> <button id="add" class="jspsych-btn jspsych-survey-html-form" type="button"> I want to provide more examples! </button>`
+    html += `<divclass="space">  </div> `
     // add submit button
     html +=
-      '<input type="submit" id="jspsych-survey-html-form-next" class="jspsych-btn jspsych-survey-html-form" value="Continue"></input>';
+      '<input type="submit" id="jspsych-survey-html-form-next" class="jspsych-btn jspsych-survey-html-form" value="Next> "></input>';
 
     html += "</form>";
     display_element.innerHTML = html;
@@ -73,10 +73,11 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
         alert("Not all your examples are valid: please make sure they match the description");
         return;
       }
-      if (document.getElementsByClassName("correct").length < 1) {
-        alert("Please add at least one example!");
-        return;
-      }
+      // Commenting this out for now to allow 
+      //if (document.getElementsByClassName("correct").length < 1) {
+        //alert("Please add at least one example!");
+        //return;
+      //}
 
       // measure response time
       const endTime = performance.now();
