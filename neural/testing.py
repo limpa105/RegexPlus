@@ -31,10 +31,10 @@ def split(word):
     return [char for char in word]
 
 # reading in the test data 
-test = pd.read_csv("test_data.txt", sep='\n', header=None, names = ['regex'])
-train_single = pd.read_csv("train_data.txt", sep='\n', header=None, names = ['regex'])
+test = pd.read_csv("data/test_data.txt", sep='\n', header=None, names = ['regex'])
+train_single = pd.read_csv("data/train_data.txt", sep='\n', header=None, names = ['regex'])
 train_ten = train_single.loc[train_single.index.repeat(10)].reset_index(drop=True)
-with open('train_data_pairs.txt') as f:
+with open('data/train_data_pairs.txt') as f:
     lines = f.readlines()
 examples = [split(line.strip()) for line in lines]
 train_ten["example"] = examples
@@ -115,23 +115,20 @@ class EncoderRNN(nn.Module):
 
 
 class AttnDecoderRNN(nn.Module):
-    def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
+    def __init__(self, hidden_size, output_size, max_length=MAX_LENGTH):
         super(AttnDecoderRNN, self).__init__()
         self.hidden_size = hidden_size
         self.output_size = output_size
-        self.dropout_p = dropout_p
         self.max_length = max_length
 
         self.embedding = nn.Embedding(self.output_size, self.hidden_size)
         self.attn = nn.Linear(self.hidden_size * 2, self.max_length)
         self.attn_combine = nn.Linear(self.hidden_size * 2, self.hidden_size)
-        self.dropout = nn.Dropout(self.dropout_p)
         self.gru = nn.GRU(self.hidden_size, self.hidden_size)
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
     def forward(self, input, hidden, encoder_outputs):
         embedded = self.embedding(input).view(1, 1, -1)
-        embedded = self.dropout(embedded)
 
         attn_weights = F.softmax(
             self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
@@ -426,23 +423,19 @@ def accuracy_stats_for(encoder, decoder, dataset='testing', maxsize=1000):
             end+=1
     return f'{count/size * 100},{end/size * 100}'
 
-def train_neural_network(hidden_size=256, dropout_p=0.1, optimizer='SGD', learning_rate =0.01):
-    print(f'Training {hidden_size=} {dropout_p=} {optimizer=} {learning_rate=}...')
-    file = open(f'Data for {hidden_size=} {dropout_p=} {optimizer=} {learning_rate=}.csv', 'w')
+def train_neural_network(hidden_size=256, optimizer='SGD', learning_rate=0.01, iters=100000):
+    print(f'Training {hidden_size=} {optimizer=} {learning_rate=}...')
+    file = open(f'Data for {hidden_size=} {optimizer=} {learning_rate=}.csv', 'w')
     file.write('time,iteration,loss,test accuracy,test end,train accuracy,train end\n')
+    file.flush()
     encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
-    attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
-    trainIters(encoder1, attn_decoder1, 1200000, print_every=1000, optimizer=optimizer, learning_rate=learning_rate, file=file)
+    attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words).to(device)
+    trainIters(encoder1, attn_decoder1, iters, print_every=1000, optimizer=optimizer, learning_rate=learning_rate, file=file)
     file.close()
 
 setups = [
-    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
-    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
-    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.001 },
-    { 'hidden_size': 128, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
-    { 'hidden_size': 512, 'dropout_p': 0.1, 'optimizer': 'SGD', 'learning_rate': 0.01 },
-    { 'hidden_size': 256, 'dropout_p': 0.0, 'optimizer': 'SGD', 'learning_rate': 0.01 },
-    { 'hidden_size': 256, 'dropout_p': 0.1, 'optimizer': 'Adam', 'learning_rate': 0.01 },
+    { 'hidden_size': 256, 'optimizer': 'Adam', 'learning_rate': 0.0003 },
+    # { 'hidden_size': 256, 'optimizer': 'SGD', 'learning_rate': 0.01 },
 ]
 
 for setup in setups:
