@@ -5,6 +5,8 @@ import random
 from numpy.random import choice
 from scipy.stats import skewnorm
 import pandas as pd
+from typing import *
+import functools
 
 from io import open
 import unicodedata
@@ -32,20 +34,19 @@ def split(word):
 
 # reading in the test data 
 test = pd.read_csv("data/test_data.txt", sep='\n', header=None, names = ['regex'])
-train_single = pd.read_csv("data/train_data.txt", sep='\n', header=None, names = ['regex'])
-train_ten = train_single.loc[train_single.index.repeat(10)].reset_index(drop=True)
-with open('data/train_data_pairs.txt') as f:
-    lines = f.readlines()
-examples = [split(line.strip()) for line in lines]
-train_ten["example"] = examples
 
-# creating pairs 
-if USE_TRUE_PROB:
-  pairs = [(eval(row["regex"]),eval(row["regex"])) for i, row in train_ten.iterrows()]
-else :
-  print("Starting to generate pairs")
-  pairs = [(eval(row["regex"]), row["example"]) for index,row in train_ten.iterrows()]
-  print("Done generating pairs")
+def load_train_data():
+    with open('data/train_data.txt') as f:
+        train_regexes_list = [eval(l) for l in f]
+    with open('data/train_data_pairs.txt') as f:
+        train_examples_list = [l.strip() for l in f]
+    train_data = []
+    for i, r in enumerate(train_regexes_list):
+        train_data.append((r, train_examples_list[i*10:i*10+4]))
+    return train_data
+
+pairs = load_train_data()
+# regex, list of all examples for that regex (I hope)
 
 # make the language 
 # first iteration = very restricted language no optionals no constants
@@ -156,14 +157,10 @@ def tensorFromList(lang, char_list):
     return torch.tensor(indexes, dtype=torch.long, device=device).view(-1, 1)
 
 
-def pairFromPair(pair):
-    input_tensor = tensorFromList(input_lang, pair[0])
-    #target_tensor = tensorFromList(output_lang, list(pair[1]))
-    return (pair[0], input_tensor)
-
 def tripleFromPair(pair):
     input_tensor = tensorFromList(input_lang, pair[0])
-    target_tensor = tensorFromList(output_lang, pair[1])
+    target_tensor = functools.reduce(
+            lambda a, b: torch.cat((a,b), dim=0), (tensorFromList(output_lang, s) for s in pair[1]))
     return (pair[0], input_tensor, target_tensor)
 
 
@@ -318,11 +315,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
     else:
         encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
         decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate)
-    if USE_TRUE_PROB:
-      training_tuple = [pairFromPair(random.choice(pairs))
-                      for i in range(n_iters)]
-    else:
-      training_tuple = [tripleFromPair(random.choice(pairs))
+    training_tuple = [tripleFromPair(random.choice(pairs))
                       for i in range(n_iters)]
     criterion = nn.CrossEntropyLoss()
 
@@ -347,8 +340,8 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             print_loss_total = 0
             # Print out in some CSV format
             stats_test = accuracy_stats_for(encoder, decoder, dataset='testing')
-            stats_train = accuracy_stats_for(encoder, decoder, dataset='training')
-            output = f'{timeSince(start, iter)},{iter},{print_loss_avg},{stats_test},{stats_train}'
+            # stats_train = accuracy_stats_for(encoder, decoder, dataset='training')
+            output = f'{timeSince(start, iter)},{iter},{print_loss_avg},{stats_test}'
             print(output)
             if file: file.write(output + '\n')
             #print('%s (%d %d%%) %.4f' % (timeSince(start, iter / n_iters),
@@ -376,62 +369,51 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
 
         decoder_hidden = encoder_hidden
 
+        decoded_examples = []
         decoded_words = []
-        decoder_attentions = torch.zeros(max_length, max_length)
 
-        for di in range(max_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
+        for di in range(max_length * 4):
+            decoder_output, decoder_hidden, __ = decoder(
                 decoder_input, decoder_hidden, encoder_outputs)
-            decoder_attentions[di] = decoder_attention.data
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:
-                decoded_words.append('<EOS>')
-                break
+                decoded_examples.append(decoded_words)
+                decoded_words = []
+                if len(decoded_examples) == 4: break
             else:
                 decoded_words.append(output_lang.index2word[topi.item()])
 
             decoder_input = topi.squeeze().detach()
 
-        return decoded_words, decoder_attentions[:di + 1]
-
+        return decoded_examples
 
 
 def accuracy_stats_for(encoder, decoder, dataset='testing', maxsize=1000):
     '''
-    Returns "correct percent,reached end percent"
+    Returns percent correct
     '''
-    if dataset == 'testing':
-        iter = list(test.iterrows())[:maxsize]
-    else:
-        iter = list(train_single.iterrows())[:maxsize]
-    size = len(iter)
     count = 0
-    end = 0
-    end_correct=0
-    for index, row in iter:
+    total = 0
+    for index, row in test.iterrows():
         regex_list = eval(row["regex"])
         answer = evaluate(encoder, decoder, regex_list)
-        if re.search('^' + ''.join(regex_list) + '$', ''.join(answer[0][:-1])):
-            count+=1
-            if answer[0][-1] == "<EOS>":
-                end_correct+=1
-            #print(f'CORRECT, regex: {"".join(regex_list)}, generated: {"".join(answer[0][:-1])}')
-        else:
-            pass
-            #print(f'WRONG, regex: {"".join(regex_list)}, generated: {"".join(answer[0][:-1])}')
-        if answer[0][-1] == "<EOS>":
-            end+=1
-    return f'{count/size * 100},{end/size * 100}'
+        for ex in answer:
+            total += 1
+            if re.search('^' + ''.join(regex_list) + '$', ''.join(ex)):
+                count+=1
+    return count/total * 100
 
-def train_neural_network(hidden_size=256, optimizer='SGD', learning_rate=0.01, iters=100000):
+def train_neural_network(hidden_size=256, optimizer='SGD', learning_rate=0.01, iters=50000):
     print(f'Training {hidden_size=} {optimizer=} {learning_rate=}...')
-    file = open(f'Data for {hidden_size=} {optimizer=} {learning_rate=}.csv', 'w')
+    file = open(f'Data for {hidden_size=} {optimizer=} {learning_rate=} no batching.csv', 'w')
     file.write('time,iteration,loss,test accuracy,test end,train accuracy,train end\n')
     file.flush()
     encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
     attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words).to(device)
     trainIters(encoder1, attn_decoder1, iters, print_every=1000, optimizer=optimizer, learning_rate=learning_rate, file=file)
     file.close()
+    torch.save(encoder1.state_dict(), 'encoder-Adam-100k-iters.pt')
+    torch.save(attn_decoder1.state_dict(), 'attn_decoder-Adam-100k-iters.pt')
 
 setups = [
     { 'hidden_size': 256, 'optimizer': 'Adam', 'learning_rate': 0.0003 },

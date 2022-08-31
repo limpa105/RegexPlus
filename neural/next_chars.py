@@ -100,16 +100,16 @@ def prepend_component_to_nfa(component: str, next_node: Node) -> Node:
 
 class DFANode:
     node_id: int
-    p_end: float
-    transitions: Dict[str, Tuple[int, float]]
-    def __init__(self, node_id, p_end, transitions):
+    is_end: bool
+    transitions: Dict[str, int]
+    def __init__(self, node_id, is_end, transitions):
         self.node_id = node_id
-        self.p_end = p_end
+        self.is_end = is_end
         self.transitions = transitions
 
 class DFA:
     # map indices (node ids) to whether they're the end node + their transitions
-    nodes: List[Tuple[bool, Dict[str, int]]]
+    nodes: List[DFANode]
 
     def __init__(self, nfa: Set[Node]):
         # NFA to DFA: powerset construction
@@ -128,76 +128,25 @@ class DFA:
 
         while len(worklist) > 0:
             s = worklist.pop()
-            transitions = dict()
+            transitions: Dict[str, int] = dict()
             for char in possible_next_chars(s):
                 s2 = consume_a_char(s, char)
                 i2 = set_to_id(s2)
-                transitions[char] = i2, 1.0
+                transitions[char] = i2
             is_end = end_token_is_allowed_here(s)
             i = set_to_id(s)
             self.nodes[i] = DFANode(i, is_end, transitions)
 
-        self.set_weights()
-
-    def set_weights(self):
-        weights = fraction_of_strings_matched(self)
-        for node in self.nodes:
-            total = sum(P_SOME_CHAR(len(node.transitions)) * weights[j] for ch, (j, w) in node.transitions.items())
-            if node.p_end:
-                total += P_END
-            for ch, (j, w) in node.transitions.items():
-                new_weight = P_SOME_CHAR(len(node.transitions)) * weights[j] / total
-                node.transitions[ch] = j, new_weight
-            node.p_end = node.p_end * P_END / total
-
     def sample(self):
+        '''Samples uniformly from the DFA. Probably not what you want'''
         out = ''
         node = self.nodes[0]
         while True:
-            ch = np.random.choice(np.array(list(node.transitions.keys()) + ['END']),
-                    p=np.array(list(w for j, w in node.transitions.values()) +
-                        [node.p_end]))
+            ch = np.random.choice(np.array(list(node.transitions.keys()) +
+                (['END'] if node.is_end else [])))
             if ch == 'END':
                 return out
             out += ch
             node = self.nodes[node.transitions[ch][0]]
 
 
-## Assigning weights to transitions
-# NUM_CHARS = 95  # yay we like *magic numbers*
-P_END = 1/6
-def P_SOME_CHAR(num_chars):
-    return (1. - P_END) / num_chars
-# P_SOME_CHAR = (1. - P_END) / NUM_CHARS
-
-def fraction_of_strings_matched(dfa: DFA) -> np.ndarray:
-    # for a node M:
-    #  M ----> A
-    #  ↓ \->K
-    #  R
-    # Fraction of strings matched by M = P_SOME_CHAR * (A + R + K)
-    #                                     (+ P_END if it's an end node)
-
-    # Want to rewrite in matrix form to get numpy to solve it for us
-    # 1.0 * M - P_SOME_CHAR * A - P_SOME_CHAR * R - P_SOME_CHAR * K = 0 or P_END
-
-    A = np.eye(len(dfa.nodes))
-    y = np.zeros(len(dfa.nodes))
-    for i, node in enumerate(dfa.nodes):
-        for char, (j, wt) in node.transitions.items():
-            A[i,j] -= P_SOME_CHAR(len(node.transitions))
-        y[i] = P_END if node.p_end else 0
-
-    # x[i] is the fraction of strings matched by node number i
-    #   (strings coming from that probability distribution)
-    x = np.linalg.solve(A, y)  # solve Ax = y
-    return x
-
-
-# If we have [0-9]+a:
-# 
-#
-#   start --[0-9]-→ * ---a--→ (END)
-#                  / ↑
-#                  \_/
-#                 [0-9]
