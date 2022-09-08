@@ -149,4 +149,13 @@ class DFA:
             out += ch
             node = self.nodes[node.transitions[ch][0]]
 
+def error_location(regex: List[str], ex: str) -> int:
+    state = regex_to_nfa(regex)
+    for i, ch in enumerate(ex):
+        if ch not in possible_next_chars(state):
+            return i
+        state = consume_a_char(state, ch)
+    return -1
+
+
 

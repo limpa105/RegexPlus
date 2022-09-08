@@ -7,7 +7,7 @@ def poisson(k):
     return 4**k / np.math.factorial(k)
 
 class Regex(next_chars.DFA):
-    def __init__(self, components: List[str], MAX_LENGTH=25,
+    def __init__(self, components: List[str], MAX_LENGTH=50,
             LENGTH_DISTRIB=poisson):
         super().__init__(next_chars.regex_to_nfa(components))
         self.MAX_LENGTH = MAX_LENGTH
