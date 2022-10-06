@@ -13,6 +13,7 @@
   "dependencies": {
     "@jspsych/plugin-html-keyboard-response": "^1.1.1",
     "@jspsych/plugin-instructions": "^1.1.1",
+    "@jspsych/plugin-survey-multi-choice": "^1.1.1",
     "express": "^4.16.4",
     "jspsych": "^7.2.3",
     "webpack": "^5.74.0",

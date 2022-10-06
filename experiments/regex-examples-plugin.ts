@@ -22,6 +22,12 @@ const info = <const>{
       pretty_name: "Regex",
       default: "",
     },
+
+    NUM_TASKS: {
+      type: ParameterType.INT,
+      pretty_name: "Number of Tasks",
+      default: 1,
+    }
   },
 };
 
@@ -95,6 +101,8 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
       display_element.innerHTML = "";
 
       // next trial
+      const progress = this.jsPsych.getProgressBarCompleted();
+      this.jsPsych.setProgressBar(progress + 1/trial.NUM_TASKS)
       this.jsPsych.finishTrial(trialdata);
     });
   }
@@ -130,7 +138,7 @@ async function AddEx(regex: string, e: HTMLElement) {
   main.appendChild(ex)
   const input = document.createElement("input")
   input.type = "text"
-  input.addEventListener('change', e => updateWhetherItIsValid(regex, e.target))
+  input.addEventListener('keyup', e => updateWhetherItIsValid(regex, e.target))
   const correct = document.createElement("span")
   correct.innerHTML = " Invalid"
   correct.className = "wrong"

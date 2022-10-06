@@ -22,13 +22,14 @@ app.get('/*', (req, res) => {
 });
 
 app.post('/have_some_data', (req, res) => {
-  // TODO: save the data (to a database, or even just a file)
   console.log("\tPOST: Got some data:", req.body);
   const { prolificID, studyID, sessionID, data } = req.body;
-  const fileName = `from_user_${prolificID}.json`;
+  const fileName = `from_user_${prolificID}_at_${new Date()}.json`;
+  const dirName = `${saved_data_dir}/from_user_${prolificID}`
   try {
-    fs.writeFileSync(saved_data_dir + '/' + fileName, JSON.stringify(req.body));
-      // file written successfully
+    fs.mkdirSync(dirName, {recursive: true}); // "recursive" actually means: no error if it already exists
+    fs.writeFileSync(dirName + '/' + fileName, JSON.stringify(req.body));
+    // file written successfully
     console.log("Have some files")
   } catch (err) {
     console.error('Error writing file:', err);

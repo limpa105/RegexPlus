@@ -5,6 +5,7 @@
 import {initJsPsych} from 'jspsych';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 import instructions from '@jspsych/plugin-instructions';
+import surveyMulipleChoice from '@jspsych/plugin-survey-multi-choice';
 import {RegexExamplesPlugin, RegexExampleData} from './regex-examples-plugin';
 
 var queryString = window.location.search;
@@ -22,6 +23,9 @@ var jsPsych = initJsPsych({
   on_data_update: function() {
     saveData(jsPsych.data.get().csv());
   },
+  show_progress_bar: true,
+  message_progress_bar: 'Journey completion',
+  auto_update_progress_bar: false,
 });
 
 function saveData(data: string) {
@@ -35,7 +39,6 @@ function saveData(data: string) {
 /* We could change it to get the content from a server, or from somewhere else,
  * or whatever, in the future
  */
-// TODO
 const problems: RegexExampleData[] = [
   {
     description: "All nonempty lowercase strings",
@@ -122,6 +125,7 @@ const problems: RegexExampleData[] = [
     regex: "\\d{3} \\d{2}"
   },
 ];
+const NUM_TASKS = problems.length;
 
 
 /*********** Intro slides ***********/
@@ -131,7 +135,7 @@ const consentHTML = ["<u><p id='legal'>Consent to Participate</p></u>\
     <p id='legal'>By completing this HIT, you are participating in a \
   study being performed by cognitive scientists in the UC San Diego \
   Department of Psychology. The purpose of this research is to find out\
-  how people understand visual information. \
+  how people communicate about patterns. \
   You must be at least 18 years old to participate. There are neither\
   specific benefits nor anticipated risks associated with participation\
   in this study. Your participation in this study is completely voluntary\
@@ -152,27 +156,42 @@ const consentHTML = ["<u><p id='legal'>Consent to Participate</p></u>\
   Institutional Review Board.</p><p>Click 'Next' to continue \
   participating in this HIT.</p>"];
 
-const storyHTML = ['<p> In this study you will be a space explorer traveling from planet to planet in a new solar system called Gacradus. \
- This galaxy has a very elaborate etiquette system. On every planet, there are strict rules for which words you are allowed to use to talk to the inhabitants. \
-You are corresponding with your friend Charlie on Earth, who is charged with documenting the intricate language system of this new solar system. \
-Your goal is to communicate all of the details about the language of each planet to Charlie, but Gacradians are screening your letters and only allowing you to send words that are in their language. \
-</p> <p> Become a world-famous explorer by explaining all of the details of each planet’s language through examples of allowed words! </p> \
-<img src="images/conversation.png"  width="450" height="300"<br>']
+const storyHTML = [`
+    <p>In this study you will be a space explorer traveling from planet to
+    planet in a new solar system called Gacradus. This solar system has a very
+    elaborate etiquette system. On every planet, there are strict rules for
+    which words you are allowed to use to talk to the inhabitants. You are
+    corresponding with your friend Charlie on Earth, who is charged with
+    documenting the intricate language system of this new solar system. Your
+    goal is to communicate all of the details about the language of each planet
+    to Charlie, but Gacradians are screening your letters and only allowing you
+    to send words that are in their language. </p>
+    <p>Become a world-famous explorer by explaining all of the details of each
+    planet’s language through examples of allowed words! </p>
+    <img src="images/conversation.png" width="450" height="300"<br>
+    `];
 
-const exampleHTML = ['<p>In this experiment, you will be shown descriptions of different groups of strings. Each description corresponds to a regular expression (regex).</p> \
-<p> <strong> For each description your goal is to provide examples of strings that would allow someone who has never seen the description to guess \
-it based solely on the examples. </strong> </p> <p> <br> Below is an example of the task: </p> <div class=task_ex> \
-<p>  <strong>Description:</strong> All strings made up of only capital letters \
-<br> <strong>Corresponding Regex:</strong> <tt> [A-Z]*  </tt> </p> \
-<ol> \
-  <li> </li> \
-  <li> I </li> \
-  <li> LOVE </li> \
-  <li> REGEXES </li> \
-</ol> \
-</div class=task_ex> \
-<p>Press any key to continue.</p> \
-</div class=task_ex>']
+const exampleHTML = [`<p>
+    In this experiment, you will visit ${NUM_TASKS} planets. On each planet,
+    the language will be described to you using both words, and a regular
+    expression (regex).
+    </p>
+    <p><strong>Your goal is to fully convey the language to Charlie, through allowed utterances.</strong></p>
+    <br />
+    <p>Below is an example of the task:</p>
+    <div class=task_ex>
+      <p>
+        <strong>Description:</strong> All strings made up of only capital letters
+        <br />
+        <strong>Corresponding Regex:</strong> <tt>[A-Z]*</tt>
+      </p>
+      <ol>
+        <li> </li>
+        <li> H </li>
+        <li> CAT </li>
+        <li> WQERWTEYRJ </li>
+      </ol>
+    </div>`]
 
 const instructionsHTML = ['<p> Press a button to either add or remove examples. \
 If your example fits the description it will have "Valid" appear next to it in green, \
@@ -192,6 +211,24 @@ const welcome = {
     show_clickable_nav: true
 };
 
+const prior_knowledge = {
+  type: surveyMulipleChoice,
+  preamble: 'Thank you! The Gacradians have two more questions for you before you leave their solar system.',
+  questions: [
+    {
+      prompt: "I write computer programs:",
+      name: "programming_experience",
+      options: ["Occasionally", "Professionally"],
+      required: false,
+    },
+    {
+      prompt: "I read or write regular expressions:",
+      name: "regex_experience",
+      options: ["Never", "Occasionally", "Regularly"],
+      required: false,
+    },
+  ],
+};
 
 const thank = {
   type: htmlKeyboardResponse,
@@ -206,6 +243,7 @@ const main_experiment = {
     type: RegexExamplesPlugin,
     description: jsPsych.timelineVariable('description'),
     regex: jsPsych.timelineVariable('regex'),
+    NUM_TASKS: NUM_TASKS,
   }],
   timeline_variables: problems,
   randomize_order: true,
@@ -215,6 +253,7 @@ const main_experiment = {
 const timeline = [
   welcome,
   main_experiment,
+  prior_knowledge,
   thank,
 ];
 

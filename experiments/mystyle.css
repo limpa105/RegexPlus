@@ -29,3 +29,8 @@ ol {
   height: auto;
   display: inline-block;
 }
+
+#jspsych-progressbar-inner {
+  background-color: green;
+}
+

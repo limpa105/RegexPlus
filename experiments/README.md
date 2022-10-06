@@ -11,7 +11,7 @@ Also needed to:
  - `npm install webpack`
  - 
 
-After a change, to rebuild: run `d`. This runs all the
+After a change, to rebuild: run `npm run build-web`. This runs all the
 build tools, and dumps `index.html` and `bundle.js` into `build/`.
 
 To run a server, locally:
