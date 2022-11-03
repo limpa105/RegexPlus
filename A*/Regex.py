@@ -1,8 +1,7 @@
 from typing import *
 import math
 import nfa
-import functools
-import string 
+import functools, dataclasses, string
 
 END_OF_REGEX_PROB = 0.05
 ONE_TOKEN_COST = - math.log(1 - END_OF_REGEX_PROB)
@@ -27,11 +26,9 @@ class Regex:
         state = self.prepend_nfa_to(nfa.Node(is_end=True)).epsilon_closure()
         return nfa.matches(state, ex)
 
+@dataclasses.dataclass(frozen=True)
 class Constant(Regex):
     contents: str
-
-    def __init__(self, contents: str):
-        self.contents = contents
 
     def __str__(self) -> str:
         special = '()[]\\+*?'
@@ -63,18 +60,17 @@ class Constant(Regex):
             node = nfa.Node(transitions={char: node})
         return node
 
-
+@dataclasses.dataclass(frozen=True)
 class CharClass(Regex):
-    def __init__(self, name: str, simpl_prob: float, options: Set[str]):
-        self.options = options
-        self.name = name
-        self.simpl_prob = simpl_prob
+    name: str
+    simpl_prob: float
+    options: FrozenSet[str]
 
     def __str__(self) -> str:
         return f'[{self.name}]'
 
-    def simplicty_score(self) -> float:
-        return math.log(self.simpl_prob) + ONE_TOKEN_COST
+    def simplicity_score(self) -> float:
+        return - math.log(self.simpl_prob) + ONE_TOKEN_COST
 
     def specificity_score(self, ex_part: str) -> float:
         if ex_part in self.options:
@@ -94,12 +90,9 @@ class CharClass(Regex):
     def prepend_nfa_to(self, node: nfa.Node) -> nfa.Node:
         return nfa.Node(transitions={char: node for char in self.options})
 
-
+@dataclasses.dataclass(frozen=True)
 class RepeatedCharClass(Regex):
     contents: CharClass
-
-    def __init__(self, contents: CharClass):
-        self.contents = contents
 
     def __str__(self):
         return str(self.contents) + '+'
@@ -126,14 +119,12 @@ class RepeatedCharClass(Regex):
 
     def prepend_nfa_to(self, node: nfa.Node) -> nfa.Node:
         temp = nfa.Node(epsilon_transitions={node})
-        temp.transitions = {char: temp for char in self.options}
-        return nfa.Node(transitions={char: temp for char in self.options})
+        temp.transitions = {char: temp for char in self.contents.options}
+        return nfa.Node(transitions={char: temp for char in self.contents.options})
 
+@dataclasses.dataclass(frozen=True)
 class Optional(Regex):
     contents: Regex
-
-    def __init__(self, contents: Regex):
-        self.contents = contents
 
     def __str__(self) -> str:
         return '(' + str(self.contents) + ')?'
@@ -151,11 +142,11 @@ class Optional(Regex):
 
 
 CHAR_CLASSES: List[CharClass] = [
-    CharClass('a-z', 0.095, set(string.ascii_lowercase)),
-    CharClass('0-9', 0.095, set(string.digits)),
-    CharClass('A-Z', 0.095, set(string.ascii_uppercase)),
-    CharClass('a-zA-Z', 0.01, set(string.ascii_letters)),
-    CharClass('a-zA-Z0-9', 0.005, set(string.ascii_letters + string.digits)),
+    CharClass('a-z', 0.095, frozenset(string.ascii_lowercase)),
+    CharClass('0-9', 0.095, frozenset(string.digits)),
+    CharClass('A-Z', 0.095, frozenset(string.ascii_uppercase)),
+    CharClass('a-zA-Z', 0.01, frozenset(string.ascii_letters)),
+    CharClass('a-zA-Z0-9', 0.005, frozenset(string.ascii_letters + string.digits)),
 ]
 REPEATED_CHAR_CLASSES: List[RepeatedCharClass] \
         = [RepeatedCharClass(cc) for cc in CHAR_CLASSES]
