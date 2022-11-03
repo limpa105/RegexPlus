@@ -28,21 +28,33 @@ def possible_next_chars(state: State) -> Set[str]:
 def end_token_is_allowed_here(state: State) -> bool:
     return any(n.is_end for n in state)
 
-def consume_a_char(state: State, ch: str) -> State:
+def maybe_consume_a_char(state: State, ch: str) -> Optional[State]:
     next_state = set()
     for node in state:
         if ch in node.transitions:
             node.transitions[ch].epsilon_closure_union(next_state)
     if len(next_state) == 0:
-        raise Exception(f"you can't actually use that character ({ch})")
+        return None
     return frozenset(next_state)
 
-def matching_locations(state: State, text: str, starting_from: int) -> list[int]:
-    TODO
+def consume_a_char(state: State, ch: str) -> State:
+    result = maybe_consume_a_char(state, ch)
+    if result is None:
+        raise Exception(f"you can't actually use that character ({ch})")
+    return result
+
+def matching_locations(state: State, text: str, starting_from: int) -> Iterator[int]:
+    for i in range(starting_from, len(text)):
+        if end_token_is_allowed_here(state):
+            yield i
+        char = text[i]
+        state = maybe_consume_a_char(state, char)
+        if state is None:
+            return
 
 def matches(state: State, text: str) -> bool:
     for char in text:
-        if not any(char in node.transitions for node in state):
+        state = maybe_consume_a_char(state, char)
+        if state is None:
             return False
-        state = consume_a_char(state, char)
     return end_token_is_allowed_here(state)
