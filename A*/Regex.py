@@ -60,7 +60,12 @@ class Constant(Regex):
             node = nfa.Node(transitions={char: node})
         return node
 
-@dataclasses.dataclass(frozen=True)
+
+# NOTE [Mark]: eq=False makes it default to object equality. This is a lot
+# faster, and works because we only ever create a few instances of these classes
+# and then re-use them.
+
+@dataclasses.dataclass(frozen=True, eq=False)
 class CharClass(Regex):
     name: str
     simpl_prob: float
@@ -90,7 +95,7 @@ class CharClass(Regex):
     def prepend_nfa_to(self, node: nfa.Node) -> nfa.Node:
         return nfa.Node(transitions={char: node for char in self.options})
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True, eq=False)
 class RepeatedCharClass(Regex):
     contents: CharClass
 
