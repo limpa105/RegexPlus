@@ -15,7 +15,7 @@ class Regex:
         raise NotImplementedError()
     def opt_simplicity_score(self) -> float:
         raise NotImplementedError()
-    def opt_specificty_score(self, ex_part: str) -> float:
+    def opt_specificity_score(self, ex_part: str) -> float:
         raise NotImplementedError()
 
     @functools.cache
@@ -50,7 +50,7 @@ class Constant(Regex):
         return math.log(3) + self.simplicity_score()
 
     def opt_specificity_score(self, ex_part: str) -> float:
-        if ex_part == self.contents:
+        if ex_part == self.contents or ex_part == '':
             return math.log(2)
         else:
             return math.inf
@@ -81,8 +81,8 @@ class CharClass(Regex):
     def opt_simplicity_score(self) -> float:
         return math.log(3) + self.simplicity_score()
 
-    def opt_specificty_score(self, ex_part: str) -> float:
-        if ex_part in self.options:
+    def opt_specificity_score(self, ex_part: str) -> float:
+        if ex_part in self.options or ex_part == '':
             return math.log(len(self.options) + 1)
         else:
             return math.inf
@@ -133,7 +133,7 @@ class Optional(Regex):
         return self.contents.opt_simplicity_score()
 
     def specificity_score(self, ex_part: str) -> float:
-        return self.contents.opt_specificty_score(ex_part)
+        return self.contents.opt_specificity_score(ex_part)
 
     def prepend_nfa_to(self, node: nfa.Node) -> nfa.Node:
         result = self.contents.prepend_nfa_to(node)
