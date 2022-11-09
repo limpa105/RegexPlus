@@ -1,10 +1,11 @@
 from typing import *
 import math, itertools, functools, dataclasses, heapq
-from Regex import *
 from Heuristics import *
 import os
+from VSA import * 
+from  PriorityQueue import *
+from Regex import *
 
-@functools.total_ordering
 @dataclasses.dataclass(frozen=True)
 class State:
     '''The thing that goes into a priority queue'''
@@ -15,80 +16,6 @@ class State:
 
     def __eq__(self, other) -> bool:
         return self.score == other.score
-    def __lt__(self, other) -> bool:
-        return self.score < other.score
-
-
-class PQ(Protocol):
-    '''
-    The protocol that is implemented by:
-     - PriorityQueue
-     - Amortized Limited memory priority queue
-     - MinMax heap limited memory priority queue
-    '''
-    def add(self, elt: State):
-        ...
-    def pop_best(self) -> State:
-        ...
-
-class LimitedPQ(list[State]):
-    '''
-    A mutable priority queue, that you add stuff to over time, with limited space
-    '''
-
-    def __init__(self: 'LimitedPQ', max_size: int):
-        self.max_size = max_size
-
-    def kill_extra_elts(self: 'Shelf'):
-        '''quickselect then re-heapify: O(n)'''
-        if len(self) <= self.max_size: return
-
-        lo = 0
-        while len(self) > self.max_size:
-            cut_elt = self[self.max_size]
-            mid = partition(self, lo, len(self), lambda x: x.score < cut_elt.score)
-            if mid >= self.max_size:
-                while len(self) > mid: self.pop()
-            else:
-                lo = mid
-
-        heapq.heapify(self)
-
-    def add(self: 'LimitedPQ', item: State):
-        '''amortized O(log n), worst-case O(n)'''
-        heapq.heappush(self, item)
-        if len(self) >= 2 * self.max_size:
-            self.kill_extra_elts()
-
-    def best_score(self: 'LimitedPQ') -> float:
-        '''O(1)'''
-        if len(self) == 0:
-            return float('inf')
-        else:
-            return self[0].score()
-
-    def best(self: 'LimitedPQ') -> State:
-        '''O(1)'''
-        return self[0]
-
-    def pop_best(self: 'LimitedPQ') -> State:
-        '''O(log n)'''
-        return heapq.heappop(self)
-
-### Utils for the priority queue
-
-T = TypeVar('T')
-
-def partition(xs: list[T], lo: int, hi: int, pred: Callable[[T], bool]) -> int:
-    '''O(hi - lo)'''
-    assert 0 <= lo <= hi < len(xs)
-    while lo < hi:
-        if pred(xs[lo]):
-            lo += 1
-        else:
-            xs[lo], xs[hi - 1] = xs[hi - 1], xs[lo]
-            hi -= 1
-    return lo
 
 ### The main search code
 
@@ -96,6 +23,7 @@ def search(examples: List[str], max_size: int):
     N = len(examples)
     pq = LimitedPQ(max_size)
     heuristic = BestHeuristic(examples)
+
     starting_index = (0,) * N
     ending_index = tuple(len(e) for e in examples)
     pq.add(State(
@@ -105,33 +33,48 @@ def search(examples: List[str], max_size: int):
         regex_so_far=[]
     ))
     # We have a loop
+    VSAs = precompute_VSAs(examples)
+
     while len(pq) > 0:
         state = pq.pop_best()
         if state.indices == ending_index:
             return state.regex_so_far
+        for end, r in next_states(VSAs, state.indices):
+            score_so_far = state.score_so_far \
+                + r.simplicity_score()  \
+                + sum(r.specificity_score(e[a:b]) for e,a,b in zip(examples, state.indices, end))
+            pq.add(State(indices=end, 
+            score_so_far= score_so_far,
+            score = score_so_far + heuristic.value_at(end),
+            regex_so_far = state.regex_so_far + [r]
+            ))
+
        #TODO: add the things after state
 
-# Liza notes:
-# 1) should we actually be ending if state,indices=ending_index what about 
-# \d for 57 and 7 (are we just hoping it will not be outputed)
-# 2) idea pop best state add all regexes s.t output a st
+
+# 2) idea pop best state add all regexes s.t output matches
 
 
-def next_regexes(examples: List[str], curr_states: Tuple(int)):
-    # next characters
-    next_chars = [example[index] for example, index in zip(examples, curr_states)]
-    chars_left = [example[index:len(example)] for example, index in zip(examples, curr_states)]
+def precompute_VSAs(examples: list[str]) -> list[VSA] :
+    return [VSA.single_example(i) for i in examples]
 
-    # posible constants
-    longest_prefix = os.path.commonprefix(chars_left)
-    constant_regxes = itertools.accumulate(map(lambda x: Constant(''.join([x,])), longest_prefix))
 
-    # possible atomic regexes using Mark's code
-    atomic_regexes_for_each = (set(atomic_regexes_matching(t)) for t in next_chars)
-    regexes = functools.reduce(set.intersection, atomic_regexes_for_each)
+def next_states(VSAs: list[VSA], starting: VSAState):
+    if len(VSAs) == 1:
+        return [ (end,r) for (end, rs) in VSAs[0].edges[starting].items() for r in rs]
+    v, * rest_vsas = VSAs
+    i, * rest_starting = starting
+    rest_starting = tuple(rest_starting)
+    rest = next_states(rest_vsas, rest_starting)
+    return [(e + rest_end, r) for rest_end, r in rest for e, rs in v.edges[(i,)].items() if r in rs ] \
+        + [ ((i, * rest_end), Optional(r)) for rest_end, r in rest] \
+         + [(e + rest_starting, Optional(r)) for e, rs in v.edges[(i,)].items() for r in rs ] 
+
+
+
     
-    # possible optionals 
-    if any(t == '' for t in texts):
+
+
 
 
 if __name__ == '__main__':
@@ -142,3 +85,5 @@ if __name__ == '__main__':
         if i == "":
             break
         inputs.append(i)
+    result = search(inputs, 10000)
+    print(''.join(str(r) for r in result))

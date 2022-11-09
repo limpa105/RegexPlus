@@ -3,29 +3,29 @@ from VSA import VSAState
 import math, itertools, functools, dataclasses
 
 class PQItemProtocol(Protocol):
-    vsa_state: VSAState
+    indices: VSAState
     score: float
 
-Item = typing.TypeVar(bound=PQItemProtocol)
+Item = TypeVar('Item', bound=PQItemProtocol)
 
-class PQ(Protocol):
+class PQ(Protocol[Item]):
     '''
     The protocol that is implemented by:
      - PriorityQueue
      - Amortized Limited memory priority queue
      - MinMax heap limited memory priority queue
     '''
-    def add(self, elt: State):
+    def add(self, elt: Item):
         ...
-    def pop_best(self) -> State:
+    def pop_best(self) -> Item:
         ...
 
-class LimitedPQ(Generic[State]):
+class LimitedPQ(Generic[Item]):
     '''
     A mutable priority queue, that you add stuff to over time, with limited space
     '''
 
-    heap: List[State]
+    heap: List[Item]
     inds: Dict[VSAState, int]
     max_size: int
 
@@ -53,20 +53,20 @@ class LimitedPQ(Generic[State]):
                 lo = mid
 
         heapify(heap)
-        self.inds = {x.vsa_state: i for i, x in enumerate(self.heap)}
+        self.inds = {x.indices: i for i, x in enumerate(self.heap)}
 
-    def add(self: 'LimitedPQ', item: State):
+    def add(self: 'LimitedPQ', item: Item):
         '''amortized O(log n), worst-case O(n)'''
-        if item.vsa_state in self.inds:
-            ind = self.inds[item.vsa_state]
+        if item.indices in self.inds:
+            ind = self.inds[item.indices]
             if item.score >= self.heap[ind].score:
                 return
             self.heap[ind] = item
             bubble_up_with_inds(self.heap, self.inds, ind)
             return
         i = len(self.heap)
-        self.inds[item.vsa_state] = i
-        self.heap.push(item)
+        self.inds[item.indices] = i
+        self.heap.append(item)
         bubble_up_with_inds(self.heap, self.inds, i)
         if len(self.heap) >= 2 * self.max_size:
             self.kill_extra_elts()
@@ -78,11 +78,11 @@ class LimitedPQ(Generic[State]):
         else:
             return self.heap[0].score()
 
-    def best(self: 'LimitedPQ') -> State:
+    def best(self: 'LimitedPQ') -> Item:
         '''O(1)'''
         return self.heap[0]
 
-    def pop_best(self: 'LimitedPQ') -> State:
+    def pop_best(self: 'LimitedPQ') -> Item:
         '''O(log n)'''
         if len(self.heap) == 1:
             self.inds = {}
@@ -90,8 +90,8 @@ class LimitedPQ(Generic[State]):
         item = self.heap[0]
         last = self.heap.pop()
         self.heap[0] = last
-        del self.inds[item.vsa_state]
-        self.inds[last.vsa_state] = 0
+        del self.inds[item.indices]
+        self.inds[last.indices] = 0
         bubble_down_with_inds(self.heap, self.inds, 0)
         return item
 
@@ -139,14 +139,14 @@ def bubble_down_with_inds(xs: List[Item], inds: Dict[VSAState, int], i: int):
         l = 2*i + 1
         r = 2*i + 2
         if l < len(xs) and xs[l].score < x.score:
-            inds[xs[l].vsa_state] = i
-            inds[x.vsa_state] = l
+            inds[xs[l].indices] = i
+            inds[x.indices] = l
             xs[i] = xs[l]
             xs[l] = x
             i = l
         elif r < len(xs) and xs[r].score < x.score:
-            inds[xs[r].vsa_state] = i
-            inds[x.vsa_state] = r
+            inds[xs[r].indices] = i
+            inds[x.indices] = r
             xs[i] = xs[r]
             xs[r] = x
             i = r
@@ -158,9 +158,9 @@ def bubble_up_with_inds(xs: list[Item], inds: Dict[VSAState, int], i: int):
     while i > 0:
         x = xs[i]
         p = (i-1)//2
-        if x.score < xs[p]:
-            inds[xs[p].vsa_state] = i
-            inds[x.vsa_state] = p
+        if x.score < xs[p].score:
+            inds[xs[p].indices] = i
+            inds[x.indices] = p
             xs[i] = xs[p]
             xs[p] = x
             i = p

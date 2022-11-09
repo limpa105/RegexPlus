@@ -45,10 +45,10 @@ class TwoMaxHeuristic:
             j0 = self.permutation[i]
             j1 = self.permutation[i-1]
             merged = vsas[j0].merge(vsas[j1])
-            out = merged.get_best_regex(
+            out = merged.all_best_regexes(
                     lambda regex, text: regex.simplicity_score() +
                     sum(regex.specificity_score(t) for t in text))
-            self.precomputed.append({k: v[0] for k, v in out})
+            self.precomputed.append({k: v[0] for k, v in out.items()})
 
     def value_at(self, vsa_state: Tuple[int, ...]) -> float:
         assert len(vsa_state) == len(self.precomputed), 'Need the same number of indices as number of examples'
