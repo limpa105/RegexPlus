@@ -37,6 +37,17 @@ class LimitedPQ(Generic[Item]):
     def __len__(self) -> int:
         return len(self.heap)
 
+    def assert_invariants(self):
+        # Sizes match up
+        assert len(self.heap) == len(self.inds) <= self.max_size
+        for i, x in enumerate(self.heap):
+            # Indices are tracked
+            assert self.inds[x.indices] == i
+            # Heap invariant
+            if i == 0: continue
+            p = (i-1)//2
+            assert self.heap[p].score <= x.score, f'{i=}, {p=}'
+
     def kill_extra_elts(self: 'LimitedPQ'):
         '''quickselect then re-heapify: O(n)'''
         if len(self) <= self.max_size: return
@@ -46,9 +57,12 @@ class LimitedPQ(Generic[Item]):
         heap = self.heap
         while len(heap) > self.max_size:
             cut_elt = heap[self.max_size]
-            mid = partition(heap, lo, len(heap), lambda x: x.score < cut_elt.score)
+            heap[self.max_size] = heap[lo]
+            mid = partition(heap, lo + 1, len(heap), lambda x: x.score < cut_elt.score)
+            heap[lo] = heap[mid - 1]
+            heap[mid - 1] = cut_elt
             if mid >= self.max_size:
-                while len(heap) > mid: heap.pop()
+                while len(heap) > mid - 1: heap.pop()
             else:
                 lo = mid
 
@@ -101,7 +115,7 @@ T = TypeVar('T')
 
 def partition(xs: list[T], lo: int, hi: int, pred: Callable[[T], bool]) -> int:
     '''O(hi - lo)'''
-    assert 0 <= lo <= hi < len(xs)
+    assert 0 <= lo <= hi <= len(xs)
     while lo < hi:
         if pred(xs[lo]):
             lo += 1
@@ -116,18 +130,16 @@ def bubble_down(xs: list[Item], i: int):
         x = xs[i]
         l = 2*i + 1
         r = 2*i + 2
-        if l < len(xs) and xs[l].score < x.score:
-            xs[i] = xs[l]
-            xs[l] = x
-            i = l
-        elif r < len(xs) and xs[r].score < x.score:
-            xs[i] = xs[r]
-            xs[r] = x
-            i = r
+        if l >= len(xs): break
+        child = r if r < len(xs) and xs[r].score < xs[l].score else l
+        if xs[child].score < x.score:
+            xs[i] = xs[child]
+            xs[child] = x
+            i = child
         else:
             break
 
-def heapify(xs: list[T]):
+def heapify(xs: list[Item]):
     '''O(n)'''
     for i in reversed(range((len(xs)+1) // 2)):
         bubble_down(xs, i)
@@ -138,18 +150,14 @@ def bubble_down_with_inds(xs: List[Item], inds: Dict[VSAState, int], i: int):
         x = xs[i]
         l = 2*i + 1
         r = 2*i + 2
-        if l < len(xs) and xs[l].score < x.score:
-            inds[xs[l].indices] = i
-            inds[x.indices] = l
-            xs[i] = xs[l]
-            xs[l] = x
-            i = l
-        elif r < len(xs) and xs[r].score < x.score:
-            inds[xs[r].indices] = i
-            inds[x.indices] = r
-            xs[i] = xs[r]
-            xs[r] = x
-            i = r
+        if l >= len(xs): break
+        child = r if r < len(xs) and xs[r].score < xs[l].score else l
+        if xs[child].score < x.score:
+            inds[xs[child].indices] = i
+            inds[x.indices] = child
+            xs[i] = xs[child]
+            xs[child] = x
+            i = child
         else:
             break
 

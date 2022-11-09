@@ -18,13 +18,18 @@ class Regex:
     def opt_specificity_score(self, ex_part: str) -> float:
         raise NotImplementedError()
 
-    @functools.cache
     def prepend_nfa_to(self, node: nfa.Node) -> nfa.Node:
         raise NotImplementedError()
 
     def matches(self, ex: str) -> bool:    
         state = self.prepend_nfa_to(nfa.Node(is_end=True)).epsilon_closure()
         return nfa.matches(state, ex)
+
+    def opt(self) -> 'Regex':
+        if isinstance(self, Optional):
+            return self
+        else:
+            return Optional(self)
 
 @dataclasses.dataclass(frozen=True)
 class Constant(Regex):

@@ -19,10 +19,11 @@ class State:
 
 ### The main search code
 
-def search(examples: List[str], max_size: int):
+def search(examples: List[str], max_size: int) -> State:
     N = len(examples)
     pq = LimitedPQ(max_size)
     heuristic = TwoMaxHeuristic(examples)
+    print('computed heuristics')
 
     starting_index = (0,) * N
     ending_index = tuple(len(e) for e in examples)
@@ -37,16 +38,15 @@ def search(examples: List[str], max_size: int):
     while len(pq) > 0:
         state = pq.pop_best()
         if state.indices == ending_index:
-            return state.regex_so_far
+            return state
         for end, r in next_states(VSAs, state.indices):
             score_so_far = state.score_so_far \
                 + r.simplicity_score() \
                 + sum(r.specificity_score(e[a:b]) for e, a, b in zip(examples, state.indices, end))
             pq.add(State(indices=end,
-            score_so_far= score_so_far,
-            score = score_so_far + heuristic.value_at(end),
-            regex_so_far = state.regex_so_far + [r]
-            ))
+                    score_so_far = score_so_far,
+                    score = score_so_far + heuristic.value_at(end),
+                    regex_so_far = state.regex_so_far + [r]))
     raise Exception('No regex works! (Should never happen)')
 
 
@@ -58,8 +58,8 @@ def next_states(VSAs: list[VSA], starting: VSAState):
     rest_starting = tuple(rest_starting)
     rest = next_states(rest_vsas, rest_starting)
     return [(e + rest_end, r) for rest_end, r in rest for e, rs in v.edges[(i,)].items() if r in rs] \
-        + [((i, *rest_end), Optional(r)) for rest_end, r in rest] \
-        + [(e + rest_starting, Optional(r)) for e, rs in v.edges[(i,)].items() for r in rs]
+        + [((i, *rest_end), r.opt()) for rest_end, r in rest] \
+        + [(e + rest_starting, r.opt()) for e, rs in v.edges[(i,)].items() for r in rs]
 
 
 if __name__ == '__main__':
@@ -71,4 +71,4 @@ if __name__ == '__main__':
             break
         inputs.append(i)
     result = search(inputs, 10000)
-    print(''.join(str(r) for r in result))
+    print(result.score, ''.join(str(r) for r in result.regex_so_far))

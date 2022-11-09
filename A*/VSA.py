@@ -37,14 +37,14 @@ class VSA:
                 # new optional edges
                 for e_a, r_a in a_edges.items():
                     end = e_a + s_b
-                    new_edges = set(map(Optional, r_a))
+                    new_edges = {r.opt() for r in r_a}
                     if end not in outgoing_edges:
                         outgoing_edges[end] = new_edges
                     else:
                         outgoing_edges[end] |= new_edges
                 for e_b, r_b in b_edges.items():
                     end = s_a + e_b
-                    new_edges = set(map(Optional, r_b))
+                    new_edges = {r.opt() for r in r_b}
                     if end not in outgoing_edges:
                         outgoing_edges[end] = new_edges
                     else:
@@ -78,3 +78,16 @@ class VSA:
         return regexes
 
 
+if __name__ == '__main__':
+    print('Enter examples, leave blank when done')
+    inputs = []
+    while True:
+        i = input('> ')
+        if i == "":
+            break
+        inputs.append(i)
+    vsas = [VSA.single_example(ex) for ex in inputs]
+    big_vsa = functools.reduce(lambda a, b: a.merge(b), vsas)
+    d = big_vsa.all_best_regexes(lambda r, ts: r.simplicity_score() +
+                                 sum(r.specificity_score(t) for t in ts))
+    print(f'result score is {d[(0,)*len(inputs)]}')

@@ -62,6 +62,31 @@ class TwoMaxHeuristic:
     def value_at(self, vsa_state: Tuple[int, ...]) -> float:
         return max(data[tuple(vsa_state[i] for i in ids)] for ids, data in self.data)
 
+class TwoSumHeuristic:
+    '''Computes a bunch of pairwise stuff -- not all pairs, but many pairs'''
+    data: List[Tuple[Tuple[int, ...], Dict[Tuple[int, ...], float]]]
+
+    def __init__(self, examples: List[str]):
+        N = len(examples)
+        if len(examples) <= 1:
+            raise Exception('nope')
+        score_fn = lambda regex, texts: 1/N*regex.simplicity_score() \
+                + sum(regex.specificity_score(t) for t in texts)
+        permutation = list(range(len(examples)))
+        random.shuffle(permutation)
+        vsas = [VSA.single_example(ex) for ex in examples]
+        self.data = []
+        for i in range(len(examples)):
+            j0 = permutation[i]
+            j1 = permutation[i-1]
+            both = vsas[j0].merge(vsas[j1])
+            self.data.append((
+                (j0, j1),
+                {k: v[0] for k, v in both.all_best_regexes(score_fn).items()}))
+
+    def value_at(self, vsa_state: Tuple[int, ...]) -> float:
+        return sum(data[tuple(vsa_state[i] for i in ids)] for ids, data in self.data)
+
 class SumHeuristic:
     precomputed: List[Dict[int, float]]
 
@@ -96,8 +121,7 @@ class AverageHeuristic:
 
 class TotalHeuristic:
     '''
-    This is strictly worse than the max heuristic, so there's not much point in using it.
-    But why not implement it.
+    An inadmissable heuristic
     '''
     precomputed: List[Dict[int, float]]
 
