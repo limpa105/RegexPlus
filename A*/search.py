@@ -2,7 +2,7 @@ from typing import *
 import math, itertools, functools, dataclasses, heapq
 from Heuristics import *
 import os
-from VSA import * 
+from VSA import *
 from  PriorityQueue import *
 from Regex import *
 
@@ -22,7 +22,7 @@ class State:
 def search(examples: List[str], max_size: int):
     N = len(examples)
     pq = LimitedPQ(max_size)
-    heuristic = BestHeuristic(examples)
+    heuristic = TwoMaxHeuristic(examples)
 
     starting_index = (0,) * N
     ending_index = tuple(len(e) for e in examples)
@@ -32,8 +32,7 @@ def search(examples: List[str], max_size: int):
         score=heuristic.value_at(starting_index),
         regex_so_far=[]
     ))
-    # We have a loop
-    VSAs = precompute_VSAs(examples)
+    VSAs = [VSA.single_example(ex) for ex in examples]
 
     while len(pq) > 0:
         state = pq.pop_best()
@@ -41,40 +40,26 @@ def search(examples: List[str], max_size: int):
             return state.regex_so_far
         for end, r in next_states(VSAs, state.indices):
             score_so_far = state.score_so_far \
-                + r.simplicity_score()  \
-                + sum(r.specificity_score(e[a:b]) for e,a,b in zip(examples, state.indices, end))
-            pq.add(State(indices=end, 
+                + r.simplicity_score() \
+                + sum(r.specificity_score(e[a:b]) for e, a, b in zip(examples, state.indices, end))
+            pq.add(State(indices=end,
             score_so_far= score_so_far,
             score = score_so_far + heuristic.value_at(end),
             regex_so_far = state.regex_so_far + [r]
             ))
-
-       #TODO: add the things after state
-
-
-# 2) idea pop best state add all regexes s.t output matches
-
-
-def precompute_VSAs(examples: list[str]) -> list[VSA] :
-    return [VSA.single_example(i) for i in examples]
+    raise Exception('No regex works! (Should never happen)')
 
 
 def next_states(VSAs: list[VSA], starting: VSAState):
     if len(VSAs) == 1:
-        return [ (end,r) for (end, rs) in VSAs[0].edges[starting].items() for r in rs]
-    v, * rest_vsas = VSAs
-    i, * rest_starting = starting
+        return [(end, r) for end, rs in VSAs[0].edges[starting].items() for r in rs]
+    v, *rest_vsas = VSAs
+    i, *rest_starting = starting
     rest_starting = tuple(rest_starting)
     rest = next_states(rest_vsas, rest_starting)
-    return [(e + rest_end, r) for rest_end, r in rest for e, rs in v.edges[(i,)].items() if r in rs ] \
-        + [ ((i, * rest_end), Optional(r)) for rest_end, r in rest] \
-         + [(e + rest_starting, Optional(r)) for e, rs in v.edges[(i,)].items() for r in rs ] 
-
-
-
-    
-
-
+    return [(e + rest_end, r) for rest_end, r in rest for e, rs in v.edges[(i,)].items() if r in rs] \
+        + [((i, *rest_end), Optional(r)) for rest_end, r in rest] \
+        + [(e + rest_starting, Optional(r)) for e, rs in v.edges[(i,)].items() for r in rs]
 
 
 if __name__ == '__main__':

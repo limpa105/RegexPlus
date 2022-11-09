@@ -33,37 +33,38 @@ class MaxHeuristic:
 
 class TwoMaxHeuristic:
     '''Computes a bunch of pairwise stuff -- not all pairs, but many pairs'''
-    permutation: List[int]
-    precomputed: List[Dict[Tuple[int, int], float]]
+    data: List[Tuple[Tuple[int, ...], Dict[Tuple[int, ...], float]]]
 
     def __init__(self, examples: List[str]):
-        self.permutation = list(range(len(examples)))
-        random.shuffle(self.permutation)
+        if len(examples) == 0:
+            self.data = []
+            return
+        score_fn = lambda regex, texts: regex.simplicity_score() \
+                + sum(regex.specificity_score(t) for t in texts)
+        if len(examples) == 1:
+            vsa = VSA.single_example(examples[0])
+            self.data = [(
+                (0,),
+                {k: v[0] for k, v in vsa.all_best_regexes(score_fn).items()})]
+            return
+        permutation = list(range(len(examples)))
+        random.shuffle(permutation)
         vsas = [VSA.single_example(ex) for ex in examples]
-        self.precomputed = []
+        self.data = []
         for i in range(len(examples)):
-            j0 = self.permutation[i]
-            j1 = self.permutation[i-1]
-            merged = vsas[j0].merge(vsas[j1])
-            out = merged.all_best_regexes(
-                    lambda regex, text: regex.simplicity_score() +
-                    sum(regex.specificity_score(t) for t in text))
-            self.precomputed.append({k: v[0] for k, v in out.items()})
+            j0 = permutation[i]
+            j1 = permutation[i-1]
+            both = vsas[j0].merge(vsas[j1])
+            self.data.append((
+                (j0, j1),
+                {k: v[0] for k, v in both.all_best_regexes(score_fn).items()}))
 
     def value_at(self, vsa_state: Tuple[int, ...]) -> float:
-        assert len(vsa_state) == len(self.precomputed), 'Need the same number of indices as number of examples'
-        cur_max = 0.
-        for i, data in enumerate(self.precomputed):
-            j0 = self.permutation[i]
-            j1 = self.permutation[i-1]
-            score = data[vsa_state[j0], vsa_state[j1]]
-            if score > cur_max:
-                cur_max = score
-        return cur_max
+        return max(data[tuple(vsa_state[i] for i in ids)] for ids, data in self.data)
 
 class SumHeuristic:
     precomputed: List[Dict[int, float]]
-    
+
     def __init__(self, examples: List[str]):
         N = len(examples)
         self.precomputed = [
@@ -122,3 +123,10 @@ class BestHeuristic:
     
     def value_at(self, vsa_state: Tuple[int, ...]) -> float:
         return max(self.max.value_at(vsa_state), self.sum.value_at(vsa_state))
+
+class NoHeuristic:
+    '''Zero all the time. Guaranteed admissible. For testing the search code.'''
+    def __init__(self, examples: List[str]):
+        pass
+    def value_at(self, vsa_state: Tuple[int, ...]) -> float:
+        return 0.
