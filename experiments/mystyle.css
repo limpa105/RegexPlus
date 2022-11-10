@@ -15,3 +15,22 @@ ol {
 	display: inline-block; 
 	text-align: left; 
 	}
+
+.task_ex {
+  width:550px;
+  border-style:solid;
+  text-align: center;
+  margin: auto;
+
+}
+
+.space {
+  width: 10px;
+  height: auto;
+  display: inline-block;
+}
+
+#jspsych-progressbar-inner {
+  background-color: green;
+}
+
