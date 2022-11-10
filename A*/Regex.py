@@ -27,6 +27,9 @@ class Regex:
         state = self.prepend_nfa_to(nfa.Node(is_end=True)).epsilon_closure()
         return nfa.matches(state, ex)
 
+    def next_inds(self, ex: str, start: int) -> List[int]:
+        raise NotImplementedError()
+
     def opt(self) -> 'Regex':
         if isinstance(self, Optional):
             return self
@@ -68,6 +71,12 @@ class Constant(Regex):
         for char in reversed(self.contents):
             node = nfa.Node(transitions={char: node})
         return node
+    
+    def next_inds(self, ex: str, start: int) -> List[int]:
+        if ex[start:start+len(self.contents)] == self.contents:
+            return [start+len(self.contents)]
+        else:
+            return []
 
 
 # NOTE [Mark]: eq=False makes it default to object equality. This is a lot
@@ -105,6 +114,12 @@ class CharClass(Regex):
     def prepend_nfa_to(self, node: nfa.Node) -> nfa.Node:
         return nfa.Node(transitions={char: node for char in self.options})
 
+    def next_inds(self, ex: str, start: int) -> List[int]:
+        if start < len(ex) and ex[start] in self.options:
+            return [start+1]
+        else:
+            return []
+
 @dataclasses.dataclass(frozen=True, eq=False)
 class RepeatedCharClass(Regex):
     contents: CharClass
@@ -138,6 +153,14 @@ class RepeatedCharClass(Regex):
         temp.transitions = {char: temp for char in self.contents.options}
         return nfa.Node(transitions={char: temp for char in self.contents.options})
 
+    def next_inds(self, ex: str, start: int) -> List[int]:
+        inds = []
+        i = start
+        while i < len(ex) and ex[i] in self.contents.options:
+            i += 1
+            inds.append(i)
+        return inds
+
 @dataclasses.dataclass(frozen=True)
 class Optional(Regex):
     contents: Regex
@@ -157,6 +180,11 @@ class Optional(Regex):
         result.epsilon_transitions.add(node)
         return result
 
+    def next_inds(self, ex: str, start: int) -> List[int]:
+        inds = self.contents.next_inds(ex, start)
+        inds.append(start)
+        return inds
+
 
 CHAR_CLASSES: List[CharClass] = [
     CharClass('a-z', 0.095, frozenset(string.ascii_lowercase)),
@@ -165,8 +193,14 @@ CHAR_CLASSES: List[CharClass] = [
     CharClass('a-zA-Z', 0.01, frozenset(string.ascii_letters)),
     CharClass('a-zA-Z0-9', 0.005, frozenset(string.ascii_letters + string.digits)),
 ]
+CHAR_CLASS_DICT = {'[' + cc.name + ']': cc for cc in CHAR_CLASSES}
+
 REPEATED_CHAR_CLASSES: List[RepeatedCharClass] \
         = [RepeatedCharClass(cc) for cc in CHAR_CLASSES]
+
+REPEATED_CHAR_CLASS_DICT = {
+    '[' + cc.contents.name + ']': cc for cc in REPEATED_CHAR_CLASSES
+}
 
 def atomic_regexes_matching(text: str) -> Iterable[Regex]:
     '''Does not include optional things, because there are too many'''
