@@ -113,7 +113,7 @@ class LimitedPQ(Generic[Item]):
 
 T = TypeVar('T')
 
-def partition(xs: list[T], lo: int, hi: int, pred: Callable[[T], bool]) -> int:
+def partition(xs: List[T], lo: int, hi: int, pred: Callable[[T], bool]) -> int:
     '''O(hi - lo)'''
     assert 0 <= lo <= hi <= len(xs)
     while lo < hi:
@@ -124,7 +124,7 @@ def partition(xs: list[T], lo: int, hi: int, pred: Callable[[T], bool]) -> int:
             hi -= 1
     return lo
 
-def bubble_down(xs: list[Item], i: int):
+def bubble_down(xs: List[Item], i: int):
     '''O(log(n/i))'''
     while True:
         x = xs[i]
@@ -139,7 +139,7 @@ def bubble_down(xs: list[Item], i: int):
         else:
             break
 
-def heapify(xs: list[Item]):
+def heapify(xs: List[Item]):
     '''O(n)'''
     for i in reversed(range((len(xs)+1) // 2)):
         bubble_down(xs, i)
@@ -161,7 +161,7 @@ def bubble_down_with_inds(xs: List[Item], inds: Dict[VSAState, int], i: int):
         else:
             break
 
-def bubble_up_with_inds(xs: list[Item], inds: Dict[VSAState, int], i: int):
+def bubble_up_with_inds(xs: List[Item], inds: Dict[VSAState, int], i: int):
     '''O(log i)'''
     while i > 0:
         x = xs[i]

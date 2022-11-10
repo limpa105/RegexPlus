@@ -144,7 +144,19 @@ class BestHeuristic:
     def __init__(self, examples: List[str]):
         self.max = MaxHeuristic(examples)
         self.sum = SumHeuristic(examples)
-    
+
+    def value_at(self, vsa_state: Tuple[int, ...]) -> float:
+        return max(self.max.value_at(vsa_state), self.sum.value_at(vsa_state))
+
+class TwoBestHeuristic:
+    '''Computes both heuristics and takes the larger one'''
+    max: TwoMaxHeuristic
+    sum: TwoSumHeuristic
+
+    def __init__(self, examples: List[str]):
+        self.max = TwoMaxHeuristic(examples)
+        self.sum = TwoSumHeuristic(examples)
+
     def value_at(self, vsa_state: Tuple[int, ...]) -> float:
         return max(self.max.value_at(vsa_state), self.sum.value_at(vsa_state))
 

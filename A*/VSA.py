@@ -6,6 +6,18 @@ import itertools, functools, dataclasses, math
 
 VSAState = Tuple[int, ...]
 
+def intersect_edge_sets(a: Set[Regex], b: Set[Regex]) -> Set[Regex]:
+    out = set()
+    for r in a:
+        if r in b:
+            out.add(r)
+        elif isinstance(r, Optional):
+            if r.contents in b:
+                out.add(r)
+        elif (opt := Optional(r)) in b:
+            out.add(opt)
+    return out
+
 @dataclasses.dataclass
 class VSA:
     examples: List[str]
@@ -23,7 +35,6 @@ class VSA:
 
     def merge(self, other: 'VSA') -> 'VSA':
         examples = self.examples + other.examples
-        # Basic edges
         edges = {}
         for s_a, a_edges in self.edges.items():
             for s_b, b_edges in other.edges.items():
@@ -32,7 +43,7 @@ class VSA:
                         e_a+e_b: both_regexes
                         for e_a, r_a in a_edges.items()
                         for e_b, r_b in b_edges.items()
-                        if len(both_regexes := r_a & r_b) > 0
+                        if len(both_regexes := intersect_edge_sets(r_a, r_b)) > 0
                     }
                 # new optional edges
                 for e_a, r_a in a_edges.items():
@@ -77,6 +88,15 @@ class VSA:
             regexes[start] = cur_best_score, cur_best_r, cur_best_end
         return regexes
 
+    def single_best_regex(self, score_fn) -> List[Regex]:
+        d = self.all_best_regexes(score_fn)
+        regex = []
+        state = (0,) * len(self.examples)
+        end = tuple(len(ex) for ex in self.examples)
+        while state != end:
+            __, r, state = d[state]
+            regex.append(r)
+        return d[(0,) * len(self.examples)][0], regex
 
 if __name__ == '__main__':
     print('Enter examples, leave blank when done')
@@ -88,6 +108,6 @@ if __name__ == '__main__':
         inputs.append(i)
     vsas = [VSA.single_example(ex) for ex in inputs]
     big_vsa = functools.reduce(lambda a, b: a.merge(b), vsas)
-    d = big_vsa.all_best_regexes(lambda r, ts: r.simplicity_score() +
+    score, regex = big_vsa.single_best_regex(lambda r, ts: r.simplicity_score() +
                                  sum(r.specificity_score(t) for t in ts))
-    print(f'result score is {d[(0,)*len(inputs)]}')
+    print(f'{score}, {"".join(str(r) for r in regex)}')

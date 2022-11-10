@@ -7,6 +7,8 @@ END_OF_REGEX_PROB = 0.05
 ONE_TOKEN_COST = - math.log(1 - END_OF_REGEX_PROB)
 
 class Regex:
+    def __repr__(self):
+        return str(self)
     def __str__(self) -> str:
         raise NotImplementedError()
     def simplicity_score(self) -> float:
@@ -38,6 +40,8 @@ class Constant(Regex):
     def __str__(self) -> str:
         special = '()[]\\+*?'
         return ''.join(('\\' + c if c in special else c) for c in self.contents)
+
+    def __repr__(self): return str(self)
 
     def simplicity_score(self) -> float:
         PRINTABLE_CHARS = 95
@@ -75,6 +79,7 @@ class CharClass(Regex):
     name: str
     simpl_prob: float
     options: FrozenSet[str]
+    def __repr__(self): return str(self)
 
     def __str__(self) -> str:
         return f'[{self.name}]'
@@ -103,6 +108,7 @@ class CharClass(Regex):
 @dataclasses.dataclass(frozen=True, eq=False)
 class RepeatedCharClass(Regex):
     contents: CharClass
+    def __repr__(self): return str(self)
 
     def __str__(self):
         return str(self.contents) + '+'
@@ -135,6 +141,7 @@ class RepeatedCharClass(Regex):
 @dataclasses.dataclass(frozen=True)
 class Optional(Regex):
     contents: Regex
+    def __repr__(self): return str(self)
 
     def __str__(self) -> str:
         return '(' + str(self.contents) + ')?'

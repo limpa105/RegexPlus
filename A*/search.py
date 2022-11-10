@@ -23,7 +23,7 @@ def search(examples: List[str], max_size: int) -> State:
     N = len(examples)
     pq = LimitedPQ(max_size)
     heuristic = TwoMaxHeuristic(examples)
-    print('computed heuristics')
+    # print('computed heuristics')
 
     starting_index = (0,) * N
     ending_index = tuple(len(e) for e in examples)
@@ -50,14 +50,14 @@ def search(examples: List[str], max_size: int) -> State:
     raise Exception('No regex works! (Should never happen)')
 
 
-def next_states(VSAs: list[VSA], starting: VSAState):
+def next_states(VSAs: List[VSA], starting: VSAState):
     if len(VSAs) == 1:
         return [(end, r) for end, rs in VSAs[0].edges[starting].items() for r in rs]
     v, *rest_vsas = VSAs
     i, *rest_starting = starting
     rest_starting = tuple(rest_starting)
     rest = next_states(rest_vsas, rest_starting)
-    return [(e + rest_end, r) for rest_end, r in rest for e, rs in v.edges[(i,)].items() if r in rs] \
+    return [(e + rest_end, r) for rest_end, r in rest for e, rs in v.edges[(i,)].items() if r in rs or (isinstance(r, Optional) and r.contents in rs)] \
         + [((i, *rest_end), r.opt()) for rest_end, r in rest] \
         + [(e + rest_starting, r.opt()) for e, rs in v.edges[(i,)].items() for r in rs]
 
