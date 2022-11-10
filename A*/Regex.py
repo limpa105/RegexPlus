@@ -47,10 +47,12 @@ class Constant(Regex):
     def __repr__(self): return str(self)
 
     def simplicity_score(self) -> float:
+        if len(self.contents) != 1: return math.inf # HACK
         PRINTABLE_CHARS = 95
         return ONE_TOKEN_COST + -math.log(0.3) \
-            + math.log(PRINTABLE_CHARS + 1) * len(self.contents) \
                 + math.log(PRINTABLE_CHARS)
+            # + math.log(PRINTABLE_CHARS + 1) * len(self.contents) \
+
 
     def specificity_score(self, ex_part: str) -> float:
         if ex_part == self.contents:
@@ -59,7 +61,11 @@ class Constant(Regex):
             return math.inf
     
     def opt_simplicity_score(self) -> float:
-        return math.log(3) + self.simplicity_score()
+        PRINTABLE_CHARS = 95
+        return math.log(3) + ONE_TOKEN_COST + -math.log(0.3) \
+            + math.log(PRINTABLE_CHARS + 1) * len(self.contents) \
+            + math.log(PRINTABLE_CHARS)
+
 
     def opt_specificity_score(self, ex_part: str) -> float:
         if ex_part == self.contents or ex_part == '':

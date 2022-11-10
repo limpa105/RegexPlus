@@ -9,7 +9,7 @@ from  PriorityQueue import *
 from Regex import *
 from NN import NNState
 
-NUM_OUTGOING_EDGES = 15
+NUM_OUTGOING_EDGES = 40
 
 @dataclasses.dataclass(frozen=True)
 class State:
@@ -24,6 +24,7 @@ def search(examples: List[str], max_size: int) -> State:
     N = len(examples)
     pq = LimitedPQ(max_size)
     heuristic = TwoMaxHeuristic(examples)
+    already_seen = set()
     # print('computed heuristics')
 
     starting_index = (0,) * N
@@ -35,12 +36,14 @@ def search(examples: List[str], max_size: int) -> State:
         regex_so_far=[],
         nn_state=NNState.initial(examples)
     ))
-    VSAs = [VSA.single_example(ex) for ex in examples]
 
     while len(pq) > 0:
         state = pq.pop_best()
         if state.indices == ending_index:
             return state
+        if state.indices in already_seen:
+            continue
+        already_seen.add(state.indices)
         for end, nn_state, r in next_states(examples, state):
             score_so_far = state.score_so_far \
                 + r.simplicity_score() \
