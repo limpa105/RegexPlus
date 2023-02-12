@@ -6,7 +6,9 @@ import {initJsPsych} from 'jspsych';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 import instructions from '@jspsych/plugin-instructions';
 import surveyMulipleChoice from '@jspsych/plugin-survey-multi-choice';
+import SurveyTextPlugin from './survey-text';
 import {RegexExamplesPlugin, RegexExampleData} from './regex-examples-plugin';
+import FreeSortPlugin from './drag-and-drop';
 
 var queryString = window.location.search;
 var urlParams = new URLSearchParams(queryString);
@@ -171,46 +173,118 @@ const storyHTML = [`
     <img src="images/conversation.png" width="450" height="300"<br>
     `];
 
-const exampleHTML = [`<p>
-    In this experiment, you will visit ${NUM_TASKS} planets. On each planet,
-    the language will be described to you using both words, and a regular
-    expression (regex).
+const describeHTML = [ `<p>
+    In this study you will regular expressions from examples and provide examples that will allow others guess regular expressions.
     </p>
-    <p><strong>Your goal is to fully convey the language to Charlie, through allowed utterances.</strong></p>
-    <br />
-    <p>Below is an example of the task:</p>
-    <div class=task_ex>
-      <p>
-        <strong>Description:</strong> All strings made up of only capital letters
-        <br />
-        <strong>Corresponding Regex:</strong> <tt>[A-Z]*</tt>
-      </p>
-      <ol>
-        <li> </li>
-        <li> H </li>
-        <li> CAT </li>
-        <li> WQERWTEYRJ </li>
-      </ol>
-    </div>`]
+    <p>
+    We will be using a simpler grammar. Specifically we will only allow regexes without arbitrary OR or repetitions (Kleene Star).
+    <ol>
+      <li>OR is limited to the character classes [a-z], <code>[0-9]</code> (or <code>\\d</code>), [A-Z], [a-zA-Z], [a-zA-Z0-9]</li>
+      <li>Optionals are limited to constants strings or one character class from above.</li>
+      <li>Repetitions are limited to the character classes above.</li>
+    </ol>
+    </p>
+    <p>
+    The following regexes are in the simpler grammar:
+    <ol>
+      <li><code>[a-z]+</code></li>
+      <li><code>[A-Z]*[0-9]*</code></li>
+      <li><code>hello( friends)?</code></li>
+      <li><code>\d{3}-\d{3}-\d{4}</code></li>
+    </ol>
+    <p> The following are NOT in the simpler grammar: </p>
+    <ol>
+      <li><code>\\d+(\\.\\d+)?</code> — it has the complex optional <code>(\\.\\d+)?</code></li>
+      <li><code>[A-Z]{3}(\\d{2})?</code> — it has the complex optional <code>(\\d{2})?</code></li>
+      <li><code>(cat|dog)</code> — it has an OR of two strings</li>
+      <li><code>(cat)+</code> — it has a repetition of a string</li>
+    </ol>
+    </p>
+    `];
+  
 
-const instructionsHTML = ['<p> Press a button to either add or remove examples. \
+const listenerInstructionsHTML = ['<p> First you will try to guess regular expressions based on examples someone else gave. </p>  <p> Type in the regular expression into the designated box and press the "Guess" button! </p>']
+
+const speakerInstructionsHTML = ['<p> Press a button to either add or remove examples. \
 If your example fits the description it will have "Valid" appear next to it in green, \
 and if it doesn\'t it will be labelled "Invalid".</p> \
 <p> All of your examples need to be valid. </p>  \
 <p> You may provide as many or as few examples as you deem necessary to convey the description.</p> \
 <p>Click next to begin the experiment!.</p>']
 
+/** 
+const train2 = {
+  type: surveyMulipleChoice,
+  questions: [
+    {
+      prompt: "Choose the regular expression that the examples below are describing: <br> <ol> <li>111.</li> <li>111.1</li> </ol>",
+      options: ["111(.1)?", "111.(1)?", "[0-9]{3}.[0-9]*", "[0-9]+.[0-9]+", "[0-9]*.[0-9]*", "[0-9].(1)?", "(111.)?(1)?"],
+    },]
+}
+*/
+
+const ex1 = {
+  type: SurveyTextPlugin,
+  questions : [
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>1234hello1234</code></li> <li><code>78hello21</code></li> </ol> <br> "}
+  ],
+  regex: '\\d+hello\\d+'
+}
+
+const ex2 = {
+  type: SurveyTextPlugin,
+  questions : [
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>APM 2402</code></li> <li><code>APM 7218</code></li> <li><code>APM 0121</code></li> <li><code>YORK 3000</code></li></ol> <br> "}
+  ],
+  regex: '[A-Z]+\\d{4}'
+}
+
+const ex3 = {
+  type: SurveyTextPlugin,
+  questions : [
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>cat</code></li> <li><code>dog</code></li> <li><code>tom</code></li> <li><code>the</code></li> <li><code>bug</code></li> </ol> <br> "}
+  ],
+  regex:'[a-z]+'
+}
+
+const ex4 = {
+  type: SurveyTextPlugin,
+  questions : [
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>abc</code></li> <li></code>abc4</code></li></ol> <br> "}
+  ],
+  regex: '[a-z]{3}(\\d)?'
+}
 
 const welcome = {
   type: instructions,
   pages: [ 
     consentHTML,
-    storyHTML,
-    exampleHTML,
-    instructionsHTML],
+    describeHTML,
+    listenerInstructionsHTML,
+  ],
     show_clickable_nav: true
 };
 
+const more_instructions = {
+  type: instructions,
+  pages: [ 
+    speakerInstructionsHTML
+  ],
+    show_clickable_nav: true
+};
+
+
+/** 
+const train3 = {
+  type: FreeSortPlugin,
+  stimuli: regexes,
+  stim_width: 90,
+  stim_height: 70,
+  sort_area_width: 700,
+  sort_area_height: 300,
+  prompt: "Try to guess the regular expression the examples below are describing: <br> <ol> <li>111</li> <li>111.1</li> </ol> <br> Drag the corresponding regex blocks into the red area and put them into the correct order. <br> <br> "
+}
+*/
 const prior_knowledge = {
   type: surveyMulipleChoice,
   preamble: 'Thank you! The Gacradians have two more questions for you before you leave their solar system.',
@@ -252,10 +326,16 @@ const main_experiment = {
 
 const timeline = [
   welcome,
+  ex1,
+  ex2,
+  ex3,
+  ex4,
+  more_instructions,
   main_experiment,
   prior_knowledge,
   thank,
 ];
+
 
 jsPsych.run(timeline);
 
