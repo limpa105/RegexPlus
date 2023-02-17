@@ -51,7 +51,7 @@ const problems: RegexExampleData[] = [
     regex: "[A-Za-z0-9]*[a-z][A-Za-z0-9]*",
   },
   {
-    description: "All strings made up of “<tt>  09 </tt> ” followed by 7 digits",
+    description: "All strings made up of “<tt>09</tt> ” followed by 7 digits",
     regex: "09\\d{7}",
   },
   {
@@ -173,8 +173,39 @@ const storyHTML = [`
     <img src="images/conversation.png" width="450" height="300"<br>
     `];
 
+    const describeHTML2 = [ `<p>
+    In this study you will try to guess regular expressions from examples and provide examples that will allow others guess regular expressions. </p>
+    <p> Our regular expression grammar allows: 
+    <ol> 
+    <li> The following character classes : [a-z],  <code>\\d</code>, [A-Z], [a-zA-Z], [a-zA-Z0-9] </li>
+    <li> Optional of a string or ONE character class from above. (Ex: <code>(wow)?</code> or <code>([a-z])?</code >) </li>
+    <li> Repetitions of the character classes above. (Ex: <code>[a-z]*</code> or <code>[a-z]{3}</code>) </li>
+    </p>
+    <p>
+    The following regexes are in the simpler grammar:
+    <ol>
+      <li><code>[a-z]+</code></li>
+      <li><code>[A-Z]*[0-9]*</code></li>
+      <li><code>hello( friends)?</code></li>
+      <li><code>\\d{3}-\\d{3}-\\d{4}</code></li>
+    </ol>
+    </p>
+    <p> The following are NOT in the simpler grammar: </p>
+    <p>
+    <ol>
+      <li><code>\\d+(\\.\\d+)?</code> — it has the complex optional <code>(\\.\\d+)?</code></li>
+      <li><code>[A-Z]{3}(\\d{2})?</code> — it has the complex optional <code>(\\d{2})?</code></li>
+      <li><code>(cat|dog)</code> — it has an OR of two strings</li>
+      <li><code>(cat)+</code> — it has a repetition of a string</li>
+    </ol>
+    </p>
+    <p>
+    It is not crucial that you memorize the grammar by heart as long as you remember the main principles.</p>
+    `]
+
+
 const describeHTML = [ `<p>
-    In this study you will regular expressions from examples and provide examples that will allow others guess regular expressions.
+    In this study you will try to guess regular expressions from examples and provide examples that will allow others guess regular expressions.
     </p>
     <p>
     We will be using a simpler grammar. Specifically we will only allow regexes without arbitrary OR or repetitions (Kleene Star).
@@ -190,9 +221,11 @@ const describeHTML = [ `<p>
       <li><code>[a-z]+</code></li>
       <li><code>[A-Z]*[0-9]*</code></li>
       <li><code>hello( friends)?</code></li>
-      <li><code>\d{3}-\d{3}-\d{4}</code></li>
+      <li><code>\\d{3}-\\d{3}-\\d{4}</code></li>
     </ol>
+    </p>
     <p> The following are NOT in the simpler grammar: </p>
+    <p>
     <ol>
       <li><code>\\d+(\\.\\d+)?</code> — it has the complex optional <code>(\\.\\d+)?</code></li>
       <li><code>[A-Z]{3}(\\d{2})?</code> — it has the complex optional <code>(\\d{2})?</code></li>
@@ -200,17 +233,21 @@ const describeHTML = [ `<p>
       <li><code>(cat)+</code> — it has a repetition of a string</li>
     </ol>
     </p>
+    <br>
+    
     `];
   
 
 const listenerInstructionsHTML = ['<p> First you will try to guess regular expressions based on examples someone else gave. </p>  <p> Type in the regular expression into the designated box and press the "Guess" button! </p>']
 
-const speakerInstructionsHTML = ['<p> Press a button to either add or remove examples. \
+const speakerInstructionsHTML = [`<p> Now you will try to provide examples so someone else can guess the regular expression from them </p>
+<p> Please be aware that the might not guesser speak English or any other common languages that you may know </p>  
+<p> Press a button to either add or remove examples. \
 If your example fits the description it will have "Valid" appear next to it in green, \
 and if it doesn\'t it will be labelled "Invalid".</p> \
 <p> All of your examples need to be valid. </p>  \
 <p> You may provide as many or as few examples as you deem necessary to convey the description.</p> \
-<p>Click next to begin the experiment!.</p>']
+<p>Click next to begin the experiment!.</p> `]
 
 /** 
 const train2 = {
@@ -236,7 +273,7 @@ const ex2 = {
   questions : [
   {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>APM 2402</code></li> <li><code>APM 7218</code></li> <li><code>APM 0121</code></li> <li><code>YORK 3000</code></li></ol> <br> "}
   ],
-  regex: '[A-Z]+\\d{4}'
+  regex: '[A-Z]+ \\d{4}'
 }
 
 const ex3 = {
@@ -259,7 +296,7 @@ const welcome = {
   type: instructions,
   pages: [ 
     consentHTML,
-    describeHTML,
+    describeHTML2,
     listenerInstructionsHTML,
   ],
     show_clickable_nav: true
@@ -287,7 +324,7 @@ const train3 = {
 */
 const prior_knowledge = {
   type: surveyMulipleChoice,
-  preamble: 'Thank you! The Gacradians have two more questions for you before you leave their solar system.',
+  preamble: 'Thank you! We have two last questions for you',
   questions: [
     {
       prompt: "I write computer programs:",
@@ -306,8 +343,7 @@ const prior_knowledge = {
 
 const thank = {
   type: htmlKeyboardResponse,
-  stimulus: `<p> Thank you for partcipating in our study! </p>
-  <p> To get credit please give Prolific this code: <strong>ABCDEFGH</strong></p>`
+  stimulus: `<p> Thank you for partcipating in our study! </p>`
 };
 
 /************* Putting it all together *************/

@@ -53,7 +53,7 @@ export class RegexExamplesPlugin implements JsPsychPlugin<Info> {
     `;
 
     // add form HTML / input elements
-    html += `<p id="the_examples"></p> <button id="add" class="jspsych-btn jspsych-survey-html-form" type="button"> I want to provide more examples! </button>`
+    html += `<p id="the_examples"></p> <button id="add" class="jspsych-btn jspsych-survey-html-form" type="button"> Add example </button>`
     html += `<divclass="space">  </div> `
     // add submit button
     html +=

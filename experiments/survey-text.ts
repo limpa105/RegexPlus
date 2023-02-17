@@ -187,7 +187,7 @@ class SurveyTextPlugin implements JsPsychPlugin<Info> {
 
     // add submit button
     html += `
-      <p id='regex' hidden=true> The correct regex was <code> ${trial.regex} </code> </p>`
+      <p id='regex' hidden=true>  </p>`
     
     
     html +=
@@ -206,8 +206,21 @@ class SurveyTextPlugin implements JsPsychPlugin<Info> {
       if (press===0){
         e.preventDefault();
         press+=1;
-        document.getElementById('regex').hidden = false;
-        document.getElementById('jspsych-survey-text-next').textContent = 'GOOOO';
+        console.log("Hello")
+  
+       
+        let input = document.getElementById('input-0');
+        if ((input as any).value == trial.regex){
+          document.getElementById('regex').hidden = false;
+          document.getElementById('regex').innerHTML= "<span style='color:green'> Correct! </span>";
+
+        } 
+        else {
+          console.log("ME?")
+          document.getElementById('regex').hidden = false;
+          document.getElementById('regex').innerHTML=  `<span style='color:red'> Wrong! </span> The correct regex was <code> ${trial.regex} </code>`;
+        }
+        
         (document.getElementById('jspsych-survey-text-next') as any).value = 'Next';
       }
       else {
