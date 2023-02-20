@@ -203,51 +203,18 @@ const storyHTML = [`
     It is not crucial that you memorize the grammar by heart as long as you remember the main principles.</p>
     `]
 
-
-const describeHTML = [ `<p>
-    In this study you will try to guess regular expressions from examples and provide examples that will allow others guess regular expressions.
-    </p>
-    <p>
-    We will be using a simpler grammar. Specifically we will only allow regexes without arbitrary OR or repetitions (Kleene Star).
-    <ol>
-      <li>OR is limited to the character classes [a-z], <code>[0-9]</code> (or <code>[0-9]</code>), [A-Z], [a-zA-Z], [a-zA-Z0-9]</li>
-      <li>Optionals are limited to constants strings or one character class from above.</li>
-      <li>Repetitions are limited to the character classes above.</li>
-    </ol>
-    </p>
-    <p>
-    The following regexes are in the simpler grammar:
-    <ol>
-      <li><code>[a-z]+</code></li>
-      <li><code>[A-Z]*[0-9]*</code></li>
-      <li><code>hello( friends)?</code></li>
-      <li><code>[0-9]{3}-[0-9]{3}-[0-9]{4}</code></li>
-    </ol>
-    </p>
-    <p> The following are NOT in the simpler grammar: </p>
-    <p>
-    <ol>
-      <li><code>[0-9]+(\\.[0-9]+)?</code> — it has the complex optional <code>(\\.[0-9]+)?</code></li>
-      <li><code>[A-Z]{3}([0-9]{2})?</code> — it has the complex optional <code>([0-9]{2})?</code></li>
-      <li><code>(cat|dog)</code> — it has an OR of two strings</li>
-      <li><code>(cat)+</code> — it has a repetition of a string</li>
-    </ol>
-    </p>
-    <br>
-
-    `];
   
 
 const listenerInstructionsHTML = ['<p> First you will try to guess regular expressions based on examples someone else gave. </p>  <p> Type in the regular expression into the designated box and press the "Guess" button! </p>']
 
-const speakerInstructionsHTML = [`<p> Now you will try to provide examples so someone else can guess the regular expression from them </p>
-<p> Please be aware that the might not guesser speak English or any other common languages that you may know </p>  
+const speakerInstructionsHTML = [`<p> Now you will try to provide examples so someone else can guess the regular expression from them. </p>
+<p> Please do not communicate the regular expression using actual words. For example for [A-Z]+ do not say ALLCAPITALLETTERS.</p>  
 <p> Press a button to either add or remove examples. \
 If your example fits the description it will have "Valid" appear next to it in green, \
 and if it doesn\'t it will be labelled "Invalid".</p> \
 <p> All of your examples need to be valid. </p>  \
 <p> You may provide as many or as few examples as you deem necessary to convey the description.</p> \
-<p>Click next to begin the experiment!.</p> `]
+<p>Click next to begin the experiment!</p> `]
 
 /** 
 const train2 = {
