@@ -26,7 +26,7 @@ var jsPsych = initJsPsych({
     saveData(jsPsych.data.get().csv());
   },
   show_progress_bar: true,
-  message_progress_bar: 'Journey completion',
+  message_progress_bar: 'Progress Bar',
   auto_update_progress_bar: false,
 });
 
@@ -52,39 +52,39 @@ const problems: RegexExampleData[] = [
   },
   {
     description: "All strings made up of “<tt>09</tt> ” followed by 7 digits",
-    regex: "09\\d{7}",
+    regex: "09[0-9]{7}",
   },
   {
     description: "All strings made up of “<tt>Page  </tt>” followed by at least one digit followed by “<tt>  of </tt>” and at least one digit",
-    regex: "Page \\d+ of \\d+",
+    regex: "Page [0-9]+ of [0-9]+",
   },
   {
     description: "All strings made up of “<tt>abc.</tt>” followed by at least one digit",
-    regex: "abc\\.\\d+",
+    regex: "abc\\.[0-9]+",
   },
   {
     description: "All strings made up of 6 digits",
-    regex: "\\d{6}",
+    regex: "[0-9]{6}",
   },
   {
     description: "All strings made up of 6 digits followed by “<tt>.</tt> ” followed by 3 digits",
-    regex: "\\d{6}\\.\\d{3}",
+    regex: "[0-9]{6}\\.[0-9]{3}",
   },
   {
     description: "All strings made up of 3 digits followed by “<tt>-</tt> ” followed by 3 digits followed by “<tt>-</tt>” followed by 4 digits",
-    regex: "\\d{3}-\\d{3}-\\d{4}",
+    regex: "[0-9]{3}-[0-9]{3}-[0-9]{4}",
   },
   {
     description: "All strings made up of at least one digit optionally followed by “<tt>.</tt>” followed by any number of digits",
-    regex: "\\d+(\\.)?\\d*",
+    regex: "[0-9]+(\\.)?[0-9]*",
   },
   {
     description: "All strings made up of 1 to 3 lowercase letters followed by “<tt>-</tt>” followed by 1 to 2 lowercase letters followed by “<tt>-</tt>” followed by 1 to 4 digits",
-    regex: "[a-z]{1,3}-[a-z]{1,2}-\\d{1,4}",
+    regex: "[a-z]{1,3}-[a-z]{1,2}-[0-9]{1,4}",
   },
   {
     description: "All strings made up of at least one digit followed by “<tt>.</tt>” followed by 1 to 4 digits",
-    regex: "\\d+\\.\\d{1,4}",
+    regex: "[0-9]+\\.[0-9]{1,4}",
   },
   {
     description: "All strings made up of an optional “<tt>*</tt>” followed by at least two lowercase letters followed by an optional “<tt>*</tt>”",
@@ -92,19 +92,19 @@ const problems: RegexExampleData[] = [
   },
   {
     description: "All strings made up of one or more digits, with an optional “<tt>+</tt>” in front",
-    regex: "(\\+)?\\d+",
+    regex: "(\\+)?[0-9]+",
   },
   {
     description: "All strings made up of two digits followed by “<tt>.5</tt>”",
-    regex: "\\d{2}\\.5",
+    regex: "[0-9]{2}\\.5",
   },
   {
     description: "All strings made up of “<tt>C0</tt>” followed by four digits",
-    regex: "C0\\d{4}",
+    regex: "C0[0-9]{4}",
   },
   {
     description: "All strings made up of either one lowercase OR one uppercase letter followed by five digits",
-    regex: "[a-zA-Z]\\d{5}",
+    regex: "[a-zA-Z][0-9]{5}",
   },
   {
     description: "All strings made up of an uppercase letter followed by one or more lowercase letters, then a space, then another uppercase letter followed by one or more lowercase letters",
@@ -112,7 +112,7 @@ const problems: RegexExampleData[] = [
   },
   {
     description: "All nonempty strings made up of “9” followed by 9 digits",
-    regex: "9\\d{9}"
+    regex: "9[0-9]{9}"
   },
   {
     description: "All nonempty strings made up of digits, lowercase and uppercase letters",
@@ -120,11 +120,11 @@ const problems: RegexExampleData[] = [
   },
   {
     description: "All nonempty strings made up of digits",
-    regex: "\\d+"
+    regex: "[0-9]+"
   },
   {
     description: "All strings made up of 3 digits followed by a space followed by 2 digits",
-    regex: "\\d{3} \\d{2}"
+    regex: "[0-9]{3} [0-9]{2}"
   },
 ];
 const NUM_TASKS = problems.length;
@@ -174,27 +174,27 @@ const storyHTML = [`
     `];
 
     const describeHTML2 = [ `<p>
-    In this study you will try to guess regular expressions from examples and provide examples that will allow others guess regular expressions. </p>
+    In this study you will try to guess regular expressions from examples and provide examples that will allow others to guess regular expressions. </p>
     <p> Our regular expression grammar allows: 
     <ol> 
-    <li> The following character classes : [a-z],  <code>\\d</code>, [A-Z], [a-zA-Z], [a-zA-Z0-9] </li>
+    <li> The following character classes : [a-z], [0-9], [A-Z], [a-zA-Z], [a-zA-Z0-9] </li>
     <li> Optional of a string or ONE character class from above. (Ex: <code>(wow)?</code> or <code>([a-z])?</code >) </li>
-    <li> Repetitions of the character classes above. (Ex: <code>[a-z]*</code> or <code>[a-z]{3}</code>) </li>
+    <li> Repetitions of the character classes above. (Ex: <code>[a-z]+</code> or <code>[a-z]*</code> or <code>[a-z]{3}</code>) </li>
     </p>
     <p>
-    The following regexes are in the simpler grammar:
+    The following regexes are in our grammar:
     <ol>
       <li><code>[a-z]+</code></li>
       <li><code>[A-Z]*[0-9]*</code></li>
       <li><code>hello( friends)?</code></li>
-      <li><code>\\d{3}-\\d{3}-\\d{4}</code></li>
+      <li><code>[0-9]{3}-[0-9]{3}-[0-9]{4}</code></li>
     </ol>
     </p>
-    <p> The following are NOT in the simpler grammar: </p>
+    <p> The following are NOT in our grammar: </p>
     <p>
-    <ol>
-      <li><code>\\d+(\\.\\d+)?</code> — it has the complex optional <code>(\\.\\d+)?</code></li>
-      <li><code>[A-Z]{3}(\\d{2})?</code> — it has the complex optional <code>(\\d{2})?</code></li>
+    <ol >
+      <li><code>[0-9]+(\\.[0-9]+)?</code> — it has the complex optional <code>(\\.[0-9]+)?</code></li>
+      <li><code>[A-Z]{3}([0-9]{2})?</code> — it has the complex optional <code>([0-9]{2})?</code></li>
       <li><code>(cat|dog)</code> — it has an OR of two strings</li>
       <li><code>(cat)+</code> — it has a repetition of a string</li>
     </ol>
@@ -210,7 +210,7 @@ const describeHTML = [ `<p>
     <p>
     We will be using a simpler grammar. Specifically we will only allow regexes without arbitrary OR or repetitions (Kleene Star).
     <ol>
-      <li>OR is limited to the character classes [a-z], <code>[0-9]</code> (or <code>\\d</code>), [A-Z], [a-zA-Z], [a-zA-Z0-9]</li>
+      <li>OR is limited to the character classes [a-z], <code>[0-9]</code> (or <code>[0-9]</code>), [A-Z], [a-zA-Z], [a-zA-Z0-9]</li>
       <li>Optionals are limited to constants strings or one character class from above.</li>
       <li>Repetitions are limited to the character classes above.</li>
     </ol>
@@ -221,20 +221,20 @@ const describeHTML = [ `<p>
       <li><code>[a-z]+</code></li>
       <li><code>[A-Z]*[0-9]*</code></li>
       <li><code>hello( friends)?</code></li>
-      <li><code>\\d{3}-\\d{3}-\\d{4}</code></li>
+      <li><code>[0-9]{3}-[0-9]{3}-[0-9]{4}</code></li>
     </ol>
     </p>
     <p> The following are NOT in the simpler grammar: </p>
     <p>
     <ol>
-      <li><code>\\d+(\\.\\d+)?</code> — it has the complex optional <code>(\\.\\d+)?</code></li>
-      <li><code>[A-Z]{3}(\\d{2})?</code> — it has the complex optional <code>(\\d{2})?</code></li>
+      <li><code>[0-9]+(\\.[0-9]+)?</code> — it has the complex optional <code>(\\.[0-9]+)?</code></li>
+      <li><code>[A-Z]{3}([0-9]{2})?</code> — it has the complex optional <code>([0-9]{2})?</code></li>
       <li><code>(cat|dog)</code> — it has an OR of two strings</li>
       <li><code>(cat)+</code> — it has a repetition of a string</li>
     </ol>
     </p>
     <br>
-    
+
     `];
   
 
@@ -263,23 +263,23 @@ const train2 = {
 const ex1 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>1234hello1234</code></li> <li><code>78hello21</code></li> </ol> <br> "}
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list'> <li><code>1234hello1234</code></li> <li><code>78hello21</code></li> </ol> <br> "}
   ],
-  regex: '\\d+hello\\d+'
+  regex: '[0-9]+hello[0-9]+'
 }
 
 const ex2 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>APM 2402</code></li> <li><code>APM 7218</code></li> <li><code>APM 0121</code></li> <li><code>YORK 3000</code></li></ol> <br> "}
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list'> <li><code>APM 2402</code></li> <li><code>APM 7218</code></li> <li><code>MOS 0113</code></li> <li><code>YORK 3000</code></li></ol> <br> "}
   ],
-  regex: '[A-Z]+ \\d{4}'
+  regex: '[A-Z]+ [0-9]{4}'
 }
 
 const ex3 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>cat</code></li> <li><code>dog</code></li> <li><code>tom</code></li> <li><code>the</code></li> <li><code>bug</code></li> </ol> <br> "}
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list' > <li><code>cat</code></li> <li><code>dog</code></li> <li><code>tom</code></li> <li><code>the</code></li> <li><code>bug</code></li> </ol> <br> "}
   ],
   regex:'[a-z]+'
 }
@@ -287,9 +287,9 @@ const ex3 = {
 const ex4 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol> <li><code>abc</code></li> <li></code>abc4</code></li></ol> <br> "}
+  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list' > <li><code>abc</code></li> <li><code>abc4</code></li></ol> <br> "}
   ],
-  regex: '[a-z]{3}(\\d)?'
+  regex: '[a-z]{3}([0-9])?'
 }
 
 const welcome = {

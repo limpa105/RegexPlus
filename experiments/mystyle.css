@@ -34,3 +34,6 @@ ol {
   background-color: green;
 }
 
+.examples_list {
+  list-style: none;
+}
