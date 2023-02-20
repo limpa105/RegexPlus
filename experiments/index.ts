@@ -173,7 +173,7 @@ const storyHTML = [`
     <img src="images/conversation.png" width="450" height="300"<br>
     `];
 
-    const describeHTML2 = [ `<p>
+const describeHTML2 = [ `<p>
     In this study you will try to guess regular expressions from examples and provide examples that will allow others to guess regular expressions. </p>
     <p> Our regular expression grammar allows: 
     <ol> 
@@ -227,10 +227,23 @@ const train2 = {
 }
 */
 
+const listener_boilerplate = (ex) => `
+    <p> As a reminder, our regular expression grammar allows: 
+    <ol> 
+    <li> Character classes: <code>[a-z]</code>, <code>[0-9]</code>, <code>[A-Z]</code>, <code>[a-zA-Z]</code>, <code>[a-zA-Z0-9]</code> </li>
+    <li> Optionals: <code>(wow)?</code> or <code>([a-z])?</code> </li>
+    <li> Repetitions of the character classes: <code>[a-z]+</code> or <code>[a-z]*</code> or <code>[a-z]{3}</code> </li>
+    </p>
+    <p>
+    Try to guess the regular expression that describes the examples below:
+    <br> <ol class = 'examples_list'>${ex}</ol> <br>
+    </p>
+    `;
+
 const ex1 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list'> <li><code>1234hello1234</code></li> <li><code>78hello21</code></li> </ol> <br> "}
+  {prompt: listener_boilerplate("<li><code>1234hello1234</code></li> <li><code>78hello21</code></li>")}
   ],
   regex: '[0-9]+hello[0-9]+'
 }
@@ -238,7 +251,7 @@ const ex1 = {
 const ex2 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list'> <li><code>APM 2402</code></li> <li><code>APM 7218</code></li> <li><code>MOS 0113</code></li> <li><code>YORK 3000</code></li></ol> <br> "}
+  {prompt: listener_boilerplate("<li><code>APM 2402</code></li> <li><code>APM 7218</code></li> <li><code>MOS 0113</code></li> <li><code>YORK 3000</code></li>")}
   ],
   regex: '[A-Z]+ [0-9]{4}'
 }
@@ -246,7 +259,7 @@ const ex2 = {
 const ex3 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list' > <li><code>cat</code></li> <li><code>dog</code></li> <li><code>tom</code></li> <li><code>the</code></li> <li><code>bug</code></li> </ol> <br> "}
+  {prompt: listener_boilerplate("<li><code>cat</code></li> <li><code>dog</code></li> <li><code>tom</code></li> <li><code>the</code></li> <li><code>bug</code></li>")}
   ],
   regex:'[a-z]+'
 }
@@ -254,7 +267,7 @@ const ex3 = {
 const ex4 = {
   type: SurveyTextPlugin,
   questions : [
-  {prompt: "Try to guess the regular expression that describes the examples below: <br> <ol class = 'examples_list' > <li><code>abc</code></li> <li><code>abc4</code></li></ol> <br> "}
+  {prompt: listener_boilerplate("<li><code>abc</code></li> <li><code>abc4</code></li>")}
   ],
   regex: '[a-z]{3}([0-9])?'
 }
