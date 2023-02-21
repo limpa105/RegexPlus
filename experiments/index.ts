@@ -12,7 +12,7 @@ import FreeSortPlugin from './drag-and-drop';
 
 var queryString = window.location.search;
 var urlParams = new URLSearchParams(queryString);
-var prolificID = urlParams.get("PROLIFIC_PID"); // ID unique to the participant
+var prolificID = urlParams.get("PROLIFIC_PID") ?? "unknown_user_" + Math.floor(1000000000 * Math.random()); // ID unique to the participant
 var studyID = urlParams.get("STUDY_ID"); // ID unique to the study
 var sessionID = urlParams.get("SESSION_ID"); // ID unique to the particular submission
 var projName = urlParams.get("projName");
