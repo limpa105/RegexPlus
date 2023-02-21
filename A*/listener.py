@@ -70,8 +70,8 @@ def cat_and_pad(tensors):
         result[i,:lengths[i]] = tensors[i]
     return result, lengths
 
-def pair_to_tensors(pair):
-    def tensor_from_list(lang, char_list):
+def pair_to_tensors(pair: Tuple[List[str], List[List[str]]]) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def tensor_from_list(lang: Lang, char_list: List[str]) -> torch.Tensor:
         indexes = [lang.word2index[word] for word in char_list] + [EOS_token]
         return torch.tensor(indexes, dtype=torch.long, device=device)
     regex_tensor = tensor_from_list(regex_lang, pair[0])

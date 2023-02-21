@@ -22,6 +22,7 @@ class State:
 def search(examples: List[str], max_size: int) -> State:
     N = len(examples)
     pq = LimitedPQ(max_size)
+    already_seen = set()
     heuristic = TwoMaxHeuristic(examples)
     # print('computed heuristics')
 
@@ -39,6 +40,10 @@ def search(examples: List[str], max_size: int) -> State:
         state = pq.pop_best()
         if state.indices == ending_index:
             return state
+        if state.indices in already_seen:
+            continue
+        # print(state)
+        already_seen.add(state.indices)
         for end, r in next_states(VSAs, state.indices):
             score_so_far = state.score_so_far \
                 + r.simplicity_score() \
@@ -50,17 +55,24 @@ def search(examples: List[str], max_size: int) -> State:
     raise Exception('No regex works! (Should never happen)')
 
 
-def next_states(VSAs: List[VSA], starting: VSAState):
+def next_states(VSAs: List[VSA], starting: VSAState) -> Iterator[Tuple[VSAState, Regex]]:
     if len(VSAs) == 1:
-        return [(end, r) for end, rs in VSAs[0].edges[starting].items() for r in rs]
+        for end, rs in VSAs[0].edges[starting].items():
+            for r in rs:
+                yield end, r
+        return
     v, *rest_vsas = VSAs
     i, *rest_starting = starting
     rest_starting = tuple(rest_starting)
-    rest = next_states(rest_vsas, rest_starting)
-    return [(e + rest_end, r) for rest_end, r in rest for e, rs in v.edges[(i,)].items() if r in rs or (isinstance(r, Optional) and r.contents in rs)] \
-        + [((i, *rest_end), r.opt()) for rest_end, r in rest] \
-        + [(e + rest_starting, r.opt()) for e, rs in v.edges[(i,)].items() for r in rs]
-
+    for rest_end, r in next_states(rest_vsas, rest_starting):
+        yield (i, *rest_end), r.opt()
+        for e, rs in v.edges[(i,)].items():
+            if r in rs or (isinstance(r, Optional) and r.contents in rs):
+                yield e + rest_end, r
+    for e, rs in v.edges[(i,)].items():
+        end = e + rest_starting
+        for r in rs:
+            yield end, r.opt()
 
 if __name__ == '__main__':
     print('Enter examples, leave blank when done')

@@ -9,7 +9,7 @@ from  PriorityQueue import *
 from Regex import *
 from NN import NNState
 
-NUM_OUTGOING_EDGES = 40
+NUM_OUTGOING_EDGES = 10
 
 @dataclasses.dataclass(frozen=True)
 class State:
@@ -43,8 +43,11 @@ def search(examples: List[str], max_size: int) -> State:
             return state
         if state.indices in already_seen:
             continue
+        # print(f'Processing {state.indices}. So far: {state.regex_so_far}')
         already_seen.add(state.indices)
         for end, nn_state, r in next_states(examples, state):
+            if end in already_seen: continue
+            # print(f' → Adding the new state at {end} with {r}')
             score_so_far = state.score_so_far \
                 + r.simplicity_score() \
                 + sum(r.specificity_score(e[a:b]) for e, a, b in zip(examples, state.indices, end))
@@ -57,6 +60,7 @@ def search(examples: List[str], max_size: int) -> State:
 
 def next_states(examples: List[str], state: State) -> Iterator[Tuple[VSAState, NNState, Regex]]:
     for r, nn_state in state.nn_state.best_next_edges(NUM_OUTGOING_EDGES):
+        # print(f' → The NN suggests {r}')
         for end in itertools.product(*(r.next_inds(ex, i) for ex, i in zip(examples, state.indices))):
             yield end, nn_state, r
 
