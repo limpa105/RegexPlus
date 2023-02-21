@@ -160,6 +160,37 @@ class TwoBestHeuristic:
     def value_at(self, vsa_state: Tuple[int, ...]) -> float:
         return max(self.max.value_at(vsa_state), self.sum.value_at(vsa_state))
 
+class TwoTotalHeuristic:
+    '''An inadmissible heuristic'''
+    data: List[Tuple[Tuple[int, ...], Dict[Tuple[int, ...], float]]]
+
+    def __init__(self, examples: List[str]):
+        if len(examples) == 0:
+            self.data = []
+            return
+        score_fn = lambda regex, texts: regex.simplicity_score() \
+                + sum(regex.specificity_score(t) for t in texts)
+        if len(examples) == 1:
+            vsa = VSA.single_example(examples[0])
+            self.data = [(
+                (0,),
+                {k: v[0] for k, v in vsa.all_best_regexes(score_fn).items()})]
+            return
+        permutation = list(range(len(examples)))
+        random.shuffle(permutation)
+        vsas = [VSA.single_example(ex) for ex in examples]
+        self.data = []
+        for i in range(len(examples)):
+            j0 = permutation[i]
+            j1 = permutation[i-1]
+            both = vsas[j0].merge(vsas[j1])
+            self.data.append((
+                (j0, j1),
+                {k: v[0] for k, v in both.all_best_regexes(score_fn).items()}))
+
+    def value_at(self, vsa_state: Tuple[int, ...]) -> float:
+        return sum(data[tuple(vsa_state[i] for i in ids)] for ids, data in self.data)
+
 class NoHeuristic:
     '''Zero all the time. Guaranteed admissible. For testing the search code.'''
     def __init__(self, examples: List[str]):
