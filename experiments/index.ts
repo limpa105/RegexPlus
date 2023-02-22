@@ -47,75 +47,75 @@ const problems: RegexExampleData[] = [
     regex: "[a-z]+",
   },
   {
-    description: "All strings made up of uppercase letters, lowercase letters and digits, and that contain at least one lowercase letter",
+    description: "Alphanumeric strings that contain at least one lowercase letter",
     regex: "[A-Za-z0-9]*[a-z][A-Za-z0-9]*",
   },
   {
-    description: "All strings made up of “<tt>09</tt> ” followed by 7 digits",
+    description: "“<tt>09</tt>” followed by 7 digits",
     regex: "09[0-9]{7}",
   },
   {
-    description: "All strings made up of “<tt>Page  </tt>” followed by at least one digit followed by “<tt>  of </tt>” and at least one digit",
+    description: "“<tt>Page </tt>” followed by at least one digit followed by “<tt> of </tt>” and at least one digit",
     regex: "Page [0-9]+ of [0-9]+",
   },
   {
-    description: "All strings made up of “<tt>abc.</tt>” followed by at least one digit",
+    description: "“<tt>abc.</tt>” followed by at least one digit",
     regex: "abc\\.[0-9]+",
   },
   {
-    description: "All strings made up of 6 digits",
+    description: "6 digits",
     regex: "[0-9]{6}",
   },
   {
-    description: "All strings made up of 6 digits followed by “<tt>.</tt> ” followed by 3 digits",
+    description: "6 digits followed by “<tt>.</tt>” followed by 3 digits",
     regex: "[0-9]{6}\\.[0-9]{3}",
   },
   {
-    description: "All strings made up of 3 digits followed by “<tt>-</tt> ” followed by 3 digits followed by “<tt>-</tt>” followed by 4 digits",
+    description: "3 digits followed by “<tt>-</tt>” followed by 3 digits followed by “<tt>-</tt>” followed by 4 digits",
     regex: "[0-9]{3}-[0-9]{3}-[0-9]{4}",
   },
   {
-    description: "All strings made up of at least one digit optionally followed by “<tt>.</tt>” followed by any number of digits",
+    description: "At least one digit optionally followed by “<tt>.</tt>” followed by any number of digits",
     regex: "[0-9]+(\\.)?[0-9]*",
   },
   {
-    description: "All strings made up of 1 to 3 lowercase letters followed by “<tt>-</tt>” followed by 1 to 2 lowercase letters followed by “<tt>-</tt>” followed by 1 to 4 digits",
+    description: "1 to 3 lowercase letters followed by “<tt>-</tt>” followed by 1 to 2 lowercase letters followed by “<tt>-</tt>” followed by 1 to 4 digits",
     regex: "[a-z]{1,3}-[a-z]{1,2}-[0-9]{1,4}",
   },
   {
-    description: "All strings made up of at least one digit followed by “<tt>.</tt>” followed by 1 to 4 digits",
+    description: "At least one digit followed by “<tt>.</tt>” followed by 1 to 4 digits",
     regex: "[0-9]+\\.[0-9]{1,4}",
   },
   {
-    description: "All strings made up of an optional “<tt>*</tt>” followed by at least two lowercase letters followed by an optional “<tt>*</tt>”",
+    description: "An optional “<tt>*</tt>” followed by at least two lowercase letters followed by an optional “<tt>*</tt>”",
     regex: "(\\*)?[a-z]{2,}(\\*)?",
   },
   {
-    description: "All strings made up of one or more digits, with an optional “<tt>+</tt>” in front",
+    description: "One or more digits, with an optional “<tt>+</tt>” in front",
     regex: "(\\+)?[0-9]+",
   },
   {
-    description: "All strings made up of two digits followed by “<tt>.5</tt>”",
+    description: "Two digits followed by “<tt>.5</tt>”",
     regex: "[0-9]{2}\\.5",
   },
   {
-    description: "All strings made up of “<tt>C0</tt>” followed by four digits",
+    description: "“<tt>C0</tt>” followed by four digits",
     regex: "C0[0-9]{4}",
   },
   {
-    description: "All strings made up of either one lowercase OR one uppercase letter followed by five digits",
+    description: "A letter followed by five digits",
     regex: "[a-zA-Z][0-9]{5}",
   },
   {
-    description: "All strings made up of an uppercase letter followed by one or more lowercase letters, then a space, then another uppercase letter followed by one or more lowercase letters",
+    description: "An uppercase letter followed by one or more lowercase letters, then a space, then another uppercase letter followed by one or more lowercase letters",
     regex: "[A-Z][a-z]+ [A-Z][a-z]+",
   },
   {
-    description: "All nonempty strings made up of “9” followed by 9 digits",
+    description: "“9” followed by 9 digits",
     regex: "9[0-9]{9}"
   },
   {
-    description: "All nonempty strings made up of digits, lowercase and uppercase letters",
+    description: "All nonempty alphanumeric strings",
     regex: "[a-zA-Z0-9]+"
   },
   {
@@ -123,7 +123,7 @@ const problems: RegexExampleData[] = [
     regex: "[0-9]+"
   },
   {
-    description: "All strings made up of 3 digits followed by a space followed by 2 digits",
+    description: "3 digits followed by a space followed by 2 digits",
     regex: "[0-9]{3} [0-9]{2}"
   },
 ];
@@ -182,7 +182,7 @@ const describeHTML2 = [ `<p>
     <li> Repetitions of the character classes above. (Ex: <code>[a-z]+</code> or <code>[a-z]*</code> or <code>[a-z]{3}</code>) </li>
     </p>
     <p>
-    The following regexes are in our grammar:
+    For example, the following regexes are in our grammar:
     <ol>
       <li><code>[a-z]+</code></li>
       <li><code>[A-Z]*[0-9]*</code></li>
