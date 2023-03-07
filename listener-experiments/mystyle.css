@@ -1,0 +1,39 @@
+input, select, textarea{
+    width: 250px;
+    color: black;
+}
+
+.wrong{
+	color:red;
+}
+
+.correct{
+	color:green;
+}
+
+ol { 
+	display: inline-block; 
+	text-align: left; 
+	}
+
+.task_ex {
+  width:550px;
+  border-style:solid;
+  text-align: center;
+  margin: auto;
+
+}
+
+.space {
+  width: 10px;
+  height: auto;
+  display: inline-block;
+}
+
+#jspsych-progressbar-inner {
+  background-color: green;
+}
+
+.examples_list {
+  list-style: none;
+}
