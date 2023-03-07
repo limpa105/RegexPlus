@@ -177,7 +177,7 @@ const describeHTML2 = [ `<p>
     In this study you will try to guess regular expressions from examples and provide examples that will allow others to guess regular expressions. </p>
     <p> Our regular expression grammar allows: 
     <ol> 
-    <li> The following character classes : [a-z], [0-9], [A-Z], [a-zA-Z], [a-zA-Z0-9] </li>
+    <li> The following character classes: [a-z], [0-9], [A-Z], [a-zA-Z], [a-zA-Z0-9] </li>
     <li> Optional of a string or ONE character class from above. (Ex: <code>(wow)?</code> or <code>([a-z])?</code >) </li>
     <li> Repetitions of the character classes above. (Ex: <code>[a-z]+</code> or <code>[a-z]*</code> or <code>[a-z]{3}</code>) </li>
     </p>

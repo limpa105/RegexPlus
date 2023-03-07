@@ -2,7 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 
-const port_no = 8888;
+const port_no = 8755;
 
 const web_dir = __dirname + '/build';
 const saved_data_dir = __dirname + '/data';
@@ -22,8 +22,8 @@ const IN_PROGRESS = 'In progress';
 const FINISHED = 'Finished';
 
 const state = {};
-const NUM_USERS = 10;
-const NUM_REGEXES = 20;
+const NUM_USERS = 11;
+const NUM_REGEXES = 21;
 for (let id = 0; id < NUM_USERS; id++) {
   state[id] = [];
   for (let ex_id = 0; ex_id < NUM_REGEXES; ex_id++)
@@ -60,7 +60,7 @@ function next_index_for_id(id) {
   for (; i < NUM_REGEXES; i++)
     if (state[id][i] == NOT_STARTED) return i;
   for (i = 0; i < NUM_REGEXES; i++)
-    if (state[id][i] == NOT_FINISHED) return i;
+    if (state[id][i] == IN_PROGRESS) return i;
   return undefined;
 }
 

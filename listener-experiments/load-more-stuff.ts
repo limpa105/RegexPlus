@@ -60,6 +60,7 @@ class LoadMoreStuffPlugin implements JsPsychPlugin<Info> {
     const new_data = JSON.parse(xhr.responseText);
     if (new_data.all_done) {
       console.log("We finished! :)")
+      this.jsPsych.finishTrial();
       this.jsPsych.addNodeToEndOfTimeline({ timeline: [thank] });
       this.jsPsych.finishTrial();
       return;
