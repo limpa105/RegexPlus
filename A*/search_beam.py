@@ -54,11 +54,11 @@ class Bucket(list):
         for i in reversed(range((len(self)+1)//2)):
             self.bubble_down(i)
 
-def search(examples: List[str], beam_size: int) -> State:
+def search_top_k(examples: List[str], beam_size: int) -> State:
     N = len(examples)
     sum_lengths = sum(len(ex) for ex in examples)
 
-    heuristic = TwoMaxHeuristic(examples)
+    heuristic = TwoTotalHeuristic(examples) # TwoMaxHeuristic(examples)
     VSAs = [VSA.single_example(ex) for ex in examples]
 
     beams = {i: Bucket(beam_size) for i in range(sum_lengths+1)}
@@ -81,8 +81,11 @@ def search(examples: List[str], beam_size: int) -> State:
                         regex_so_far = state.regex_so_far + [r]))
 
     # Find the best in the last bucket
-    return min((s.score, s) for s in beams[sum_lengths])[1]
+    # return min((s.score, s) for s in beams[sum_lengths])[1]
+    return [s for s in beams[sum_lengths]] # HACK
 
+def search(examples: List[str], beam_size: int) -> State:
+    return min(search_top_k(examples, beam_size), key=lambda s: s.score)
 
 def next_states(VSAs: List[VSA], starting: VSAState) -> Iterator[Tuple[VSAState, Regex]]:
     if len(VSAs) == 1:
